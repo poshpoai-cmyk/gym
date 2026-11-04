@@ -1,1219 +1,840 @@
 <!DOCTYPE html>
-<html lang="en" class="dark">
+<html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>V-Taper Minimalist Tracker</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
-    <script>
-        tailwind.config = {
-            theme: {
-                extend: {
-                    colors: {
-                        ash: {
-                            950: '#050505',
-                            900: '#111111',
-                            850: '#161616',
-                            800: '#1c1c1c',
-                            700: '#262626',
-                            600: '#3a3a3a',
-                            500: '#525252',
-                            400: '#8c8c8c',
-                            300: '#b0b0b0',
-                            200: '#d4d4d4',
-                            100: '#e5e5e5'
-                        }
-                    },
-                    fontFamily: {
-                        sans: ['Inter', 'sans-serif'],
-                        mono: ['"JetBrains Mono"', 'monospace']
-                    }
-                }
-            }
-        }
-    </script>
-    <style>
-        /* STRICT ASH & MATTE BLACK MONOCHROME — ZERO BLUR */
-        * {
-            -webkit-tap-highlight-color: transparent;
-            box-sizing: border-box;
-        }
-        html, body {
-            background-color: #050505;
-            color: #e5e5e5;
-            font-family: 'Inter', sans-serif;
-            overflow-x: hidden;
-            width: 100%;
-        }
-        /* Prevent iPhone Safari auto-zoom on input focus */
-        input, select, button {
-            font-size: 16px !important;
-        }
-        /* Hide native number spinners for clean mobile fit */
-        input[type="number"]::-webkit-inner-spin-button,
-        input[type="number"]::-webkit-outer-spin-button {
-            -webkit-appearance: none;
-            margin: 0;
-        }
-        input[type="number"] {
-            -moz-appearance: textfield;
-        }
-        .ash-card {
-            background-color: #111111;
-            border: 1px solid #262626;
-        }
-        .ash-card-logged {
-            background-color: #161616;
-            border: 1px solid #e5e5e5;
-        }
-        .ash-btn-primary {
-            background-color: #e5e5e5;
-            color: #050505;
-            border: 1px solid #e5e5e5;
-            font-weight: 600;
-            transition: background-color 0.1s ease;
-        }
-        .ash-btn-primary:active {
-            background-color: #b0b0b0;
-            border-color: #b0b0b0;
-        }
-        .ash-btn-secondary {
-            background-color: #1c1c1c;
-            color: #e5e5e5;
-            border: 1px solid #262626;
-            transition: border-color 0.1s ease, background-color 0.1s ease;
-        }
-        .ash-btn-secondary:active {
-            background-color: #262626;
-            border-color: #8c8c8c;
-        }
-        .set-row-done {
-            background-color: #191919;
-            border-color: #e5e5e5 !important;
-        }
-        .modal-backdrop {
-            display: none;
-            position: fixed;
-            inset: 0;
-            background-color: rgba(5, 5, 5, 0.96);
-            z-index: 100;
-            align-items: center;
-            justify-content: center;
-            padding: 16px;
-        }
-        .modal-backdrop.active {
-            display: flex;
-        }
-    </style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <title>GYM.V</title>
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <style>
+    :root {
+      --bg: #050505;
+      --card: #111111;
+      --card-border: #222222;
+      --ash: #888888;
+      --ash-light: #d1d1d1;
+      --white: #f5f5f5;
+      --accent: #333333;
+      --pos: #2ecc71;
+      --neg: #e74c3c;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      -webkit-tap-highlight-color: transparent;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    }
+
+    body {
+      background-color: var(--bg);
+      color: var(--white);
+      padding: env(safe-area-inset-top, 20px) 16px env(safe-area-inset-bottom, 80px) 16px;
+      min-height: 100vh;
+    }
+
+    header {
+      padding: 16px 0 12px;
+      border-bottom: 1px solid var(--card-border);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    h1 {
+      font-size: 1.2rem;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      color: var(--white);
+      font-weight: 800;
+    }
+
+    .status-badge {
+      font-size: 0.7rem;
+      font-weight: 600;
+      letter-spacing: 0.5px;
+      color: var(--ash);
+      background: var(--card);
+      border: 1px solid var(--card-border);
+      padding: 4px 8px;
+      border-radius: 4px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: var(--ash);
+    }
+    .dot.live { background: var(--pos); }
+    .dot.err { background: var(--neg); }
+
+    .tabs {
+      display: flex;
+      gap: 8px;
+      margin: 16px 0;
+    }
+
+    .tab-btn {
+      flex: 1;
+      padding: 12px;
+      background: var(--card);
+      border: 1px solid var(--card-border);
+      color: var(--ash);
+      font-size: 0.85rem;
+      font-weight: 700;
+      border-radius: 6px;
+      cursor: pointer;
+      text-transform: uppercase;
+    }
+
+    .tab-btn.active {
+      color: var(--white);
+      border-color: var(--ash);
+      background: #1c1c1c;
+    }
+
+    .bw-card {
+      background: var(--card);
+      border: 1px solid var(--card-border);
+      border-radius: 8px;
+      padding: 14px;
+      margin-bottom: 16px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+    }
+
+    .bw-card label {
+      font-size: 0.8rem;
+      color: var(--ash-light);
+      text-transform: uppercase;
+      font-weight: 700;
+    }
+
+    .bw-input-wrap {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .bw-input-wrap input {
+      width: 75px;
+      background: #000;
+      border: 1px solid var(--card-border);
+      color: var(--white);
+      padding: 10px;
+      font-size: 0.95rem;
+      border-radius: 4px;
+      text-align: center;
+    }
+
+    .bw-btn {
+      background: var(--white);
+      color: #000;
+      padding: 10px 14px;
+      font-size: 0.8rem;
+      border-radius: 4px;
+      font-weight: 700;
+      cursor: pointer;
+      border: none;
+    }
+
+    .exercise-card {
+      background: var(--card);
+      border: 1px solid var(--card-border);
+      border-radius: 8px;
+      padding: 16px;
+      margin-bottom: 14px;
+    }
+
+    .ex-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+      margin-bottom: 4px;
+    }
+
+    .ex-name {
+      font-size: 1rem;
+      font-weight: 700;
+      color: var(--white);
+    }
+
+    .ex-target {
+      font-size: 0.75rem;
+      color: var(--ash-light);
+      margin-bottom: 8px;
+    }
+
+    .ex-duration {
+      font-size: 0.75rem;
+      color: var(--ash);
+      margin-bottom: 16px;
+      border-bottom: 1px solid var(--card-border);
+      padding-bottom: 8px;
+    }
+
+    .set-row {
+      display: grid;
+      grid-template-columns: 50px 1fr 1fr 40px;
+      gap: 10px;
+      align-items: center;
+      margin-bottom: 10px;
+    }
+
+    .set-label {
+      font-size: 0.75rem;
+      color: var(--ash);
+      font-weight: 700;
+    }
+
+    .input-box {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .input-box span {
+      font-size: 0.65rem;
+      color: var(--ash);
+      margin-bottom: 4px;
+      font-weight: 600;
+    }
+
+    .input-box input {
+      background: #000;
+      border: 1px solid var(--card-border);
+      color: var(--white);
+      padding: 10px;
+      font-size: 0.95rem;
+      border-radius: 4px;
+      text-align: center;
+    }
+
+    .check-btn {
+      height: 40px;
+      background: #181818;
+      border: 1px solid var(--card-border);
+      color: var(--ash);
+      border-radius: 4px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1rem;
+      cursor: pointer;
+    }
+
+    .check-btn.done {
+      background: var(--white);
+      color: #000;
+      font-weight: 800;
+    }
+
+    .set-actions {
+      display: flex;
+      gap: 8px;
+      margin-top: 14px;
+    }
+
+    .set-action-btn {
+      flex: 1;
+      padding: 8px;
+      font-size: 0.75rem;
+      background: #181818;
+      border: 1px solid var(--card-border);
+      color: var(--ash);
+      border-radius: 4px;
+      cursor: pointer;
+      font-weight: 600;
+    }
+
+    .save-session-btn {
+      width: 100%;
+      padding: 16px;
+      margin: 24px 0 40px;
+      background: var(--white);
+      color: #000;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      font-size: 0.9rem;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+    }
+
+    .history-card {
+      background: var(--card);
+      border: 1px solid var(--card-border);
+      border-radius: 8px;
+      padding: 14px;
+      margin-bottom: 12px;
+    }
+
+    .hist-head {
+      display: flex;
+      justify-content: space-between;
+      font-size: 0.75rem;
+      color: var(--ash);
+      margin-bottom: 12px;
+      border-bottom: 1px solid var(--card-border);
+      padding-bottom: 8px;
+      font-weight: 700;
+    }
+
+    .hist-entry {
+      font-size: 0.85rem;
+      margin-bottom: 8px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .hist-entry span {
+      color: var(--ash-light);
+    }
+    
+    .pct-badge {
+      font-size: 0.7rem;
+      padding: 2px 6px;
+      border-radius: 4px;
+      font-weight: 700;
+      margin-left: 8px;
+    }
+    .pct-pos { color: var(--pos); }
+    .pct-neg { color: var(--neg); }
+    .pct-neu { color: var(--ash); }
+    
+    .bg-pos { background: rgba(46, 204, 113, 0.15); }
+    .bg-neg { background: rgba(231, 76, 60, 0.15); }
+    .bg-neu { background: rgba(136, 136, 136, 0.15); }
+
+    /* Modal for Progress Report */
+    #progressModal {
+      position: fixed;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: rgba(0,0,0,0.9);
+      display: none;
+      z-index: 1000;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
+
+    .modal-content {
+      background: var(--card);
+      border: 1px solid var(--card-border);
+      width: 100%;
+      max-width: 400px;
+      border-radius: 12px;
+      padding: 20px;
+    }
+
+    .modal-content h2 {
+      font-size: 1.1rem;
+      text-align: center;
+      margin-bottom: 16px;
+      color: var(--white);
+    }
+
+    #modalReportList {
+      max-height: 60vh;
+      overflow-y: auto;
+      margin-bottom: 20px;
+    }
+
+    .report-item {
+      display: flex;
+      justify-content: space-between;
+      padding: 8px 0;
+      border-bottom: 1px solid var(--card-border);
+      font-size: 0.85rem;
+    }
+
+    .close-modal-btn {
+      width: 100%;
+      padding: 14px;
+      background: var(--white);
+      color: #000;
+      font-weight: 800;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+    }
+  </style>
 </head>
-<body class="min-h-screen pb-16">
+<body>
 
-    <!-- TOP HEADER & INLINE BODY WEIGHT BAR -->
-    <header class="bg-ash-950 border-b border-ash-700 sticky top-0 z-30">
-        <div class="max-w-xl mx-auto px-3 py-2.5 space-y-2.5">
-            <!-- Title & Rolling 7-Day Counter -->
-            <div class="flex items-center justify-between gap-2">
-                <div>
-                    <h1 class="font-mono font-bold text-sm sm:text-base tracking-tight text-ash-100 uppercase">
-                        V-TAPER // LOG
-                    </h1>
-                    <p class="text-[11px] text-ash-400 font-mono">
-                        Rolling Split • Set 3 Technical Failure
-                    </p>
-                </div>
-
-                <div class="flex items-center space-x-1.5 font-mono text-[11px] shrink-0">
-                    <div id="weekly-freq-badge" class="bg-ash-900 border border-ash-700 px-2 py-1 rounded text-ash-200">
-                        7D DAYS: <span id="hud-weekly-count" class="font-bold text-ash-100">0/4</span>
-                    </div>
-                    <div id="sync-badge" class="bg-ash-900 border border-ash-700 px-2 py-1 rounded text-ash-400">
-                        READY
-                    </div>
-                </div>
-            </div>
-
-            <!-- Overtraining Status Banner (Hidden unless triggered) -->
-            <div id="overtraining-banner" class="hidden bg-ash-100 text-ash-950 px-3 py-2 rounded font-mono text-xs font-bold uppercase tracking-tight">
-                ⚠️ Overtraining Alert: More than 4 workout days logged in the last 7 days. Prioritize recovery.
-            </div>
-
-            <!-- Compact Daily Date & Body Weight Bar -->
-            <div class="bg-ash-900 border border-ash-700 p-2 rounded grid grid-cols-12 gap-2 items-center">
-                <!-- Session Date -->
-                <div class="col-span-5 flex items-center">
-                    <input type="date" id="active-date" aria-label="Workout Date" class="w-full bg-ash-950 border border-ash-700 px-2 py-1.5 text-ash-100 font-mono rounded focus:outline-none focus:border-ash-300">
-                </div>
-
-                <!-- Body Weight Logger -->
-                <div class="col-span-7 flex items-center space-x-1.5">
-                    <span class="font-mono text-[11px] text-ash-400 uppercase whitespace-nowrap">
-                        BW (<span id="current-bw-label" class="text-ash-100 font-bold">64.0</span>):
-                    </span>
-                    <input type="number" id="bw-input" step="0.1" min="30" max="200" value="64.0" placeholder="kg" class="w-full min-w-0 bg-ash-950 border border-ash-700 px-1.5 py-1.5 text-center font-mono text-ash-100 rounded focus:outline-none focus:border-ash-300">
-                    <button type="button" onclick="logBodyWeight()" class="ash-btn-primary px-2.5 py-1.5 rounded font-mono text-xs uppercase shrink-0">
-                        Save
-                    </button>
-                </div>
-            </div>
-
-            <!-- Navigation Tabs (Rolling Day A, Day B, History) -->
-            <div class="grid grid-cols-3 gap-1.5">
-                <button id="tab-btn-A" onclick="switchView('A')" class="py-2 px-1 font-mono text-xs font-semibold uppercase rounded border bg-ash-100 text-ash-950 border-ash-100 truncate">
-                    DAY A (PUSH & ABS)
-                </button>
-                <button id="tab-btn-B" onclick="switchView('B')" class="py-2 px-1 font-mono text-xs font-semibold uppercase rounded border bg-ash-900 text-ash-400 border-ash-700 truncate">
-                    DAY B (PULL & LEGS)
-                </button>
-                <button id="tab-btn-HISTORY" onclick="switchView('HISTORY')" class="py-2 px-1 font-mono text-xs font-semibold uppercase rounded border bg-ash-900 text-ash-400 border-ash-700 truncate">
-                    HISTORY (<span id="total-logs-count">0</span>)
-                </button>
-            </div>
-        </div>
-    </header>
-
-    <!-- MAIN WORKSPACE -->
-    <main class="max-w-xl mx-auto px-3 pt-4">
-
-        <!-- WORKOUT VIEW (DAY A OR DAY B) -->
-        <section id="view-workout" class="space-y-5">
-            <!-- Sub-Filter for Home vs Gym -->
-            <div class="flex items-center justify-between bg-ash-900 border border-ash-700 p-1 rounded">
-                <button id="sec-filter-ALL" onclick="setSectionFilter('ALL')" class="flex-1 py-1.5 font-mono text-[11px] font-semibold uppercase rounded bg-ash-100 text-ash-950">
-                    All Sections
-                </button>
-                <button id="sec-filter-HOME" onclick="setSectionFilter('HOME')" class="flex-1 py-1.5 font-mono text-[11px] font-semibold uppercase rounded text-ash-400">
-                    Home (45m)
-                </button>
-                <button id="sec-filter-GYM" onclick="setSectionFilter('GYM')" class="flex-1 py-1.5 font-mono text-[11px] font-semibold uppercase rounded text-ash-400">
-                    Gym (60m)
-                </button>
-            </div>
-
-            <!-- Home Session Block -->
-            <div id="block-home">
-                <div class="flex items-center justify-between border-b border-ash-700 pb-1.5 mb-3">
-                    <h2 class="font-mono text-xs font-bold uppercase tracking-wider text-ash-100">
-                        Home Workout (Bodyweight & Warm-up)
-                    </h2>
-                    <span class="font-mono text-[11px] text-ash-400">45 Min</span>
-                </div>
-                <div id="home-exercises-list" class="space-y-3"></div>
-            </div>
-
-            <!-- Gym Session Block -->
-            <div id="block-gym">
-                <div class="flex items-center justify-between border-b border-ash-700 pb-1.5 mb-3">
-                    <h2 class="font-mono text-xs font-bold uppercase tracking-wider text-ash-100">
-                        Gym Workout (Weights & Cables)
-                    </h2>
-                    <span class="font-mono text-[11px] text-ash-400">60 Min</span>
-                </div>
-                <div id="gym-exercises-list" class="space-y-3"></div>
-            </div>
-        </section>
-
-        <!-- HISTORY & PROGRESSION VIEW -->
-        <section id="view-history" class="hidden space-y-4">
-            <!-- Filter & Backup Controls -->
-            <div class="ash-card p-3 rounded space-y-3">
-                <div>
-                    <label class="block font-mono text-[11px] text-ash-400 uppercase mb-1">Filter Exercise / Body Weight Progression</label>
-                    <select id="history-filter" onchange="renderHistory()" class="w-full bg-ash-950 border border-ash-700 px-3 py-2 rounded text-ash-100 font-mono text-xs focus:outline-none focus:border-ash-300">
-                        <option value="ALL">All Logs (Workouts + Body Weight)</option>
-                        <option value="BODYWEIGHT">Body Weight History Only</option>
-                    </select>
-                </div>
-                <div class="flex items-center justify-between gap-2 pt-1 border-t border-ash-700">
-                    <span class="font-mono text-[11px] text-ash-400">Backup Data</span>
-                    <div class="flex items-center space-x-2">
-                        <button type="button" onclick="exportDataJSON()" class="ash-btn-secondary px-3 py-1.5 rounded font-mono text-xs uppercase">
-                            Export JSON
-                        </button>
-                        <label class="ash-btn-secondary px-3 py-1.5 rounded font-mono text-xs uppercase cursor-pointer">
-                            Import JSON
-                            <input type="file" accept=".json" onchange="importDataJSON(event)" class="hidden">
-                        </label>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Progression Summary Bar (Visible when filtering an exercise) -->
-            <div id="progression-summary" class="hidden ash-card p-3 rounded grid grid-cols-3 gap-2 text-center font-mono">
-                <div>
-                    <div class="text-[10px] text-ash-400 uppercase">Start Top Set</div>
-                    <div id="prog-start" class="text-xs sm:text-sm font-bold text-ash-200 mt-0.5">--</div>
-                </div>
-                <div>
-                    <div class="text-[10px] text-ash-400 uppercase">Latest Top Set</div>
-                    <div id="prog-latest" class="text-xs sm:text-sm font-bold text-ash-100 mt-0.5">--</div>
-                </div>
-                <div>
-                    <div class="text-[10px] text-ash-400 uppercase">Peak Weight</div>
-                    <div id="prog-best" class="text-xs sm:text-sm font-bold text-white mt-0.5">--</div>
-                </div>
-            </div>
-
-            <!-- Clean Chronological Log List -->
-            <div id="history-cards-list" class="space-y-2.5"></div>
-        </section>
-
-    </main>
-
-    <!-- MINIMALIST ASH & BLACK ALERT / GUARDRAIL MODAL -->
-    <div id="modal-overlay" class="modal-backdrop">
-        <div class="bg-ash-900 border border-ash-100 p-4 rounded max-w-sm w-full space-y-3">
-            <div class="flex items-center justify-between border-b border-ash-700 pb-2">
-                <span id="modal-tag" class="font-mono text-xs font-bold uppercase text-ash-100">Notice</span>
-                <button onclick="closeModal()" class="font-mono text-xs text-ash-400 hover:text-white">[ESC]</button>
-            </div>
-            <h3 id="modal-title" class="font-sans font-bold text-base text-ash-100"></h3>
-            <div id="modal-body" class="text-xs text-ash-300 leading-relaxed space-y-1.5"></div>
-            <div id="modal-footer" class="pt-2 flex justify-end space-x-2">
-                <button onclick="closeModal()" class="ash-btn-primary px-4 py-2 rounded font-mono text-xs uppercase">OK</button>
-            </div>
-        </div>
+  <header>
+    <h1>GYM.V</h1>
+    <div class="status-badge">
+      <span class="dot" id="cloudDot"></span>
+      <span id="cloudStatus">CONNECTING...</span>
     </div>
+  </header>
 
-    <!-- APPLICATION & CLOUD SYNC SCRIPT -->
-    <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
-        import { getAuth, signInAnonymously, signInWithCustomToken } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
-        import { getFirestore, collection, addDoc, deleteDoc, doc, onSnapshot, serverTimestamp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+  <div class="tabs">
+    <button class="tab-btn active" onclick="window.switchTab('workout')">WORKOUT</button>
+    <button class="tab-btn" onclick="window.switchTab('history')">HISTORY</button>
+  </div>
 
-        // =====================================================
-        // 1. PRE-LOADED ROLLING DAY A & DAY B EXERCISES
-        // =====================================================
-        const EXERCISES = [
-            // DAY A — HOME
-            { id: 'a0', day: 'A', section: 'HOME', name: 'Kneeling Hip Flexor Stretch & Arm Circles', target: 'Pelvic Tilt & Left Shoulder Warm-up', defaultSets: 2, defaultReps: 30, defaultWeight: 0 },
-            { id: 'a1', day: 'A', section: 'HOME', name: 'Neck Curls', target: 'Front Neck Thickness', defaultSets: 3, defaultReps: 15, defaultWeight: 0 },
-            { id: 'a2', day: 'A', section: 'HOME', name: 'Push-ups', target: 'Mid & Lower Chest — Core Braced', defaultSets: 3, defaultReps: 12, defaultWeight: 0 },
-            { id: 'a3', day: 'A', section: 'HOME', name: 'Pike Push-ups', target: 'Front & Side Shoulders for Width', defaultSets: 3, defaultReps: 10, defaultWeight: 0 },
-            { id: 'a4', day: 'A', section: 'HOME', name: 'Crunches', target: 'Upper/Mid Abs — Pull Ribcage Down', defaultSets: 3, defaultReps: 15, defaultWeight: 0 },
-            { id: 'a5', day: 'A', section: 'HOME', name: 'Stomach Vacuums', target: 'Deep V-Line / Transversus Abdominis — 30s holds', defaultSets: 3, defaultReps: 30, defaultWeight: 0 },
+  <div class="bw-card">
+    <div>
+      <label>Body Weight</label>
+      <div style="font-size: 0.75rem; color: var(--ash); margin-top:4px;" id="lastBwDisplay">Last: Not logged</div>
+    </div>
+    <div class="bw-input-wrap">
+      <input type="number" step="0.1" id="bwInput" placeholder="kg">
+      <button class="bw-btn" onclick="window.logBodyWeight()">LOG</button>
+    </div>
+  </div>
 
-            // DAY A — GYM
-            { id: 'a6', day: 'A', section: 'GYM', name: 'Parallel Bar Dips', target: 'Lower Chest Line & Triceps', defaultSets: 3, defaultReps: 10, defaultWeight: 0 },
-            { id: 'a7', day: 'A', section: 'GYM', name: 'Decline Bench Press', target: 'Upper/Full Chest Mass', defaultSets: 3, defaultReps: 10, defaultWeight: 20 },
-            { id: 'a8', day: 'A', section: 'GYM', name: 'Standing Barbell Press', target: 'Overall Shoulder Mass', defaultSets: 3, defaultReps: 10, defaultWeight: 15 },
-            { id: 'a9', day: 'A', section: 'GYM', name: 'Front Raises', target: 'Front Deltoids', defaultSets: 3, defaultReps: 12, defaultWeight: 5 },
-            { id: 'a10', day: 'A', section: 'GYM', name: 'Standing Dumbbell Fly / Lateral Raises', target: 'Side Shoulders — #1 V-Taper Width', defaultSets: 3, defaultReps: 12, defaultWeight: 5 },
-            { id: 'a11', day: 'A', section: 'GYM', name: 'Tricep Overhead Extension', target: 'Long Head of Triceps', defaultSets: 3, defaultReps: 12, defaultWeight: 10 },
-            { id: 'a12', day: 'A', section: 'GYM', name: 'One Arm Triceps Overhead', target: 'Tricep Symmetry — Watch Left Shoulder', defaultSets: 3, defaultReps: 12, defaultWeight: 5 },
+  <div id="workoutView">
+    <div style="display: flex; gap: 8px; margin-bottom: 16px;">
+      <button class="tab-btn active" id="dayABtn" onclick="window.setDay('A')">DAY A (PUSH)</button>
+      <button class="tab-btn" id="dayBBtn" onclick="window.setDay('B')">DAY B (PULL)</button>
+    </div>
+    <div id="exercisesContainer"></div>
+    <button class="save-session-btn" onclick="window.saveCurrentWorkout()">SAVE & ANALYZE</button>
+  </div>
 
-            // DAY B — HOME
-            { id: 'b0', day: 'B', section: 'HOME', name: 'Hip Flexor Stretch & Wrist Rotations', target: 'Pelvic Tilt & Joint Prep', defaultSets: 2, defaultReps: 30, defaultWeight: 0 },
-            { id: 'b1', day: 'B', section: 'HOME', name: 'Neck Extensions', target: 'Back of Neck & Upper Traps', defaultSets: 3, defaultReps: 15, defaultWeight: 0 },
-            { id: 'b2', day: 'B', section: 'HOME', name: 'Free Squats', target: 'Quads & Glutes — Squeeze Glutes at Top', defaultSets: 3, defaultReps: 30, defaultWeight: 0 },
-            { id: 'b3', day: 'B', section: 'HOME', name: 'Glute Bridges', target: 'Glutes — Corrects Anterior Pelvic Tilt', defaultSets: 3, defaultReps: 15, defaultWeight: 0 },
-            { id: 'b4', day: 'B', section: 'HOME', name: 'Superman Holds', target: 'Lower Back Stability — Flattens Posture', defaultSets: 3, defaultReps: 30, defaultWeight: 0 },
-            { id: 'b5', day: 'B', section: 'HOME', name: 'Dead Hangs', target: 'Grip & Lat Stretch for Pull-up Progression', defaultSets: 3, defaultReps: 10, defaultWeight: 0 },
+  <div id="historyView" style="display: none;">
+    <div id="historyList"></div>
+  </div>
 
-            // DAY B — GYM
-            { id: 'b6', day: 'B', section: 'GYM', name: 'Lat Pulldown', target: 'Lats / Wings — Pull to Upper Chest', defaultSets: 3, defaultReps: 12, defaultWeight: 25 },
-            { id: 'b7', day: 'B', section: 'GYM', name: 'Back Fly / Reverse Pec Deck', target: 'Rear Delts — Pulls Shoulders Back', defaultSets: 3, defaultReps: 12, defaultWeight: 10 },
-            { id: 'b8', day: 'B', section: 'GYM', name: 'Pullovers', target: 'Lat Stretch & Ribcage Expansion', defaultSets: 3, defaultReps: 12, defaultWeight: 12.5 },
-            { id: 'b9', day: 'B', section: 'GYM', name: 'Barbell Curl', target: 'Overall Bicep Mass', defaultSets: 3, defaultReps: 10, defaultWeight: 15 },
-            { id: 'b10', day: 'B', section: 'GYM', name: 'Dumbbell Curl', target: 'Bicep Peak & Symmetry', defaultSets: 3, defaultReps: 12, defaultWeight: 7.5 },
-            { id: 'b11', day: 'B', section: 'GYM', name: 'Reverse Curl', target: 'Brachialis & Forearm Upper Thickness', defaultSets: 3, defaultReps: 12, defaultWeight: 10 },
-            { id: 'b12', day: 'B', section: 'GYM', name: 'Forearm Wrist Curls', target: 'Lower Arm Thickness', defaultSets: 3, defaultReps: 15, defaultWeight: 10 }
-        ];
+  <!-- Progress Report Modal -->
+  <div id="progressModal">
+    <div class="modal-content">
+      <h2>SESSION PROGRESS</h2>
+      <div id="modalReportList"></div>
+      <button class="close-modal-btn" onclick="window.closeModal()">CONFIRM SAVED</button>
+    </div>
+  </div>
 
-        // =====================================================
-        // 2. STATE & CLOUD DATABASE INITIALIZATION
-        // =====================================================
-        let activeView = 'A'; // 'A', 'B', or 'HISTORY'
-        let sectionFilter = 'ALL'; // 'ALL', 'HOME', 'GYM'
-        let currentUser = null;
-        let db = null;
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+    import { getFirestore, doc, setDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
-        let workoutLogs = [];
-        let bodyWeightLogs = [
-            { id: 'init-bw', date: new Date().toISOString().split('T')[0], weight: 64.0, timestamp: Date.now() }
-        ];
+    // 1. EXACT FIREBASE CONFIGURATION PROVIDED
+    const firebaseConfig = {
+      apiKey: "AIzaSyB5zoyx9_f41-e3oBWRoFj5Si2eM9v5uwE",
+      authDomain: "gymv-4baac.firebaseapp.com",
+      projectId: "gymv-4baac",
+      storageBucket: "gymv-4baac.firebasestorage.app",
+      messagingSenderId: "21885539570",
+      appId: "1:21885539570:web:6480453fee2c5e5979ac6b",
+      measurementId: "G-8NWPQN2E63"
+    };
 
-        // Holds live set-by-set drafts keyed by `${dateStr}_${ex.id}`
-        const draftExerciseSets = {};
+    let app, db;
+    let isCloudReady = false;
 
-        const todayStr = new Date().toISOString().split('T')[0];
-        document.getElementById('active-date').value = todayStr;
+    try {
+      app = initializeApp(firebaseConfig);
+      db = getFirestore(app);
+      isCloudReady = true;
+      document.getElementById('cloudDot').className = 'dot live';
+      document.getElementById('cloudStatus').innerText = 'CLOUD SYNCED';
+    } catch (e) {
+      document.getElementById('cloudDot').className = 'dot err';
+      document.getElementById('cloudStatus').innerText = 'OFFLINE MODE';
+    }
 
-        // Populate History Filter Dropdown
-        const historyFilterEl = document.getElementById('history-filter');
-        EXERCISES.forEach(ex => {
-            const opt = document.createElement('option');
-            opt.value = ex.name;
-            opt.textContent = `Day ${ex.day} — ${ex.name}`;
-            historyFilterEl.appendChild(opt);
-        });
+    const DAY_A_EXERCISES = [
+      { name: "Neck Curls", target: "Front Neck Thickness", defaultSets: 3, defaultReps: 15, defaultKg: 0 },
+      { name: "Push-ups", target: "Chest & Triceps", defaultSets: 3, defaultReps: 15, defaultKg: 0 },
+      { name: "Pike Push-ups", target: "Front/Side Shoulders", defaultSets: 3, defaultReps: 10, defaultKg: 0 },
+      { name: "Crunches", target: "Upper/Mid Abs", defaultSets: 3, defaultReps: 20, defaultKg: 0 },
+      { name: "Stomach Vacuums", target: "Transversus Abdominis", defaultSets: 3, defaultReps: 30, defaultKg: 0 },
+      { name: "Parallel Bar Dips", target: "Lower Chest Line", defaultSets: 3, defaultReps: 8, defaultKg: 0 },
+      { name: "Decline Bench Press", target: "Upper Chest Fullness", defaultSets: 3, defaultReps: 10, defaultKg: 20 },
+      { name: "Standing Barbell Press", target: "Overall Shoulder Mass", defaultSets: 3, defaultReps: 8, defaultKg: 15 },
+      { name: "Front Raises", target: "Front Deltoids", defaultSets: 3, defaultReps: 12, defaultKg: 5 },
+      { name: "Standing Dumbbell Fly", target: "Side Shoulders (Width)", defaultSets: 3, defaultReps: 12, defaultKg: 5 },
+      { name: "Tricep Overhead Ext", target: "Long Head Triceps", defaultSets: 3, defaultReps: 10, defaultKg: 7.5 },
+      { name: "One Arm Triceps Overhead", target: "Tricep Symmetry", defaultSets: 3, defaultReps: 10, defaultKg: 5 }
+    ];
 
-        const appId = typeof __app_id !== 'undefined' ? __app_id : 'vtaper-ash-tracker';
-        const firebaseConfigStr = typeof __firebase_config !== 'undefined' ? __firebase_config : '';
+    const DAY_B_EXERCISES = [
+      { name: "Neck Extensions", target: "Back Neck & Traps", defaultSets: 3, defaultReps: 15, defaultKg: 0 },
+      { name: "Free Squats", target: "Quads & Glutes (Posture)", defaultSets: 3, defaultReps: 30, defaultKg: 0 },
+      { name: "Glute Bridges", target: "Glutes (Pelvic Tilt)", defaultSets: 3, defaultReps: 15, defaultKg: 0 },
+      { name: "Superman Holds", target: "Lower Back Stability", defaultSets: 3, defaultReps: 30, defaultKg: 0 },
+      { name: "Dead Hangs", target: "Grip & Lat Stretch", defaultSets: 3, defaultReps: 10, defaultKg: 0 },
+      { name: "Lat Pulldown", target: "Lats & Upper Back Width", defaultSets: 3, defaultReps: 10, defaultKg: 25 },
+      { name: "Back Fly", target: "Rear Delts", defaultSets: 3, defaultReps: 12, defaultKg: 5 },
+      { name: "Pullovers", target: "Ribcage Expansion & Lats", defaultSets: 3, defaultReps: 10, defaultKg: 10 },
+      { name: "Barbell Curl", target: "Bicep Mass", defaultSets: 3, defaultReps: 10, defaultKg: 15 },
+      { name: "Dumbbell Curl", target: "Bicep Symmetry", defaultSets: 3, defaultReps: 10, defaultKg: 7.5 },
+      { name: "Reverse Curl", target: "Brachialis & Forearms", defaultSets: 3, defaultReps: 12, defaultKg: 10 },
+      { name: "Forearms (Wrist Curls)", target: "Forearm Thickness", defaultSets: 3, defaultReps: 15, defaultKg: 10 }
+    ];
 
-        async function initApp() {
-            const syncBadge = document.getElementById('sync-badge');
+    let currentDay = 'A';
+    let appData = { history: [], bodyWeights: [] };
 
-            if (!firebaseConfigStr || firebaseConfigStr === '{}') {
-                syncBadge.textContent = 'SESSION';
-                refreshUI();
-                return;
-            }
-
-            try {
-                const firebaseConfig = JSON.parse(firebaseConfigStr);
-                const app = initializeApp(firebaseConfig);
-                const auth = getAuth(app);
-                db = getFirestore(app);
-
-                if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token) {
-                    await signInWithCustomToken(auth, __initial_auth_token);
-                } else {
-                    await signInAnonymously(auth);
-                }
-
-                currentUser = auth.currentUser;
-                if (!currentUser) {
-                    refreshUI();
-                    return;
-                }
-
-                syncBadge.textContent = 'CLOUD';
-
-                const workoutsRef = collection(db, 'artifacts', appId, 'users', currentUser.uid, 'workouts');
-                onSnapshot(workoutsRef, (snap) => {
-                    const list = [];
-                    snap.forEach(d => list.push({ id: d.id, ...d.data() }));
-                    workoutLogs = list;
-                    sortLogs();
-                    refreshUI();
-                }, (err) => console.error(err));
-
-                const bwRef = collection(db, 'artifacts', appId, 'users', currentUser.uid, 'bodyweight');
-                onSnapshot(bwRef, (snap) => {
-                    const list = [];
-                    snap.forEach(d => list.push({ id: d.id, ...d.data() }));
-                    if (list.length > 0) bodyWeightLogs = list;
-                    sortLogs();
-                    refreshUI();
-                }, (err) => console.error(err));
-
-            } catch (e) {
-                console.error(e);
-                syncBadge.textContent = 'SESSION';
-                refreshUI();
-            }
-        }
-
-        function sortLogs() {
-            workoutLogs.sort((a, b) => (b.timestamp || 0) - (a.timestamp || 0));
-            bodyWeightLogs.sort((a, b) => (b.timestamp || 0) - (a.timestamp || 0));
-        }
-
-        // Normalize legacy logs or per-set logs into an array of { setNumber, weight, reps, done }
-        function parseLogSets(log, fallbackEx) {
-            if (!log) return [];
-            if (Array.isArray(log.setDetails) && log.setDetails.length > 0) {
-                return log.setDetails;
-            }
-            if (typeof log.setDetailsJson === 'string') {
-                try {
-                    const parsed = JSON.parse(log.setDetailsJson);
-                    if (Array.isArray(parsed) && parsed.length > 0) return parsed;
-                } catch (e) {}
-            }
-            const count = parseInt(log.sets) || (fallbackEx ? fallbackEx.defaultSets : 3);
-            const w = log.weight !== undefined ? parseFloat(log.weight) : (fallbackEx ? fallbackEx.defaultWeight : 0);
-            const r = log.reps !== undefined ? parseInt(log.reps) : (fallbackEx ? fallbackEx.defaultReps : 10);
-            const arr = [];
-            for (let i = 1; i <= count; i++) {
-                arr.push({ setNumber: i, weight: w, reps: r, done: true });
-            }
-            return arr;
-        }
-
-        function formatSetBreakdownString(setArr) {
-            if (!setArr || setArr.length === 0) return 'No previous sets logged';
-            return setArr.map((s, idx) => `S${idx + 1}: ${s.weight}kg × ${s.reps}`).join(' | ');
-        }
-
-        // Helper to extract the top working weight from any workout log entry
-        function getTopWeightFromLog(log) {
-            if (!log) return 0;
-            const sets = parseLogSets(log);
-            if (sets.length > 0) {
-                return Math.max(...sets.map(s => Number(parseFloat(s.weight) || 0)));
-            }
-            return Number(parseFloat(log.weight) || 0);
-        }
-
-        // Calculate consecutive workout days using the same weight for a given exercise
-        function getExerciseWeightDurationInfo(exerciseName) {
-            const exLogs = workoutLogs
-                .filter(l => l.exercise === exerciseName)
-                .slice()
-                .sort((a, b) => {
-                    const dA = new Date(a.date).getTime();
-                    const dB = new Date(b.date).getTime();
-                    if (dB !== dA) return dB - dA;
-                    return (b.timestamp || 0) - (a.timestamp || 0);
-                });
-
-            if (exLogs.length === 0) {
-                return {
-                    hasHistory: false,
-                    lastWeight: null,
-                    streakDays: 0,
-                    badgeText: 'No previous history yet'
-                };
-            }
-
-            // Deduplicate by date so multiple saves on the same day count as 1 workout day
-            const uniqueDayLogs = [];
-            const seenDates = new Set();
-            for (const log of exLogs) {
-                if (!seenDates.has(log.date)) {
-                    seenDates.add(log.date);
-                    uniqueDayLogs.push(log);
-                }
-            }
-
-            const latestWeight = getTopWeightFromLog(uniqueDayLogs[0]);
-            let streak = 0;
-
-            for (const dayLog of uniqueDayLogs) {
-                const w = getTopWeightFromLog(dayLog);
-                if (Math.abs(w - latestWeight) < 0.001) {
-                    streak++;
-                } else {
-                    break;
-                }
-            }
-
-            const dayWord = streak === 1 ? 'workout day' : 'workout days';
-            const badgeText = latestWeight > 0
-                ? `Using ${latestWeight} kg for last ${streak} ${dayWord}.`
-                : `Bodyweight (0 kg) for last ${streak} ${dayWord}.`;
-
-            return {
-                hasHistory: true,
-                lastWeight: latestWeight,
-                streakDays: streak,
-                badgeText
-            };
-        }
-
-        // =====================================================
-        // 3. OVERTRAINING GUARDRAIL CHECK (7-DAY ROLLING WINDOW)
-        // =====================================================
-        function checkGuardrails(dateStr, exerciseName, newCompletedSetsCount, existingLogIdForToday) {
-            const targetTime = new Date(dateStr).getTime();
-            const windowMs = 6 * 24 * 60 * 60 * 1000; // 7 days inclusive
-
-            const daysSet = new Set();
-            let exerciseWeeklySets = 0;
-
-            workoutLogs.forEach(log => {
-                if (existingLogIdForToday && log.id === existingLogIdForToday) return;
-                const logTime = new Date(log.date).getTime();
-                if (Math.abs(targetTime - logTime) <= windowMs) {
-                    daysSet.add(log.date);
-                    if (log.exercise === exerciseName) {
-                        const details = parseLogSets(log);
-                        exerciseWeeklySets += details.length;
-                    }
-                }
-            });
-
-            const projectedDays = daysSet.has(dateStr) ? daysSet.size : daysSet.size + 1;
-            const projectedSets = exerciseWeeklySets + newCompletedSetsCount;
-
-            const warnings = [];
-            if (projectedDays > 4) {
-                warnings.push(`You are logging a ${projectedDays}th workout day within a rolling 7-day window. Training more than 4 days a week on 70g protein limits muscle recovery.`);
-            }
-            if (projectedSets > 12) {
-                warnings.push(`This brings "${exerciseName}" to ${projectedSets} completed sets in 7 days (limit: 12 sets/week to protect your left shoulder).`);
-            }
-            return warnings;
-        }
-
-        // =====================================================
-        // 4. RENDER WORKOUT LIST (PER-SET WEIGHT & REPS ROWS)
-        // =====================================================
-        window.setSectionFilter = function(sec) {
-            sectionFilter = sec;
-            ['ALL', 'HOME', 'GYM'].forEach(s => {
-                const btn = document.getElementById(`sec-filter-${s}`);
-                if (s === sec) {
-                    btn.className = 'flex-1 py-1.5 font-mono text-[11px] font-semibold uppercase rounded bg-ash-100 text-ash-950';
-                } else {
-                    btn.className = 'flex-1 py-1.5 font-mono text-[11px] font-semibold uppercase rounded text-ash-400';
-                }
-            });
-
-            const homeBlock = document.getElementById('block-home');
-            const gymBlock = document.getElementById('block-gym');
-
-            if (sec === 'HOME') {
-                homeBlock.classList.remove('hidden');
-                gymBlock.classList.add('hidden');
-            } else if (sec === 'GYM') {
-                homeBlock.classList.add('hidden');
-                gymBlock.classList.remove('hidden');
+    function loadData() {
+      const local = localStorage.getItem('gymv_data');
+      if (local) {
+        try { appData = JSON.parse(local); } catch(e) {}
+      }
+      if (isCloudReady) {
+        onSnapshot(doc(db, "userdata", "main_profile"), (snapshot) => {
+          if (snapshot.exists()) {
+            appData = snapshot.data();
+            localStorage.setItem('gymv_data', JSON.stringify(appData));
+            window.updateBwHeader();
+            if(document.getElementById('workoutView').style.display !== 'none') {
+               window.renderExercises();
             } else {
-                homeBlock.classList.remove('hidden');
-                gymBlock.classList.remove('hidden');
+               window.renderHistory();
             }
-        };
+          }
+        });
+      }
+      window.updateBwHeader();
+      window.renderExercises();
+    }
 
-        function getOrInitDraftSets(ex, activeDate) {
-            const key = `${activeDate}_${ex.id}`;
-            if (draftExerciseSets[key]) {
-                return draftExerciseSets[key];
-            }
+    function saveData() {
+      localStorage.setItem('gymv_data', JSON.stringify(appData));
+      if (isCloudReady) {
+        setDoc(doc(db, "userdata", "main_profile"), appData).catch(err => console.log("Cloud sync delayed"));
+      }
+    }
 
-            // Check if already logged on activeDate
-            const todayLog = workoutLogs.find(l => l.date === activeDate && l.exercise === ex.name);
-            if (todayLog) {
-                const parsed = parseLogSets(todayLog, ex).map((s, i) => ({
-                    setNumber: i + 1,
-                    weight: s.weight,
-                    reps: s.reps,
-                    done: true
-                }));
-                draftExerciseSets[key] = parsed;
-                return parsed;
-            }
+    window.switchTab = function(tab) {
+      document.querySelectorAll('.tabs .tab-btn').forEach(b => b.classList.remove('active'));
+      if (tab === 'workout') {
+        document.querySelector('.tabs .tab-btn:nth-child(1)').classList.add('active');
+        document.getElementById('workoutView').style.display = 'block';
+        document.getElementById('historyView').style.display = 'none';
+      } else {
+        document.querySelector('.tabs .tab-btn:nth-child(2)').classList.add('active');
+        document.getElementById('workoutView').style.display = 'none';
+        document.getElementById('historyView').style.display = 'block';
+        window.renderHistory();
+      }
+    };
 
-            // Otherwise pre-fill from previous session before activeDate
-            const prevLog = workoutLogs.find(l => l.exercise === ex.name && l.date !== activeDate);
-            if (prevLog) {
-                const prevSets = parseLogSets(prevLog, ex);
-                const initialized = prevSets.map((s, i) => ({
-                    setNumber: i + 1,
-                    weight: s.weight,
-                    reps: s.reps,
-                    done: false
-                }));
-                draftExerciseSets[key] = initialized;
-                return initialized;
-            }
+    window.setDay = function(day) {
+      currentDay = day;
+      document.getElementById('dayABtn').className = day === 'A' ? 'tab-btn active' : 'tab-btn';
+      document.getElementById('dayBBtn').className = day === 'B' ? 'tab-btn active' : 'tab-btn';
+      window.renderExercises();
+    };
 
-            // Default sets for first time
-            const defaults = [];
-            for (let i = 1; i <= ex.defaultSets; i++) {
-                defaults.push({
-                    setNumber: i,
-                    weight: ex.defaultWeight,
-                    reps: ex.defaultReps,
-                    done: false
-                });
-            }
-            draftExerciseSets[key] = defaults;
-            return defaults;
+    // Calculate total volume for an exercise (Reps * Weight)
+    function calculateVolume(sets) {
+      let vol = 0;
+      sets.forEach(s => {
+        let w = s.kg > 0 ? s.kg : 1; 
+        vol += (s.reps * w);
+      });
+      return vol;
+    }
+
+    function getStreakAndPastVolume(exerciseName) {
+      let streak = 0;
+      let lastWeight = null;
+      let pastVolume = 0;
+
+      for (let i = appData.history.length - 1; i >= 0; i--) {
+        const entry = appData.history[i];
+        if (entry.exercises && entry.exercises[exerciseName]) {
+          const sets = entry.exercises[exerciseName];
+          
+          if (streak === 0) {
+            pastVolume = calculateVolume(sets);
+          }
+
+          const topWeight = Math.max(...sets.map(s => Number(s.kg) || 0));
+          if (lastWeight === null) {
+            lastWeight = topWeight;
+            streak = 1;
+          } else if (lastWeight === topWeight) {
+            streak++;
+          } else {
+            break;
+          }
         }
+      }
+      return { streak, lastWeight: lastWeight !== null ? lastWeight : 0, pastVolume };
+    }
 
-        function renderWorkoutList() {
-            if (activeView === 'HISTORY') return;
-
-            const activeDate = document.getElementById('active-date').value || todayStr;
-            const homeContainer = document.getElementById('home-exercises-list');
-            const gymContainer = document.getElementById('gym-exercises-list');
-
-            const homeList = EXERCISES.filter(e => e.day === activeView && e.section === 'HOME');
-            const gymList = EXERCISES.filter(e => e.day === activeView && e.section === 'GYM');
-
-            homeContainer.innerHTML = homeList.map(ex => buildExerciseCard(ex, activeDate)).join('');
-            gymContainer.innerHTML = gymList.map(ex => buildExerciseCard(ex, activeDate)).join('');
+    function getLastSets(exerciseName) {
+      for (let i = appData.history.length - 1; i >= 0; i--) {
+        const entry = appData.history[i];
+        if (entry.exercises && entry.exercises[exerciseName]) {
+          return entry.exercises[exerciseName];
         }
+      }
+      return null;
+    }
 
-        function buildExerciseCard(ex, activeDate) {
-            // Find most recent log prior to activeDate (or latest overall if none prior)
-            const prevLog = workoutLogs.find(l => l.exercise === ex.name && l.date !== activeDate) || workoutLogs.find(l => l.exercise === ex.name);
-            const prevSets = prevLog ? parseLogSets(prevLog, ex) : [];
+    window.renderExercises = function() {
+      const list = currentDay === 'A' ? DAY_A_EXERCISES : DAY_B_EXERCISES;
+      const container = document.getElementById('exercisesContainer');
+      container.innerHTML = '';
 
-            const durationInfo = getExerciseWeightDurationInfo(ex.name);
+      list.forEach((ex, exIdx) => {
+        const { streak, lastWeight } = getStreakAndPastVolume(ex.name);
+        const lastSets = getLastSets(ex.name);
+        const card = document.createElement('div');
+        card.className = 'exercise-card';
 
-            const todayLog = workoutLogs.find(l => l.date === activeDate && l.exercise === ex.name);
-            const setsArray = getOrInitDraftSets(ex, activeDate);
-            const completedCount = setsArray.filter(s => s.done).length;
-            const isSavedToday = Boolean(todayLog);
+        let streakText = streak > 0 ? `Using ${lastWeight} kg for last ${streak} workout${streak > 1 ? 's' : ''}` : `New training block`;
+        let setsHtml = '';
+        const setCount = lastSets ? lastSets.length : ex.defaultSets;
 
-            const lastSessionBanner = prevLog
-                ? `Last sets (${prevLog.date.slice(5)}): ${formatSetBreakdownString(prevSets)}`
-                : `Default target: ${ex.defaultSets} sets × ${ex.defaultReps} reps @ ${ex.defaultWeight}kg`;
-
-            const setRowsHtml = setsArray.map((s, idx) => {
-                const prevHint = prevSets[idx]
-                    ? `${prevSets[idx].weight}kg×${prevSets[idx].reps}`
-                    : `${ex.defaultWeight}kg×${ex.defaultReps}`;
-                const isFinalSet = idx === setsArray.length - 1;
-
-                return `
-                <div class="grid grid-cols-12 gap-1.5 items-center bg-ash-950 border border-ash-700 p-1.5 rounded ${s.done ? 'set-row-done' : ''}">
-                    <!-- Set Number & Previous Hint -->
-                    <div class="col-span-3 pl-1">
-                        <div class="font-mono text-[11px] font-bold ${s.done ? 'text-ash-100' : 'text-ash-200'} leading-tight">
-                            SET ${idx + 1}
-                        </div>
-                        <div class="font-mono text-[9px] text-ash-400 truncate">
-                            ${isFinalSet ? 'FAIL • ' : ''}${prevHint}
-                        </div>
-                    </div>
-
-                    <!-- Weight (kg) Stepper + Input -->
-                    <div class="col-span-4 flex items-center bg-ash-900 border border-ash-700 rounded p-0.5">
-                        <button type="button" onclick="stepSetField('${ex.id}', ${idx}, 'weight', -2.5)" class="ash-btn-secondary w-6 h-7 rounded font-mono text-xs flex items-center justify-center shrink-0">-</button>
-                        <input type="number" step="0.5" min="0" value="${s.weight}"
-                            onchange="updateSetField('${ex.id}', ${idx}, 'weight', this.value)"
-                            aria-label="Set ${idx + 1} Weight kg"
-                            class="w-full min-w-0 bg-transparent text-center font-mono font-bold text-ash-100 focus:outline-none">
-                        <button type="button" onclick="stepSetField('${ex.id}', ${idx}, 'weight', 2.5)" class="ash-btn-secondary w-6 h-7 rounded font-mono text-xs flex items-center justify-center shrink-0">+</button>
-                    </div>
-
-                    <!-- Reps Stepper + Input -->
-                    <div class="col-span-3 flex items-center bg-ash-900 border border-ash-700 rounded p-0.5">
-                        <button type="button" onclick="stepSetField('${ex.id}', ${idx}, 'reps', -1)" class="ash-btn-secondary w-5 h-7 rounded font-mono text-xs flex items-center justify-center shrink-0">-</button>
-                        <input type="number" min="1" max="300" value="${s.reps}"
-                            onchange="updateSetField('${ex.id}', ${idx}, 'reps', this.value)"
-                            aria-label="Set ${idx + 1} Reps"
-                            class="w-full min-w-0 bg-transparent text-center font-mono font-bold text-ash-100 focus:outline-none">
-                        <button type="button" onclick="stepSetField('${ex.id}', ${idx}, 'reps', 1)" class="ash-btn-secondary w-5 h-7 rounded font-mono text-xs flex items-center justify-center shrink-0">+</button>
-                    </div>
-
-                    <!-- Done Checkmark Button -->
-                    <div class="col-span-2 flex justify-end">
-                        <button type="button" onclick="toggleSetDone('${ex.id}', ${idx})"
-                            aria-label="Mark Set ${idx + 1} Done"
-                            class="w-full h-8 rounded font-mono text-xs font-bold flex items-center justify-center border ${
-                                s.done
-                                    ? 'bg-ash-100 text-ash-950 border-ash-100'
-                                    : 'bg-ash-900 text-ash-400 border-ash-700'
-                            }">
-                            ✓
-                        </button>
-                    </div>
-                </div>
-                `;
-            }).join('');
-
-            return `
-            <div class="${isSavedToday ? 'ash-card-logged' : 'ash-card'} p-3 rounded space-y-2.5">
-                <!-- Exercise Header & Target Muscle -->
-                <div class="flex items-start justify-between gap-2">
-                    <div class="min-w-0">
-                        <div class="flex items-center flex-wrap gap-1.5">
-                            <h3 class="font-sans font-bold text-sm text-ash-100 leading-tight">${ex.name}</h3>
-                            ${isSavedToday ? `<span class="bg-ash-100 text-ash-950 font-mono text-[10px] font-bold px-1.5 py-0.5 rounded uppercase">Saved (${todayLog.sets}S)</span>` : ''}
-                        </div>
-                        <p class="font-mono text-[11px] text-ash-400 mt-0.5 leading-snug">
-                            Target: <span class="text-ash-200 font-medium">${ex.target}</span>
-                        </p>
-                    </div>
-                </div>
-
-                <!-- Weight Duration Tracker + Last Session Per-Set Breakdown -->
-                <div class="bg-ash-950 border border-ash-700 px-2.5 py-2 rounded space-y-1">
-                    <div class="flex items-center justify-between gap-2">
-                        <span class="font-mono text-[11px] font-bold ${durationInfo.hasHistory ? 'text-ash-100' : 'text-ash-400'}">
-                            ${durationInfo.badgeText}
-                        </span>
-                        ${durationInfo.streakDays >= 3 ? `<span class="bg-ash-800 border border-ash-600 text-ash-200 font-mono text-[9px] px-1.5 py-0.5 rounded uppercase shrink-0">Ready to +KG?</span>` : ''}
-                    </div>
-                    <div class="font-mono text-[11px] text-ash-400 leading-relaxed break-words border-t border-ash-800 pt-1">
-                        ${lastSessionBanner}
-                    </div>
-                </div>
-
-                <!-- Column Headers for Individual Set Rows -->
-                <div class="grid grid-cols-12 gap-1.5 px-1 font-mono text-[10px] text-ash-400 uppercase">
-                    <div class="col-span-3">Set / Prev</div>
-                    <div class="col-span-4 text-center">Weight (kg)</div>
-                    <div class="col-span-3 text-center">Reps</div>
-                    <div class="col-span-2 text-right pr-1">Done</div>
-                </div>
-
-                <!-- Individual Set Rows -->
-                <div class="space-y-1.5">
-                    ${setRowsHtml}
-                </div>
-
-                <!-- Add / Remove Set Row & Save Exercise Session Button -->
-                <div class="flex items-center justify-between gap-2 pt-1">
-                    <div class="flex items-center space-x-1.5">
-                        <button type="button" onclick="addSetRow('${ex.id}')" class="ash-btn-secondary px-2.5 py-1.5 rounded font-mono text-[11px] uppercase">
-                            + Add Set
-                        </button>
-                        <button type="button" onclick="removeSetRow('${ex.id}')" class="ash-btn-secondary px-2.5 py-1.5 rounded font-mono text-[11px] uppercase text-ash-400">
-                            - Set
-                        </button>
-                    </div>
-
-                    <button type="button" onclick="saveExerciseSets('${ex.id}')" class="ash-btn-primary px-3.5 py-1.5 rounded font-mono text-xs uppercase tracking-wider">
-                        ${isSavedToday ? 'Update Sets' : `Save Sets (${completedCount}/${setsArray.length})`}
-                    </button>
-                </div>
+        for (let s = 1; s <= setCount; s++) {
+          const defaultK = lastSets && lastSets[s - 1] ? lastSets[s - 1].kg : ex.defaultKg;
+          const defaultR = lastSets && lastSets[s - 1] ? lastSets[s - 1].reps : ex.defaultReps;
+          setsHtml += `
+            <div class="set-row">
+              <div class="set-label">SET ${s}</div>
+              <div class="input-box">
+                <span>REPS</span>
+                <input type="number" id="reps-${exIdx}-${s}" value="${defaultR}">
+              </div>
+              <div class="input-box">
+                <span>KG</span>
+                <input type="number" step="0.5" id="kg-${exIdx}-${s}" value="${defaultK}">
+              </div>
+              <button type="button" class="check-btn" onclick="this.classList.toggle('done')">✓</button>
             </div>
-            `;
+          `;
         }
 
-        window.updateSetField = function(exId, setIndex, field, rawVal) {
-            const activeDate = document.getElementById('active-date').value || todayStr;
-            const ex = EXERCISES.find(e => e.id === exId);
-            if (!ex) return;
-            const setsArr = getOrInitDraftSets(ex, activeDate);
-            if (!setsArr[setIndex]) return;
+        card.innerHTML = `
+          <div class="ex-header"><div class="ex-name">${ex.name}</div></div>
+          <div class="ex-target">${ex.target}</div>
+          <div class="ex-duration"><span>${streakText}</span></div>
+          <div id="sets-wrapper-${exIdx}">${setsHtml}</div>
+          <div class="set-actions">
+            <button type="button" class="set-action-btn" onclick="window.addSet(${exIdx})">+ ADD SET</button>
+            <button type="button" class="set-action-btn" onclick="window.removeSet(${exIdx})">- REMOVE SET</button>
+          </div>
+        `;
+        container.appendChild(card);
+      });
+    }
 
-            if (field === 'weight') {
-                setsArr[setIndex].weight = Math.max(0, Number((parseFloat(rawVal) || 0).toFixed(1)));
-            } else if (field === 'reps') {
-                setsArr[setIndex].reps = Math.max(1, parseInt(rawVal) || 1);
-            }
-        };
+    window.addSet = function(exIdx) {
+      const wrapper = document.getElementById(`sets-wrapper-${exIdx}`);
+      const count = wrapper.children.length + 1;
+      const row = document.createElement('div');
+      row.className = 'set-row';
+      row.innerHTML = `
+        <div class="set-label">SET ${count}</div>
+        <div class="input-box"><span>REPS</span><input type="number" id="reps-${exIdx}-${count}" value="10"></div>
+        <div class="input-box"><span>KG</span><input type="number" step="0.5" id="kg-${exIdx}-${count}" value="0"></div>
+        <button type="button" class="check-btn" onclick="this.classList.toggle('done')">✓</button>
+      `;
+      wrapper.appendChild(row);
+    }
 
-        window.stepSetField = function(exId, setIndex, field, delta) {
-            const activeDate = document.getElementById('active-date').value || todayStr;
-            const ex = EXERCISES.find(e => e.id === exId);
-            if (!ex) return;
-            const setsArr = getOrInitDraftSets(ex, activeDate);
-            if (!setsArr[setIndex]) return;
+    window.removeSet = function(exIdx) {
+      const wrapper = document.getElementById(`sets-wrapper-${exIdx}`);
+      if (wrapper.children.length > 1) {
+        wrapper.removeChild(wrapper.lastChild);
+      }
+    }
 
-            if (field === 'weight') {
-                const nextW = Math.max(0, Number(((parseFloat(setsArr[setIndex].weight) || 0) + delta).toFixed(1)));
-                setsArr[setIndex].weight = nextW;
-            } else if (field === 'reps') {
-                const nextR = Math.max(1, (parseInt(setsArr[setIndex].reps) || 1) + delta);
-                setsArr[setIndex].reps = nextR;
-            }
-            renderWorkoutList();
-        };
+    window.saveCurrentWorkout = function() {
+      const list = currentDay === 'A' ? DAY_A_EXERCISES : DAY_B_EXERCISES;
+      
+      const workoutPayload = {
+        date: new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }),
+        timestamp: Date.now(),
+        type: `Day ${currentDay}`,
+        exercises: {},
+        progress: {}
+      };
 
-        window.toggleSetDone = function(exId, setIndex) {
-            const activeDate = document.getElementById('active-date').value || todayStr;
-            const ex = EXERCISES.find(e => e.id === exId);
-            if (!ex) return;
-            const setsArr = getOrInitDraftSets(ex, activeDate);
-            if (!setsArr[setIndex]) return;
+      let reportHtml = '';
 
-            setsArr[setIndex].done = !setsArr[setIndex].done;
-            renderWorkoutList();
-        };
-
-        window.addSetRow = function(exId) {
-            const activeDate = document.getElementById('active-date').value || todayStr;
-            const ex = EXERCISES.find(e => e.id === exId);
-            if (!ex) return;
-            const setsArr = getOrInitDraftSets(ex, activeDate);
-            const last = setsArr[setsArr.length - 1] || { weight: ex.defaultWeight, reps: ex.defaultReps };
-            setsArr.push({
-                setNumber: setsArr.length + 1,
-                weight: last.weight,
-                reps: last.reps,
-                done: false
-            });
-            renderWorkoutList();
-        };
-
-        window.removeSetRow = function(exId) {
-            const activeDate = document.getElementById('active-date').value || todayStr;
-            const ex = EXERCISES.find(e => e.id === exId);
-            if (!ex) return;
-            const setsArr = getOrInitDraftSets(ex, activeDate);
-            if (setsArr.length <= 1) return;
-            setsArr.pop();
-            renderWorkoutList();
-        };
-
-        window.saveExerciseSets = function(exId) {
-            const ex = EXERCISES.find(e => e.id === exId);
-            if (!ex) return;
-
-            const dateStr = document.getElementById('active-date').value || todayStr;
-            const setsArr = getOrInitDraftSets(ex, dateStr);
-
-            // If user taps "Save Sets" without checking individual ✓ boxes, mark all current rows done
-            let completedSets = setsArr.filter(s => s.done);
-            if (completedSets.length === 0) {
-                setsArr.forEach(s => { s.done = true; });
-                completedSets = setsArr.slice();
-            }
-
-            const existingToday = workoutLogs.find(l => l.date === dateStr && l.exercise === ex.name);
-            const warnings = checkGuardrails(dateStr, ex.name, completedSets.length, existingToday ? existingToday.id : null);
-
-            if (warnings.length > 0) {
-                openGuardrailModal(warnings, () => persistWorkoutSetLog(dateStr, ex, completedSets, existingToday));
-            } else {
-                persistWorkoutSetLog(dateStr, ex, completedSets, existingToday);
-            }
-        };
-
-        async function persistWorkoutSetLog(dateStr, ex, completedSets, existingToday) {
-            const normalizedSets = completedSets.map((s, idx) => ({
-                setNumber: idx + 1,
-                weight: Number(parseFloat(s.weight) || 0),
-                reps: parseInt(s.reps) || 1,
-                done: true
-            }));
-
-            const maxWeight = Math.max(...normalizedSets.map(s => s.weight));
-            const topSet = normalizedSets.reduce((best, cur) => (cur.weight >= best.weight ? cur : best), normalizedSets[0]);
-
-            // Remove old entry for same date + exercise if updating
-            if (existingToday) {
-                workoutLogs = workoutLogs.filter(w => w.id !== existingToday.id);
-                if (currentUser && db && !existingToday.id.startsWith('local-')) {
-                    try {
-                        await deleteDoc(doc(db, 'artifacts', appId, 'users', currentUser.uid, 'workouts', existingToday.id));
-                    } catch (e) {
-                        console.error(e);
-                    }
-                }
-            }
-
-            const entry = {
-                id: 'local-' + Date.now() + Math.random().toString(36).slice(2, 6),
-                date: dateStr,
-                day: ex.day,
-                exercise: ex.name,
-                target: ex.target,
-                sets: normalizedSets.length,
-                reps: topSet.reps,
-                weight: maxWeight,
-                setDetails: normalizedSets,
-                setDetailsJson: JSON.stringify(normalizedSets),
-                timestamp: Date.now()
-            };
-
-            workoutLogs.unshift(entry);
-            refreshUI();
-
-            if (currentUser && db) {
-                try {
-                    const ref = collection(db, 'artifacts', appId, 'users', currentUser.uid, 'workouts');
-                    await addDoc(ref, {
-                        date: dateStr,
-                        day: ex.day,
-                        exercise: ex.name,
-                        target: ex.target,
-                        sets: normalizedSets.length,
-                        reps: topSet.reps,
-                        weight: maxWeight,
-                        setDetailsJson: JSON.stringify(normalizedSets),
-                        timestamp: Date.now(),
-                        createdAt: serverTimestamp()
-                    });
-                } catch (e) {
-                    console.error(e);
-                }
-            }
+      list.forEach((ex, exIdx) => {
+        const wrapper = document.getElementById(`sets-wrapper-${exIdx}`);
+        const rows = wrapper.children;
+        const loggedSets = [];
+        for (let s = 1; s <= rows.length; s++) {
+          const r = document.getElementById(`reps-${exIdx}-${s}`);
+          const k = document.getElementById(`kg-${exIdx}-${s}`);
+          if (r && k && Number(r.value) > 0) {
+            loggedSets.push({ set: s, reps: Number(r.value), kg: Number(k.value) || 0 });
+          }
         }
-
-        // =====================================================
-        // 5. DAILY BODY WEIGHT LOGGING
-        // =====================================================
-        window.logBodyWeight = async function() {
-            const dateStr = document.getElementById('active-date').value || todayStr;
-            const weightVal = parseFloat(document.getElementById('bw-input').value);
-            if (isNaN(weightVal) || weightVal <= 0) return;
-
-            const cleanWeight = Number(weightVal.toFixed(1));
-            const entry = {
-                id: 'bw-' + Date.now(),
-                date: dateStr,
-                weight: cleanWeight,
-                timestamp: Date.now()
-            };
-
-            bodyWeightLogs.unshift(entry);
-            refreshUI();
-
-            showModal('Body Weight Logged', `Saved ${cleanWeight} kg for ${dateStr}.`);
-
-            if (currentUser && db) {
-                try {
-                    const ref = collection(db, 'artifacts', appId, 'users', currentUser.uid, 'bodyweight');
-                    await addDoc(ref, {
-                        date: dateStr,
-                        weight: cleanWeight,
-                        timestamp: Date.now(),
-                        createdAt: serverTimestamp()
-                    });
-                } catch (e) {
-                    console.error(e);
-                }
-            }
-        };
-
-        // =====================================================
-        // 6. HISTORY & PROGRESSION VIEW
-        // =====================================================
-        window.renderHistory = function() {
-            const filterVal = document.getElementById('history-filter').value;
-            const listContainer = document.getElementById('history-cards-list');
-            const summaryBox = document.getElementById('progression-summary');
-
-            const rows = [];
-
-            if (filterVal === 'ALL' || filterVal === 'BODYWEIGHT') {
-                bodyWeightLogs.forEach(b => {
-                    rows.push({
-                        id: b.id,
-                        kind: 'BW',
-                        date: b.date,
-                        title: 'Daily Body Weight',
-                        subtitle: 'Body Mass Check-In',
-                        metric: `${Number(b.weight).toFixed(1)} kg`,
-                        setPills: [],
-                        rawWeight: parseFloat(b.weight) || 0,
-                        topSetLabel: `${Number(b.weight).toFixed(1)} kg`,
-                        timestamp: b.timestamp || new Date(b.date).getTime()
-                    });
-                });
-            }
-
-            if (filterVal !== 'BODYWEIGHT') {
-                workoutLogs.forEach(w => {
-                    if (filterVal === 'ALL' || w.exercise === filterVal) {
-                        const setDetails = parseLogSets(w);
-                        const maxW = setDetails.length > 0
-                            ? Math.max(...setDetails.map(s => parseFloat(s.weight) || 0))
-                            : (parseFloat(w.weight) || 0);
-                        const bestSet = setDetails.find(s => (parseFloat(s.weight) || 0) === maxW) || setDetails[0] || { weight: maxW, reps: w.reps || 0 };
-                        const dur = getExerciseWeightDurationInfo(w.exercise);
-
-                        rows.push({
-                            id: w.id,
-                            kind: 'WORKOUT',
-                            date: w.date,
-                            title: w.exercise,
-                            subtitle: `Day ${w.day || ''} • ${w.target || ''}`,
-                            metric: `${setDetails.length} Sets • Peak: ${bestSet.weight}kg × ${bestSet.reps}`,
-                            durationNote: dur.badgeText,
-                            setPills: setDetails,
-                            rawWeight: maxW,
-                            topSetLabel: `${bestSet.weight}kg × ${bestSet.reps}`,
-                            timestamp: w.timestamp || new Date(w.date).getTime()
-                        });
-                    }
-                });
-            }
-
-            rows.sort((a, b) => {
-                const dA = new Date(a.date).getTime();
-                const dB = new Date(b.date).getTime();
-                if (dB !== dA) return dB - dA;
-                return (b.timestamp || 0) - (a.timestamp || 0);
-            });
-
-            if (filterVal !== 'ALL' && rows.length > 0) {
-                summaryBox.classList.remove('hidden');
-                const chronological = rows.slice().reverse();
-                const weights = chronological.map(r => r.rawWeight);
-                document.getElementById('prog-start').textContent = chronological[0].topSetLabel;
-                document.getElementById('prog-latest').textContent = rows[0].topSetLabel;
-                document.getElementById('prog-best').textContent = `${Math.max(...weights)} kg`;
+        
+        if (loggedSets.length > 0) {
+          workoutPayload.exercises[ex.name] = loggedSets;
+          
+          const currentVol = calculateVolume(loggedSets);
+          const { pastVolume } = getStreakAndPastVolume(ex.name);
+          
+          let pctStr = "NEW";
+          let pctClass = "pct-neu bg-neu";
+          
+          if (pastVolume > 0) {
+            const pctChange = ((currentVol - pastVolume) / pastVolume) * 100;
+            if (pctChange > 0) {
+              pctStr = `+${pctChange.toFixed(1)}%`;
+              pctClass = "pct-pos bg-pos";
+            } else if (pctChange < 0) {
+              pctStr = `${pctChange.toFixed(1)}%`;
+              pctClass = "pct-neg bg-neg";
             } else {
-                summaryBox.classList.add('hidden');
+              pctStr = `0.0%`;
+              pctClass = "pct-neu bg-neu";
             }
-
-            if (rows.length === 0) {
-                listContainer.innerHTML = `
-                    <div class="ash-card p-6 rounded text-center font-mono text-xs text-ash-400">
-                        No logs recorded for this view yet.
-                    </div>
-                `;
-                return;
-            }
-
-            listContainer.innerHTML = rows.map(r => {
-                const pillsHtml = r.setPills && r.setPills.length > 0
-                    ? `<div class="flex flex-wrap gap-1.5 mt-2 pt-2 border-t border-ash-700">
-                        ${r.setPills.map((s, idx) => `
-                            <span class="bg-ash-950 border border-ash-700 px-2 py-0.5 rounded font-mono text-[11px] text-ash-200">
-                                <strong class="text-ash-400">S${idx + 1}:</strong> ${s.weight}kg × ${s.reps}
-                            </span>
-                        `).join('')}
-                       </div>`
-                    : '';
-
-                return `
-                <div class="${r.kind === 'BW' ? 'ash-card-logged' : 'ash-card'} p-3 rounded">
-                    <div class="flex items-start justify-between gap-2">
-                        <div class="min-w-0">
-                            <div class="flex items-center space-x-2 font-mono text-[11px] text-ash-400">
-                                <span>${r.date}</span>
-                                <span>•</span>
-                                <span class="truncate">${r.subtitle}</span>
-                            </div>
-                            <div class="font-sans font-bold text-sm text-ash-100 truncate mt-0.5">${r.title}</div>
-                            <div class="font-mono text-xs text-ash-300 mt-0.5">${r.metric}</div>
-                            ${r.durationNote ? `<div class="font-mono text-[11px] text-ash-400 mt-0.5">${r.durationNote}</div>` : ''}
-                        </div>
-                        <button type="button" onclick="deleteEntry('${r.kind}', '${r.id}')" class="ash-btn-secondary px-2.5 py-1.5 rounded font-mono text-xs text-ash-400 hover:text-ash-100 shrink-0" aria-label="Delete Log">
-                            DEL
-                        </button>
-                    </div>
-                    ${pillsHtml}
-                </div>
-                `;
-            }).join('');
-        };
-
-        window.deleteEntry = async function(kind, id) {
-            if (kind === 'WORKOUT') {
-                workoutLogs = workoutLogs.filter(w => w.id !== id);
-                if (currentUser && db && !id.startsWith('local-')) {
-                    try {
-                        await deleteDoc(doc(db, 'artifacts', appId, 'users', currentUser.uid, 'workouts', id));
-                    } catch (e) {
-                        console.error(e);
-                    }
-                }
-            } else {
-                bodyWeightLogs = bodyWeightLogs.filter(b => b.id !== id);
-                if (currentUser && db && !id.startsWith('bw-') && !id.startsWith('init-')) {
-                    try {
-                        await deleteDoc(doc(db, 'artifacts', appId, 'users', currentUser.uid, 'bodyweight', id));
-                    } catch (e) {
-                        console.error(e);
-                    }
-                }
-            }
-            refreshUI();
-        };
-
-        // =====================================================
-        // 7. HEADER STATS, TABS & EXPORT/IMPORT
-        // =====================================================
-        function updateHeaderStats() {
-            const latestBw = bodyWeightLogs.length > 0 ? Number(bodyWeightLogs[0].weight).toFixed(1) : '64.0';
-            document.getElementById('current-bw-label').textContent = latestBw;
-
-            const nowMs = Date.now();
-            const sevenDaysMs = 7 * 24 * 60 * 60 * 1000;
-            const recentDays = new Set();
-            workoutLogs.forEach(l => {
-                if (nowMs - new Date(l.date).getTime() <= sevenDaysMs) {
-                    recentDays.add(l.date);
-                }
-            });
-
-            const countEl = document.getElementById('hud-weekly-count');
-            countEl.textContent = `${recentDays.size}/4`;
-
-            const badgeEl = document.getElementById('weekly-freq-badge');
-            const bannerEl = document.getElementById('overtraining-banner');
-
-            if (recentDays.size > 4) {
-                badgeEl.className = 'bg-ash-100 text-ash-950 border border-ash-100 px-2 py-1 rounded font-bold';
-                bannerEl.classList.remove('hidden');
-            } else {
-                badgeEl.className = 'bg-ash-900 border border-ash-700 px-2 py-1 rounded text-ash-200';
-                bannerEl.classList.add('hidden');
-            }
-
-            document.getElementById('total-logs-count').textContent = workoutLogs.length + bodyWeightLogs.length;
+          }
+          
+          workoutPayload.progress[ex.name] = { str: pctStr, cls: pctClass };
+          
+          reportHtml += `
+            <div class="report-item">
+              <span>${ex.name}</span>
+              <span class="pct-badge ${pctClass}">${pctStr}</span>
+            </div>
+          `;
         }
+      });
 
-        window.switchView = function(view) {
-            activeView = view;
-            ['A', 'B', 'HISTORY'].forEach(v => {
-                const btn = document.getElementById(`tab-btn-${v}`);
-                if (v === view) {
-                    btn.className = 'py-2 px-1 font-mono text-xs font-semibold uppercase rounded border bg-ash-100 text-ash-950 border-ash-100 truncate';
-                } else {
-                    btn.className = 'py-2 px-1 font-mono text-xs font-semibold uppercase rounded border bg-ash-900 text-ash-400 border-ash-700 truncate';
-                }
-            });
+      appData.history.push(workoutPayload);
+      saveData();
+      
+      document.getElementById('modalReportList').innerHTML = reportHtml;
+      document.getElementById('progressModal').style.display = 'flex';
+      
+      window.renderExercises();
+    }
 
-            const workoutSec = document.getElementById('view-workout');
-            const historySec = document.getElementById('view-history');
+    window.closeModal = function() {
+      document.getElementById('progressModal').style.display = 'none';
+    }
 
-            if (view === 'HISTORY') {
-                workoutSec.classList.add('hidden');
-                historySec.classList.remove('hidden');
-                window.renderHistory();
-            } else {
-                historySec.classList.add('hidden');
-                workoutSec.classList.remove('hidden');
-                renderWorkoutList();
-            }
+    window.logBodyWeight = function() {
+      const val = parseFloat(document.getElementById('bwInput').value);
+      if (!val || isNaN(val)) return;
+      appData.bodyWeights.push({
+        date: new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric' }),
+        weight: val,
+        timestamp: Date.now()
+      });
+      document.getElementById('bwInput').value = '';
+      saveData();
+      window.updateBwHeader();
+    }
+
+    window.updateBwHeader = function() {
+      const display = document.getElementById('lastBwDisplay');
+      if (appData.bodyWeights && appData.bodyWeights.length > 0) {
+        const last = appData.bodyWeights[appData.bodyWeights.length - 1];
+        display.innerText = `Last: ${last.weight} kg (${last.date})`;
+      } else {
+        display.innerText = "Last: Not logged";
+      }
+    }
+
+    window.renderHistory = function() {
+      const container = document.getElementById('historyList');
+      container.innerHTML = '';
+      
+      if (appData.history.length === 0 && (!appData.bodyWeights || appData.bodyWeights.length === 0)) {
+        container.innerHTML = '<div style="color:var(--ash); font-size:0.85rem; padding:20px; text-align:center;">No history recorded yet.</div>';
+        return;
+      }
+
+      // OVERALL PROGRESSIVE OVERLOAD CALCULATION (30-DAY)
+      if (appData.history.length >= 2) {
+        let chunkSize = Math.min(30, Math.floor(appData.history.length / 2));
+        
+        const latestChunk = appData.history.slice(-chunkSize);
+        const prevChunk = appData.history.slice(-(chunkSize * 2), -chunkSize);
+        
+        let latestVol = 0;
+        let prevVol = 0;
+        
+        const calcTotal = (chunk) => {
+           let total = 0;
+           chunk.forEach(w => {
+              for (let ex in w.exercises) {
+                 w.exercises[ex].forEach(s => {
+                    let weight = s.kg > 0 ? s.kg : 1;
+                    total += (s.reps * weight);
+                 });
+              }
+           });
+           return total;
         };
 
-        window.exportDataJSON = function() {
-            const data = { workoutLogs, bodyWeightLogs };
-            const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
-            const url = URL.createObjectURL(blob);
-            const a = document.createElement('a');
-            a.href = url;
-            a.download = `vtaper-log-${todayStr}.json`;
-            a.click();
-            URL.revokeObjectURL(url);
-        };
+        latestVol = calcTotal(latestChunk);
+        prevVol = calcTotal(prevChunk);
 
-        window.importDataJSON = function(e) {
-            const file = e.target.files[0];
-            if (!file) return;
-            const reader = new FileReader();
-            reader.onload = (ev) => {
-                try {
-                    const parsed = JSON.parse(ev.target.result);
-                    if (Array.isArray(parsed.workoutLogs)) workoutLogs = parsed.workoutLogs;
-                    if (Array.isArray(parsed.bodyWeightLogs)) bodyWeightLogs = parsed.bodyWeightLogs;
-                    sortLogs();
-                    refreshUI();
-                    showModal('Backup Imported', 'Your workout and body weight history has been restored.');
-                } catch (err) {
-                    showModal('Import Error', 'Could not read the backup JSON file.');
-                }
-            };
-            reader.readAsText(file);
-        };
-
-        function showModal(title, text) {
-            document.getElementById('modal-tag').textContent = 'STATUS';
-            document.getElementById('modal-title').textContent = title;
-            document.getElementById('modal-body').innerHTML = `<p>${text}</p>`;
-            document.getElementById('modal-footer').innerHTML = `
-                <button onclick="closeModal()" class="ash-btn-primary px-4 py-2 rounded font-mono text-xs uppercase">OK</button>
-            `;
-            document.getElementById('modal-overlay').classList.add('active');
+        if (prevVol > 0) {
+           let pctChange = ((latestVol - prevVol) / prevVol) * 100;
+           let pctClass = pctChange >= 0 ? 'pct-pos' : 'pct-neg';
+           let pctStr = pctChange >= 0 ? `+${pctChange.toFixed(1)}%` : `${pctChange.toFixed(1)}%`;
+           
+           const trendCard = document.createElement('div');
+           trendCard.className = 'history-card';
+           trendCard.style.border = '1px solid var(--card-border)';
+           trendCard.style.background = '#151515';
+           trendCard.innerHTML = `
+             <div class="hist-head" style="color:var(--white); border-bottom:1px solid var(--accent);">
+               <span>OVERALL PROGRESSION</span>
+               <span>${chunkSize} VS ${chunkSize} SESSIONS</span>
+             </div>
+             <div style="display:flex; align-items:center; gap:16px; margin-top:16px; margin-bottom:8px;">
+               <div style="font-size:2rem; font-weight:800;" class="${pctClass}">${pctStr}</div>
+               <div style="font-size:0.75rem; color:var(--ash-light); line-height:1.4;">
+                 Total volume progression comparing your last ${chunkSize} workouts against the ${chunkSize} workouts prior.
+               </div>
+             </div>
+           `;
+           container.appendChild(trendCard);
         }
+      }
 
-        function openGuardrailModal(warnings, onConfirm) {
-            document.getElementById('modal-tag').textContent = 'OVERTRAINING WARNING';
-            document.getElementById('modal-title').textContent = 'Recovery Limit Reached';
-            document.getElementById('modal-body').innerHTML = warnings.map(w => `<p>• ${w}</p>`).join('');
-            document.getElementById('modal-footer').innerHTML = `
-                <button onclick="closeModal()" class="ash-btn-secondary px-3 py-2 rounded font-mono text-xs uppercase">Cancel</button>
-                <button id="confirm-override-btn" class="ash-btn-primary px-3 py-2 rounded font-mono text-xs uppercase">Log Anyway</button>
-            `;
-            document.getElementById('modal-overlay').classList.add('active');
-            document.getElementById('confirm-override-btn').onclick = () => {
-                window.closeModal();
-                onConfirm();
-            };
-        }
-
-        window.closeModal = function() {
-            document.getElementById('modal-overlay').classList.remove('active');
-        };
-
-        document.getElementById('active-date').addEventListener('change', () => {
-            refreshUI();
+      if (appData.bodyWeights && appData.bodyWeights.length > 0) {
+        const bwCard = document.createElement('div');
+        bwCard.className = 'history-card';
+        bwCard.innerHTML = `<div class="hist-head"><span>BODY WEIGHT LOGS</span><span>${appData.bodyWeights.length} ENTRIES</span></div>`;
+        appData.bodyWeights.slice(-5).reverse().forEach(b => {
+          bwCard.innerHTML += `<div class="hist-entry"><span>${b.date}</span><strong style="color:var(--white);">${b.weight} kg</strong></div>`;
         });
+        container.appendChild(bwCard);
+      }
 
-        function refreshUI() {
-            updateHeaderStats();
-            renderWorkoutList();
-            if (activeView === 'HISTORY') window.renderHistory();
+      appData.history.slice().reverse().forEach(h => {
+        const card = document.createElement('div');
+        card.className = 'history-card';
+        let exHtml = '';
+        for (let name in h.exercises) {
+          const sets = h.exercises[name];
+          const prog = h.progress && h.progress[name] ? h.progress[name] : { str: '', cls: '' };
+          const summary = sets.map(s => `${s.kg}kg×${s.reps}`).join(' | ');
+          exHtml += `
+            <div class="hist-entry" style="display:block; margin-bottom:12px;">
+              <div style="display:flex; justify-content:space-between; margin-bottom:4px;">
+                <span style="color:var(--white); font-weight:700;">${name}</span>
+                ${prog.str ? `<span class="pct-badge ${prog.cls}">${prog.str} VOL</span>` : ''}
+              </div>
+              <div style="font-size:0.75rem; color:var(--ash-light);">${summary}</div>
+            </div>`;
         }
+        card.innerHTML = `<div class="hist-head"><span>${h.type}</span><span>${h.date}</span></div>${exHtml}`;
+        container.appendChild(card);
+      });
+    }
 
-        initApp();
-    </script>
+    // Launch
+    loadData();
+  </script>
 </body>
 </html>
