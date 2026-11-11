@@ -1,0 +1,2333 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <title>GYM.V</title>
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <style>
+    :root {
+      --bg: #050505;
+      --card: #111111;
+      --card-border: #222222;
+      --ash: #888888;
+      --ash-light: #d1d1d1;
+      --white: #f5f5f5;
+      --accent: #333333;
+      --pos: #2ecc71;
+      --neg: #e74c3c;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      -webkit-tap-highlight-color: transparent;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    }
+
+    html, body {
+      background-color: var(--bg);
+      color: var(--white);
+      width: 100%;
+      overflow-x: hidden;
+    }
+
+    body {
+      padding: env(safe-area-inset-top, 16px) 14px env(safe-area-inset-bottom, 90px) 14px;
+      min-height: 100vh;
+      max-width: 600px;
+      margin: 0 auto;
+    }
+
+    /* HEADER */
+    header {
+      padding: 12px 0;
+      border-bottom: 1px solid var(--card-border);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    h1 {
+      font-size: 1.25rem;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      font-weight: 900;
+    }
+
+    .status-badge {
+      font-size: 0.65rem;
+      font-weight: 700;
+      color: var(--ash);
+      background: var(--card);
+      border: 1px solid var(--card-border);
+      padding: 6px 10px;
+      border-radius: 4px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .dot { width: 8px; height: 8px; border-radius: 50%; background: var(--ash); }
+    .dot.live { background: var(--pos); box-shadow: 0 0 6px var(--pos); }
+    .dot.err { background: var(--neg); box-shadow: 0 0 6px var(--neg); }
+
+    /* TABS */
+    .tabs { display: flex; gap: 8px; margin: 14px 0; }
+    .tab-btn {
+      flex: 1;
+      padding: 12px 8px;
+      background: var(--card);
+      border: 1px solid var(--card-border);
+      color: var(--ash);
+      font-size: 0.8rem;
+      font-weight: 800;
+      border-radius: 6px;
+      cursor: pointer;
+      text-transform: uppercase;
+    }
+    .tab-btn.active {
+      color: var(--white);
+      border-color: var(--ash-light);
+      background: #1c1c1c;
+    }
+
+    .filter-tabs {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 4px;
+      margin-bottom: 14px;
+      background: #000;
+      padding: 4px;
+      border-radius: 6px;
+      border: 1px solid var(--card-border);
+    }
+    .filter-btn {
+      padding: 8px 4px;
+      background: transparent;
+      border: none;
+      color: var(--ash);
+      font-size: 0.7rem;
+      font-weight: 800;
+      border-radius: 4px;
+      cursor: pointer;
+      text-transform: uppercase;
+    }
+    .filter-btn.active {
+      background: var(--card);
+      color: var(--white);
+      border: 1px solid var(--card-border);
+    }
+
+    /* CARDS: BODY WEIGHT & WATER */
+    .tracker-card {
+      background: var(--card);
+      border: 1px solid var(--card-border);
+      border-radius: 8px;
+      padding: 12px 14px;
+      margin-bottom: 12px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+    .row-between {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 8px;
+    }
+    .card-label {
+      font-size: 0.78rem;
+      color: var(--ash-light);
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+    .sub-label {
+      font-size: 0.72rem;
+      color: var(--ash);
+      margin-top: 2px;
+    }
+
+    .bw-input-wrap { display: flex; align-items: center; gap: 6px; }
+    .bw-input-wrap input {
+      width: 72px;
+      background: #000;
+      border: 1px solid var(--card-border);
+      color: var(--white);
+      padding: 8px;
+      font-size: 0.9rem;
+      border-radius: 4px;
+      text-align: center;
+      font-weight: 700;
+    }
+    .action-btn-white {
+      background: var(--white);
+      color: #000;
+      padding: 9px 14px;
+      font-size: 0.75rem;
+      border-radius: 4px;
+      font-weight: 800;
+      border: none;
+      cursor: pointer;
+      text-transform: uppercase;
+    }
+    .date-input {
+      background: #000;
+      border: 1px solid var(--card-border);
+      color: var(--white);
+      padding: 6px 8px;
+      border-radius: 4px;
+      font-family: monospace;
+      font-size: 0.85rem;
+    }
+
+    /* WATER GLASS PILLS */
+    .water-pills {
+      display: grid;
+      grid-template-columns: repeat(10, 1fr);
+      gap: 4px;
+      margin-top: 2px;
+    }
+    .water-pill {
+      height: 18px;
+      border-radius: 3px;
+      background: #050505;
+      border: 1px solid var(--card-border);
+      cursor: pointer;
+      transition: all 0.15s;
+    }
+    .water-pill.filled {
+      background: var(--ash-light);
+      border-color: var(--white);
+    }
+    .water-ctrl-btn {
+      width: 34px;
+      height: 32px;
+      background: #000;
+      border: 1px solid var(--card-border);
+      color: var(--white);
+      font-weight: 900;
+      font-size: 1rem;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+
+    /* EXERCISE CARD */
+    .exercise-card {
+      background: var(--card);
+      border: 1px solid var(--card-border);
+      border-radius: 8px;
+      padding: 14px;
+      margin-bottom: 12px;
+      transition: border 0.2s;
+    }
+    .exercise-card.saved {
+      border-color: var(--pos);
+    }
+    .ex-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 8px;
+      margin-bottom: 4px;
+    }
+    .ex-title-wrap {
+      display: flex;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 6px;
+    }
+    .ex-name {
+      font-size: 0.98rem;
+      font-weight: 800;
+      color: var(--white);
+    }
+    .info-btn {
+      width: 22px;
+      height: 22px;
+      border-radius: 50%;
+      background: #1f1f1f;
+      border: 1px solid var(--ash);
+      color: var(--white);
+      font-size: 0.72rem;
+      font-weight: 900;
+      font-family: Georgia, serif;
+      font-style: italic;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      flex-shrink: 0;
+    }
+    .info-btn:active {
+      background: var(--white);
+      color: #000;
+    }
+
+    .loc-badge {
+      font-size: 0.62rem;
+      background: #1d1d1d;
+      border: 1px solid var(--card-border);
+      padding: 2px 6px;
+      border-radius: 4px;
+      color: var(--ash-light);
+      text-transform: uppercase;
+      font-weight: 700;
+      white-space: nowrap;
+    }
+
+    .ex-meta-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 0.72rem;
+      color: var(--ash-light);
+      margin-bottom: 12px;
+      border-bottom: 1px solid var(--card-border);
+      padding-bottom: 8px;
+    }
+    .rest-tag {
+      font-size: 0.65rem;
+      color: var(--ash);
+      font-family: monospace;
+    }
+
+    /* SET ROWS BY MODE */
+    .set-row {
+      display: grid;
+      grid-template-columns: 28px 1fr 1fr 38px;
+      gap: 8px;
+      align-items: center;
+      margin-bottom: 10px;
+    }
+    .set-row.single-col {
+      grid-template-columns: 28px 1fr 38px;
+    }
+    .set-label {
+      font-size: 0.72rem;
+      color: var(--ash);
+      font-weight: 800;
+    }
+    .input-box {
+      display: flex;
+      flex-direction: column;
+      min-width: 0;
+    }
+    .input-box span {
+      font-size: 0.58rem;
+      color: var(--ash);
+      margin-bottom: 3px;
+      font-weight: 700;
+      text-align: center;
+      text-transform: uppercase;
+    }
+    .num-ctrl {
+      display: flex;
+      background: #000;
+      border: 1px solid var(--card-border);
+      border-radius: 6px;
+      height: 36px;
+      overflow: hidden;
+    }
+    .num-ctrl .btn {
+      width: 32px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: #181818;
+      color: var(--ash-light);
+      font-size: 1.1rem;
+      cursor: pointer;
+      user-select: none;
+      font-weight: bold;
+      flex-shrink: 0;
+    }
+    .num-ctrl .btn:active {
+      background: #2c2c2c;
+    }
+    .num-ctrl input {
+      flex: 1;
+      width: 100%;
+      min-width: 0;
+      background: transparent;
+      border: none;
+      color: var(--white);
+      text-align: center;
+      font-size: 0.9rem;
+      font-weight: 800;
+      padding: 0;
+      appearance: none;
+      -webkit-appearance: none;
+    }
+
+    .check-btn {
+      height: 36px;
+      background: #181818;
+      border: 1px solid var(--card-border);
+      color: var(--ash);
+      border-radius: 4px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.95rem;
+      cursor: pointer;
+      margin-top: 13px;
+    }
+    .check-btn.done {
+      background: var(--white);
+      color: #000;
+      font-weight: 900;
+      border-color: var(--white);
+    }
+
+    .set-actions-bar {
+      display: flex;
+      gap: 8px;
+      margin-top: 10px;
+    }
+    .add-rem-btn {
+      flex: 1;
+      padding: 8px;
+      background: #000;
+      border: 1px solid var(--card-border);
+      color: var(--ash);
+      font-size: 0.68rem;
+      font-weight: 800;
+      border-radius: 4px;
+      cursor: pointer;
+      text-transform: uppercase;
+    }
+
+    .log-btn-group {
+      display: flex;
+      gap: 8px;
+      margin-top: 10px;
+    }
+    .save-ex-btn {
+      flex: 1;
+      padding: 12px;
+      background: #181818;
+      border: 1px solid var(--card-border);
+      color: var(--ash-light);
+      font-size: 0.75rem;
+      font-weight: 800;
+      border-radius: 4px;
+      cursor: pointer;
+      text-transform: uppercase;
+    }
+    .save-ex-btn.saved {
+      background: rgba(46, 204, 113, 0.15);
+      color: var(--pos);
+      border-color: var(--pos);
+    }
+    .unlog-ex-btn {
+      padding: 12px 14px;
+      background: #250b0b;
+      border: 1px solid var(--neg);
+      color: var(--neg);
+      font-size: 0.72rem;
+      font-weight: 800;
+      border-radius: 4px;
+      cursor: pointer;
+      text-transform: uppercase;
+    }
+
+    /* FLOATING SMART SET TIMER BAR */
+    #restTimerBar {
+      position: fixed;
+      bottom: 14px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: calc(100% - 28px);
+      max-width: 572px;
+      background: #0d0d0d;
+      border: 1px solid var(--ash-light);
+      border-radius: 10px;
+      padding: 12px 14px;
+      z-index: 900;
+      display: none;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.85);
+    }
+    .timer-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 6px;
+    }
+    .timer-title {
+      font-size: 0.72rem;
+      font-weight: 800;
+      color: var(--ash-light);
+      text-transform: uppercase;
+    }
+    .timer-digits {
+      font-size: 1.35rem;
+      font-weight: 900;
+      font-family: monospace;
+      color: var(--white);
+    }
+    .timer-Phase-pos { color: var(--pos); }
+    .timer-sub {
+      font-size: 0.68rem;
+      color: var(--ash);
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 8px;
+    }
+    .timer-progress-bg {
+      width: 100%;
+      height: 5px;
+      background: #222;
+      border-radius: 3px;
+      overflow: hidden;
+      margin-bottom: 8px;
+    }
+    .timer-progress-fill {
+      height: 100%;
+      background: var(--white);
+      width: 100%;
+      transition: width 0.3s linear;
+    }
+    .timer-btns {
+      display: flex;
+      gap: 6px;
+    }
+    .timer-btn {
+      flex: 1;
+      padding: 6px;
+      background: #1a1a1a;
+      border: 1px solid var(--card-border);
+      color: var(--ash-light);
+      font-size: 0.68rem;
+      font-weight: 800;
+      border-radius: 4px;
+      cursor: pointer;
+      text-transform: uppercase;
+    }
+
+    /* ADD CUSTOM EXERCISE BOX */
+    .custom-ex-box {
+      margin-top: 20px;
+      background: var(--card);
+      border: 1px dashed var(--card-border);
+      border-radius: 8px;
+      padding: 14px;
+    }
+    .form-input, .form-select, .form-textarea {
+      width: 100%;
+      background: #000;
+      border: 1px solid var(--card-border);
+      color: var(--white);
+      padding: 10px;
+      border-radius: 4px;
+      font-size: 0.82rem;
+      margin-bottom: 10px;
+    }
+    .form-textarea {
+      min-height: 70px;
+      resize: vertical;
+    }
+
+    .date-picker-bar {
+      margin-top: 18px;
+      padding: 12px 14px;
+      background: var(--card);
+      border: 1px solid var(--card-border);
+      border-radius: 8px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .save-session-btn {
+      width: 100%;
+      padding: 16px;
+      margin: 14px 0 40px;
+      background: var(--white);
+      color: #000;
+      font-weight: 900;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      font-size: 0.9rem;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+    }
+
+    /* HISTORY CARDS */
+    .history-card {
+      background: var(--card);
+      border: 1px solid var(--card-border);
+      border-radius: 8px;
+      padding: 14px;
+      margin-bottom: 12px;
+    }
+    .hist-head {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 0.75rem;
+      color: var(--ash);
+      margin-bottom: 10px;
+      border-bottom: 1px solid var(--card-border);
+      padding-bottom: 8px;
+      font-weight: 800;
+    }
+    .hist-entry {
+      font-size: 0.82rem;
+      margin-bottom: 8px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .delete-btn {
+      background: #250a0a;
+      color: var(--neg);
+      border: 1px solid var(--neg);
+      font-size: 0.68rem;
+      padding: 4px 8px;
+      border-radius: 4px;
+      cursor: pointer;
+      font-weight: 800;
+    }
+
+    .pct-badge {
+      font-size: 0.68rem;
+      padding: 3px 6px;
+      border-radius: 4px;
+      font-weight: 800;
+      margin-left: 6px;
+      display: inline-block;
+    }
+    .pct-pos { color: var(--pos); background: rgba(46, 204, 113, 0.15); }
+    .pct-neg { color: var(--neg); background: rgba(231, 76, 60, 0.15); }
+    .pct-neu { color: var(--ash); background: rgba(136, 136, 136, 0.15); }
+
+    /* MODALS (PROGRESS, INFO GUIDE, CONFIRM) */
+    .modal-overlay {
+      position: fixed;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: rgba(0,0,0,0.92);
+      display: none;
+      z-index: 1000;
+      align-items: center;
+      justify-content: center;
+      padding: 16px;
+    }
+    .modal-content {
+      background: var(--card);
+      border: 1px solid var(--ash);
+      width: 100%;
+      max-width: 440px;
+      max-height: 85vh;
+      overflow-y: auto;
+      border-radius: 10px;
+      padding: 18px;
+    }
+    .modal-content h2 {
+      font-size: 1.05rem;
+      margin-bottom: 12px;
+      color: var(--white);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+    .modal-day-score {
+      font-size: 2.4rem;
+      font-weight: 900;
+      margin: 10px 0;
+      text-align: center;
+    }
+    .guide-section {
+      margin-bottom: 12px;
+      padding-bottom: 10px;
+      border-bottom: 1px solid var(--card-border);
+      text-align: left;
+    }
+    .guide-label {
+      font-size: 0.68rem;
+      font-weight: 800;
+      color: var(--ash);
+      text-transform: uppercase;
+      margin-bottom: 4px;
+      letter-spacing: 0.5px;
+    }
+    .guide-text {
+      font-size: 0.82rem;
+      color: var(--white);
+      line-height: 1.45;
+    }
+    .close-modal-btn {
+      width: 100%;
+      padding: 13px;
+      background: var(--white);
+      color: #000;
+      font-weight: 900;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      margin-top: 10px;
+      text-transform: uppercase;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- MAIN APP (OPENS DIRECTLY — NO PIN SCREEN) -->
+  <div id="appContent">
+    <header>
+      <div>
+        <h1>GYM.V</h1>
+        <div style="font-size: 0.65rem; color: var(--ash); font-weight: 700;">V-TAPER & POSTURE SYSTEM</div>
+      </div>
+      <div class="status-badge">
+        <span class="dot" id="cloudDot"></span>
+        <span id="cloudStatus">CHECKING NET...</span>
+      </div>
+    </header>
+
+    <!-- MAIN TABS -->
+    <div class="tabs">
+      <button class="tab-btn active" onclick="window.switchTab('workout')">WORKOUT</button>
+      <button class="tab-btn" onclick="window.switchTab('history')">HISTORY & BACKUP</button>
+    </div>
+
+    <!-- BODY WEIGHT & LOG DATE CARD -->
+    <div class="tracker-card">
+      <div class="row-between">
+        <div>
+          <div class="card-label">Body Weight</div>
+          <div class="sub-label" id="lastBwDisplay">Last: Not logged</div>
+        </div>
+        <div class="bw-input-wrap">
+          <input type="number" step="0.1" id="bwInput" placeholder="kg">
+          <button class="action-btn-white" onclick="window.logBodyWeight()">LOG</button>
+        </div>
+      </div>
+      <div class="row-between" style="border-top: 1px solid var(--card-border); padding-top: 8px;">
+        <span style="font-size: 0.7rem; font-weight: 700; color: var(--ash-light);">ACTIVE LOG DATE:</span>
+        <input type="date" id="bwDate" class="date-input" onchange="window.syncDates(this.value)">
+      </div>
+    </div>
+
+    <!-- DAILY WATER TRACKER (IN GLASSES) -->
+    <div class="tracker-card">
+      <div class="row-between">
+        <div>
+          <div class="card-label">Daily Water Intake</div>
+          <div class="sub-label" id="waterCountDisplay">0 / 10 Glasses (Full Day)</div>
+        </div>
+        <div style="display: flex; gap: 6px; align-items: center;">
+          <button class="water-ctrl-btn" onclick="window.adjustWater(-1)">-</button>
+          <button class="water-ctrl-btn" onclick="window.adjustWater(1)">+</button>
+        </div>
+      </div>
+      <div class="water-pills" id="waterPillsContainer"></div>
+    </div>
+
+    <!-- WORKOUT VIEW -->
+    <div id="workoutView">
+      <div style="display: flex; gap: 8px; margin-bottom: 12px;">
+        <button class="tab-btn active" id="dayABtn" onclick="window.setDay('A')">DAY A (PUSH & ABS)</button>
+        <button class="tab-btn" id="dayBBtn" onclick="window.setDay('B')">DAY B (PULL & LEGS)</button>
+      </div>
+
+      <!-- LOCATION & STRETCH FILTER -->
+      <div class="filter-tabs">
+        <button class="filter-btn active" id="flt-all" onclick="window.setFilter('ALL')">ALL</button>
+        <button class="filter-btn" id="flt-home" onclick="window.setFilter('Home')">HOME</button>
+        <button class="filter-btn" id="flt-gym" onclick="window.setFilter('Gym')">GYM</button>
+        <button class="filter-btn" id="flt-stretch" onclick="window.setFilter('Stretch')">STRETCH (20M)</button>
+      </div>
+
+      <div id="exercisesContainer"></div>
+
+      <!-- ADD CUSTOM EXERCISE SECTION -->
+      <div class="custom-ex-box">
+        <div class="row-between" style="cursor: pointer;" onclick="window.toggleCustomForm()">
+          <span class="card-label">+ ADD CUSTOM EXERCISE TO LIST</span>
+          <span id="customToggleIcon" style="font-weight: 900; color: var(--ash-light);">[+]</span>
+        </div>
+        <div id="customExForm" style="display: none; margin-top: 12px; border-top: 1px solid var(--card-border); padding-top: 12px;">
+          <input type="text" id="custName" class="form-input" placeholder="Exercise Name (e.g. Incline DB Press)">
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px;">
+            <select id="custDay" class="form-select">
+              <option value="A">Day A (Push & Abs)</option>
+              <option value="B">Day B (Pull & Legs)</option>
+              <option value="BOTH">Both Days (Stretch)</option>
+            </select>
+            <select id="custLoc" class="form-select">
+              <option value="Gym">Gym</option>
+              <option value="Home">Home</option>
+              <option value="Stretch">Stretch</option>
+            </select>
+          </div>
+          <input type="text" id="custTarget" class="form-input" placeholder="Target Muscle (e.g. Upper Chest)">
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px;">
+            <select id="custMode" class="form-select">
+              <option value="weight_reps">Sets + Reps + KG</option>
+              <option value="time_only">Sets + Time (Seconds Only)</option>
+              <option value="time_reps">Time (Sec) + Pull-up Reps</option>
+            </select>
+            <input type="number" id="custRest" class="form-input" placeholder="Rest Sec (e.g. 60)" value="60">
+          </div>
+          <textarea id="custGuide" class="form-textarea" placeholder="Posture, Grip, Bar Type & Muscle Engagement Cues..."></textarea>
+          <button class="action-btn-white" style="width: 100%; padding: 12px;" onclick="window.addCustomExercise()">SAVE EXERCISE TO LIST</button>
+        </div>
+      </div>
+
+      <!-- WORKOUT DATE & FINAL DAY SAVE -->
+      <div class="date-picker-bar">
+        <span style="font-size: 0.78rem; font-weight: 800; color: var(--ash-light);">WORKOUT DATE:</span>
+        <input type="date" id="sessionDate" class="date-input" onchange="window.syncDates(this.value)">
+      </div>
+      <button class="save-session-btn" onclick="window.saveDayAnalysis()">SAVE & ANALYZE DAY</button>
+    </div>
+
+    <!-- HISTORY & BACKUP VIEW -->
+    <div id="historyView" style="display: none;">
+      <!-- BACKUP / DOWNLOAD / RESET CONTROLS -->
+      <div class="history-card">
+        <div class="hist-head">
+          <span>DATA BACKUP & SERVER CONTROL</span>
+          <span>JSON FILE</span>
+        </div>
+        <div style="display: flex; gap: 8px; margin-bottom: 10px;">
+          <button class="action-btn-white" style="flex: 1;" onclick="window.downloadBackupFile()">DOWNLOAD HISTORY</button>
+          <label class="action-btn-white" style="flex: 1; text-align: center; background: #222; color: var(--white); border: 1px solid var(--ash);">
+            IMPORT FILE
+            <input type="file" accept=".json" style="display: none;" onchange="window.importBackupFile(event)">
+          </label>
+        </div>
+        <button class="delete-btn" style="width: 100%; padding: 9px;" onclick="window.openResetConfirmModal()">WIPE & RESET ALL SERVER DATA</button>
+      </div>
+
+      <div id="historyList"></div>
+    </div>
+  </div>
+
+  <!-- FLOATING SMART COUNTDOWN TIMER (REST + NEXT SET WORK PERIOD) -->
+  <div id="restTimerBar">
+    <div class="timer-top">
+      <div>
+        <div class="timer-title" id="timerExTitle">NEXT SET COUNTDOWN</div>
+        <div class="timer-sub" id="timerBreakdown">Rest: 60s + Next Set Work: 35s</div>
+      </div>
+      <div class="timer-digits" id="timerDigits">01:35</div>
+    </div>
+    <div class="timer-progress-bg">
+      <div class="timer-progress-fill" id="timerProgressFill"></div>
+    </div>
+    <div class="timer-btns">
+      <button class="timer-btn" onclick="window.adjustTimer(-15)">-15S</button>
+      <button class="timer-btn" onclick="window.adjustTimer(15)">+15S</button>
+      <button class="timer-btn" style="color: var(--neg); border-color: var(--neg);" onclick="window.stopRestTimer()">SKIP / CLOSE</button>
+    </div>
+  </div>
+
+  <!-- EXERCISE (i) BIOMECHANICAL GUIDE MODAL -->
+  <div id="guideModal" class="modal-overlay" onclick="window.closeGuideModal()">
+    <div class="modal-content" onclick="event.stopPropagation()">
+      <h2 id="guideTitle">Exercise Name</h2>
+      <div class="guide-section">
+        <div class="guide-label">Muscle to Engage & V-Taper Synergy</div>
+        <div class="guide-text" id="guideSynergy"></div>
+      </div>
+      <div class="guide-section">
+        <div class="guide-label">Bar Type & Exact Grip Placement</div>
+        <div class="guide-text" id="guideGrip"></div>
+      </div>
+      <div class="guide-section">
+        <div class="guide-label">Posture & Biomechanical Execution</div>
+        <div class="guide-text" id="guidePosture"></div>
+      </div>
+      <div class="guide-section" style="border-bottom: none;">
+        <div class="guide-label">Tempo, Stretch & Hold Timing</div>
+        <div class="guide-text" id="guideTempo"></div>
+      </div>
+      <button class="close-modal-btn" onclick="window.closeGuideModal()">GOT IT</button>
+    </div>
+  </div>
+
+  <!-- OVERALL DAY PERFORMANCE & COMPARISON MODAL -->
+  <div id="progressModal" class="modal-overlay">
+    <div class="modal-content">
+      <h2 style="text-align: center;">OVERALL DAY PERFORMANCE</h2>
+      <div id="modalDayScore" class="modal-day-score pct-pos">+0.0%</div>
+      <p style="font-size: 0.78rem; color: var(--ash-light); text-align: center; margin-bottom: 14px;">
+        Total day volume compared to your previous matching workout day.
+      </p>
+      <div id="modalExBreakdown" style="max-height: 220px; overflow-y: auto; border-top: 1px solid var(--card-border); padding-top: 10px;"></div>
+      <button class="close-modal-btn" onclick="window.confirmAndSaveSession()">SAVE TO SERVER & LOCAL</button>
+    </div>
+  </div>
+
+  <!-- CUSTOM CONFIRMATION MODAL (NO NATIVE ALERT/CONFIRM) -->
+  <div id="confirmModal" class="modal-overlay">
+    <div class="modal-content" style="text-align: center;">
+      <h2 id="confirmTitle">Confirm Action</h2>
+      <p id="confirmMessage" style="font-size: 0.85rem; color: var(--ash-light); margin-bottom: 18px;"></p>
+      <div style="display: flex; gap: 10px;">
+        <button class="close-modal-btn" style="background: #222; color: var(--white); margin-top: 0;" onclick="window.closeConfirmModal()">CANCEL</button>
+        <button id="confirmActionBtn" class="close-modal-btn" style="background: var(--neg); color: var(--white); margin-top: 0;">CONFIRM</button>
+      </div>
+    </div>
+  </div>
+
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+    import { getFirestore, doc, setDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyB5zoyx9_f41-e3oBWRoFj5Si2eM9v5uwE",
+      authDomain: "gymv-4baac.firebaseapp.com",
+      projectId: "gymv-4baac",
+      storageBucket: "gymv-4baac.firebasestorage.app",
+      messagingSenderId: "21885539570",
+      appId: "1:21885539570:web:6480453fee2c5e5979ac6b",
+      measurementId: "G-8NWPQN2E63"
+    };
+
+    let app, db, isCloudReady = false;
+
+    function updateNetworkStatus() {
+      const dot = document.getElementById('cloudDot');
+      const stat = document.getElementById('cloudStatus');
+      if (navigator.onLine) {
+        dot.className = 'dot live';
+        stat.innerText = 'ONLINE & READY';
+      } else {
+        dot.className = 'dot err';
+        stat.innerText = 'OFFLINE (LOCAL)';
+      }
+    }
+    window.addEventListener('online', updateNetworkStatus);
+    window.addEventListener('offline', updateNetworkStatus);
+
+    try {
+      app = initializeApp(firebaseConfig);
+      db = getFirestore(app);
+      isCloudReady = true;
+      updateNetworkStatus();
+    } catch (e) {
+      document.getElementById('cloudDot').className = 'dot err';
+      document.getElementById('cloudStatus').innerText = 'FIREBASE ERROR';
+    }
+
+    // ============================================================================
+    // DEFAULT EXERCISES + FULL BIOMECHANICAL V-TAPER GUIDES + SMART MODES & TIMERS
+    // ============================================================================
+    const BASE_DAY_A = [
+      {
+        id: "a_neck_curls",
+        name: "Neck Curls",
+        loc: "Home",
+        target: "Front Neck (Sternocleidomastoid)",
+        mode: "weight_reps",
+        sets: 3, reps: 15, kg: 0, restSec: 45, workSec: 30,
+        guide: {
+          synergy: "Builds thick front-neck columns to frame your jawline and upper traps. Pairs with Day B Neck Extensions for balanced 360-degree neck support.",
+          grip: "Bodyweight or light weight plate held gently on forehead with a folded towel.",
+          posture: "Lie face-up on your bed with your head hanging just off the edge. Keep your ribcage pinned down and shoulders relaxed.",
+          tempo: "2 seconds slow lower until your chin tilts back (full stretch), 1 second curl up touching chin to chest, 1 second squeeze."
+        }
+      },
+      {
+        id: "a_pushups",
+        name: "Push-ups",
+        loc: "Home",
+        target: "Mid-Chest & Anterior Delts (No Bicep Tension)",
+        mode: "weight_reps",
+        sets: 3, reps: 15, kg: 0, restSec: 60, workSec: 35,
+        guide: {
+          synergy: "Trains your mid-pectorals and serratus anterior while Decline Bench hits lower/full chest and Pike Push-ups hit upper delts. Push through your palms to isolate chest & triceps—never pull with your biceps.",
+          grip: "Hands slightly wider than shoulder-width on the floor, fingers spread wide gripping the floor.",
+          posture: "Tuck your tailbone (squeeze glutes hard and brace abs) to eliminate Anterior Pelvic Tilt—never let your belly sag. Tuck elbows at a 45° arrow angle (not flared 90°) to protect your left shoulder.",
+          tempo: "2 seconds slow descent until chest is 1 inch from floor (deep pec stretch), 1 second explosive push pressing the floor away."
+        }
+      },
+      {
+        id: "a_pike_pushups",
+        name: "Pike Push-ups",
+        loc: "Home",
+        target: "Upper Chest & Front/Side Shoulders",
+        mode: "weight_reps",
+        sets: 3, reps: 10, kg: 0, restSec: 60, workSec: 35,
+        guide: {
+          synergy: "Replaces heavy overhead barbell pressing to build upper-clavicular chest and shoulder caps safely without spine compression.",
+          grip: "Shoulder-width grip on the floor, forming an inverted 'V' with your hips high.",
+          posture: "Keep legs straight as possible and walk feet slightly forward. Lower the top of your head forward in front of your hands (forming a tripod), keeping your left shoulder blade stable.",
+          tempo: "2 seconds controlled lower, pause 1 second at bottom without bouncing, 1 second press back to inverted V."
+        }
+      },
+      {
+        id: "a_crunches",
+        name: "Crunches",
+        loc: "Home",
+        target: "Upper & Mid Rectus Abdominis",
+        mode: "weight_reps",
+        sets: 3, reps: 20, kg: 0, restSec: 45, workSec: 35,
+        guide: {
+          synergy: "Shortens the distance between your ribcage and pelvis to pull your pelvis upward (directly correcting Anterior Pelvic Tilt) while Vacuums flatten the deep waist.",
+          grip: "Fingertips lightly touching temples—never pull on your neck.",
+          posture: "Press your lower back flat into the floor before starting every rep. Exhale all air as you curl your ribs toward your hips.",
+          tempo: "1 second curl up, 2 seconds hard hold at top blowing all air out, 2 seconds slow lower."
+        }
+      },
+      {
+        id: "a_vacuums",
+        name: "Stomach Vacuums",
+        loc: "Home",
+        target: "Transversus Abdominis (Internal Waist Corset)",
+        mode: "time_only",
+        sets: 3, sec: 30, restSec: 45, workSec: 30,
+        guide: {
+          synergy: "The #1 exercise to eliminate a protruding stomach and shrink your waist circumference for an extreme V-taper illusion.",
+          grip: "Stand upright or hands on knees/hips with spine tall.",
+          posture: "Exhale 100% of the air from your lungs, then suck your belly button as hard as possible toward your spine as if trying to touch your backbone.",
+          tempo: "Continuous 30-second isometric hold. Take tiny sips of air through your nose while keeping the stomach pinned inward."
+        }
+      },
+      {
+        id: "a_dips",
+        name: "Parallel Bar Dips",
+        loc: "Gym",
+        target: "Lower Chest Line & Outer Triceps",
+        mode: "weight_reps",
+        sets: 3, reps: 8, kg: 0, restSec: 90, workSec: 35,
+        guide: {
+          synergy: "Carves the sharp lower-outer border of your chest so your pecs look plated above a tight waist.",
+          grip: "Neutral grip on parallel dip bars; crush the bars tightly to stabilize your wrists and left shoulder.",
+          posture: "Lean your torso forward 30 degrees and tuck knees slightly in front of you. Stop descending once upper arms are parallel to the floor—do not drop too deep if your left shoulder feels unstable.",
+          tempo: "2 seconds controlled descent feeling the chest stretch, 1 second drive up to 95% lockout."
+        }
+      },
+      {
+        id: "a_decline_bench",
+        name: "Decline Bench Press",
+        loc: "Gym",
+        target: "Full Pectoral Mass (Shoulder-Friendly Angle)",
+        mode: "weight_reps",
+        sets: 3, reps: 10, kg: 20, restSec: 90, workSec: 35,
+        guide: {
+          synergy: "The decline angle recruits maximum chest fibers while reducing anterior shoulder strain compared to flat benching.",
+          grip: "Straight Barbell — grip slightly wider than shoulder-width, wrists stacked straight over elbows.",
+          posture: "Pinch your shoulder blades together and down into the pad ('put your shoulders in your back pockets'). Touch the bar to your lower sternum.",
+          tempo: "2 seconds slow lower, 1 second pause on chest (no bouncing), 1 second press squeezing elbows inward."
+        }
+      },
+      {
+        id: "a_front_raises",
+        name: "Front Raises",
+        loc: "Gym",
+        target: "Anterior Deltoid Separation",
+        mode: "weight_reps",
+        sets: 3, reps: 12, kg: 5, restSec: 60, workSec: 35,
+        guide: {
+          synergy: "Builds front shoulder tie-ins where the chest meets the deltoid.",
+          grip: "Dumbbells with a neutral (thumbs up) or pronated grip; thumbs-up is safer on your left shoulder joint.",
+          posture: "Stand tall, squeeze glutes, brace abs so you never swing your torso. Raise weights only to eye level.",
+          tempo: "1 second lift, 1 second hold at eye level, 3 seconds slow controlled descent."
+        }
+      },
+      {
+        id: "a_lateral_raises",
+        name: "Standing Dumbbell Fly",
+        loc: "Gym",
+        target: "Lateral Deltoid ( #1 V-Taper Width Builder)",
+        mode: "weight_reps",
+        sets: 3, reps: 12, kg: 5, restSec: 60, workSec: 35,
+        guide: {
+          synergy: "Directly widens your shoulder-to-waist ratio. While Front Raises hit the front and Back Fly hits the rear, this isolates the side cap.",
+          grip: "Dumbbells held at sides with a slight 15° bend in elbows.",
+          posture: "Lean torso forward 10 degrees. Push the dumbbells OUT toward the side walls (not straight up) so your upper traps don't steal the work. Lead with your elbows.",
+          tempo: "1 second raise to shoulder height, 1 second pause at top, 3 seconds slow lower resisting gravity."
+        }
+      },
+      {
+        id: "a_tricep_overhead",
+        name: "Tricep Overhead Ext",
+        loc: "Gym",
+        target: "Triceps Long Head (Arm Thickness)",
+        mode: "weight_reps",
+        sets: 3, reps: 10, kg: 7.5, restSec: 60, workSec: 35,
+        guide: {
+          synergy: "The long head makes up 60% of your upper arm size and only stretches fully when your arms are overhead.",
+          grip: "Diamond hand grip underneath a single dumbbell plate, or EZ/Curly Bar narrow grip.",
+          posture: "Keep elbows pointed forward and tucked close to your ears. Brace your core hard so your lower back does not arch.",
+          tempo: "3 seconds deep stretch behind your neck, 1 second drive to full lockout."
+        }
+      },
+      {
+        id: "a_one_arm_tricep",
+        name: "One Arm Triceps",
+        loc: "Gym",
+        target: "Unilateral Tricep Symmetry",
+        mode: "weight_reps",
+        sets: 3, reps: 10, kg: 5, restSec: 60, workSec: 35,
+        guide: {
+          synergy: "Fixes left-to-right arm imbalances. Always start with your weaker/left arm and match the exact reps on your right.",
+          grip: "Single Dumbbell held vertically overhead.",
+          posture: "Use your free hand to support your working upper arm near the elbow so the shoulder stays 100% locked in place.",
+          tempo: "2 seconds lower behind head, 1 second pause in deep stretch, 1 second press to lockout."
+        }
+      }
+    ];
+
+    const BASE_DAY_B = [
+      {
+        id: "b_neck_ext",
+        name: "Neck Extensions",
+        loc: "Home",
+        target: "Rear Neck & Upper Traps",
+        mode: "weight_reps",
+        sets: 3, reps: 15, kg: 0, restSec: 45, workSec: 30,
+        guide: {
+          synergy: "Strengthens posterior neck posture to fix forward-head posture and complement Day A Neck Curls.",
+          grip: "Lie face-down on bed with head off edge; hands lightly behind head for gentle resistance if needed.",
+          posture: "Keep chest pinned to the bed. Pull your chin tucked back and lift the back of your skull toward the ceiling.",
+          tempo: "2 seconds lower into stretch, 1 second lift, 1 second peak hold at top."
+        }
+      },
+      {
+        id: "b_free_squats",
+        name: "Free Squats",
+        loc: "Home",
+        target: "Quads, Adductors & Glute Drive",
+        mode: "weight_reps",
+        sets: 3, reps: 30, kg: 0, restSec: 60, workSec: 45,
+        guide: {
+          synergy: "Builds lower-body athletic base and metabolic drive while Glute Bridges isolate pelvic alignment.",
+          grip: "Bodyweight — arms extended forward for counterbalance.",
+          posture: "Feet shoulder-width apart, toes turned out 15°. Keep chest tall and knees tracking over toes. At the top of every rep, squeeze your glutes to lock hips neutral.",
+          tempo: "2 seconds down to parallel or below, 1 second drive up."
+        }
+      },
+      {
+        id: "b_glute_bridges",
+        name: "Glute Bridges",
+        loc: "Home",
+        target: "Gluteus Maximus & Hamstrings (Pelvic Tilt Fix)",
+        mode: "weight_reps",
+        sets: 3, reps: 15, kg: 0, restSec: 45, workSec: 35,
+        guide: {
+          synergy: "Weak glutes cause your pelvis to tip forward and push your belly out. Strengthening glutes pulls the back of your pelvis down to flatten your stomach.",
+          grip: "Lie flat on your back, heels 10 inches from glutes, arms flat on floor.",
+          posture: "Flatten your lower back first, then drive through your heels until knees, hips, and shoulders form a straight line. Do not hyperextend your lower spine.",
+          tempo: "1 second lift, 3 seconds hard glute squeeze at the top, 2 seconds lower."
+        }
+      },
+      {
+        id: "b_superman",
+        name: "Superman Holds",
+        loc: "Home",
+        target: "Spinal Erectors & Upper Back",
+        mode: "time_only",
+        sets: 3, sec: 30, restSec: 45, workSec: 30,
+        guide: {
+          synergy: "Builds endurance in the thoracic spine erectors to keep you standing tall and broad-shouldered all day.",
+          grip: "Lie face-down on floor, arms extended in a 'Y' or 'T' shape.",
+          posture: "Squeeze glutes and lift chest, arms, and thighs slightly off the floor while looking straight down at the mat (keep neck neutral).",
+          tempo: "Continuous 30-second isometric hold—focus on pulling shoulder blades together."
+        }
+      },
+      {
+        id: "b_dead_hangs",
+        name: "Dead Hangs",
+        loc: "Home",
+        target: "Lat Stretch, Grip & Pull-up Progression",
+        mode: "time_reps",
+        sets: 3, sec: 30, reps: 0, restSec: 60, workSec: 30,
+        guide: {
+          synergy: "Decompresses your spine, stretches tight lats, and builds crushing grip strength. Log your hang time in seconds now, and add Pull-up Reps in the right box as you unlock full pull-ups!",
+          grip: "Straight overhead pull-up bar — overhand (pronated) grip slightly wider than shoulder-width. Wrap thumbs fully around the bar.",
+          posture: "Keep an 'Active Hang': pull your shoulders slightly down away from your ears (engage your lower traps) so your left shoulder joint stays securely in its socket.",
+          tempo: "Hold for target seconds; if doing pull-ups, pull chest to bar over 1s and lower slowly over 3s."
+        }
+      },
+      {
+        id: "b_lat_pulldown",
+        name: "Lat Pulldown",
+        loc: "Gym",
+        target: "Latissimus Dorsi (Upper V-Taper Wings)",
+        mode: "weight_reps",
+        sets: 3, reps: 10, kg: 25, restSec: 90, workSec: 35,
+        guide: {
+          synergy: "Your primary upper-back width builder. To hit the lats instead of your biceps, think of your hands only as hooks.",
+          grip: "Wide-Grip Lat Bar — overhand grip about 1.5x shoulder width.",
+          posture: "Sit tall, chest up, lean back only 10-15°. Cue: 'Try to break the bar in half downward and drive your elbows straight down into your back pockets.' Pull the bar to your upper chest/clavicle.",
+          tempo: "1 second pull down, 1 second squeeze at collarbone, 3 seconds slow controlled stretch up until lats fully open."
+        }
+      },
+      {
+        id: "b_back_fly",
+        name: "Back Fly",
+        loc: "Gym",
+        target: "Posterior Deltoids & Rhomboids (Posture Pull)",
+        mode: "weight_reps",
+        sets: 3, reps: 12, kg: 5, restSec: 60, workSec: 35,
+        guide: {
+          synergy: "Pulls rounded shoulders backward to make your collarbone look wider and protect your left shoulder joint.",
+          grip: "Reverse Pec-Deck Machine or Dumbbells bent over at 90° — use a neutral or palms-down grip.",
+          posture: "Keep shoulders depressed down away from ears. Sweep your arms out wide in a huge arc as if pushing the walls apart with the backs of your wrists (don't just pinch shoulder blades early).",
+          tempo: "1 second sweep out, 1 second hold at rear contraction, 2 seconds slow return."
+        }
+      },
+      {
+        id: "b_pullovers",
+        name: "Pullovers",
+        loc: "Gym",
+        target: "Lower Lats & Serratus Anterior",
+        mode: "weight_reps",
+        sets: 3, reps: 10, kg: 10, restSec: 75, workSec: 35,
+        guide: {
+          synergy: "Trains the lats through shoulder extension without any bicep involvement, completing your back development alongside Lat Pulldowns.",
+          grip: "Single Dumbbell held with diamond palms against the inner top plate (or Straight Cable Bar).",
+          posture: "Lie across or along a flat bench, hips slightly dropped, ribs braced. Keep a fixed 15° bend in your elbows—do not bend and straighten like a tricep extension. Pull the weight in an arc using your armpits/lats.",
+          tempo: "3 seconds slow stretch behind head (stop before left shoulder discomfort), 1 second pull over to chest level."
+        }
+      },
+      {
+        id: "b_barbell_curl",
+        name: "Barbell Curl",
+        loc: "Gym",
+        target: "Overall Biceps Mass (Short & Long Head)",
+        mode: "weight_reps",
+        sets: 3, reps: 10, kg: 15, restSec: 60, workSec: 35,
+        guide: {
+          synergy: "Builds overall bicep thickness, while Dumbbell Curls refine peak supination and Reverse Curls build the outer brachialis.",
+          grip: "EZ / Curly Bar (preferred if wrists feel tight) or Straight Bar at shoulder-width underhand grip.",
+          posture: "Pin your elbows tightly against your ribs—do not let elbows swing forward or lean your lower back. Squeeze glutes to stay rock-solid.",
+          tempo: "1 second curl up, 1 second hard bicep squeeze at top, 3 seconds slow eccentric lower to full arm extension."
+        }
+      },
+      {
+        id: "b_db_curl",
+        name: "Dumbbell Curl",
+        loc: "Gym",
+        target: "Biceps Peak & Left/Right Symmetry",
+        mode: "weight_reps",
+        sets: 3, reps: 10, kg: 7.5, restSec: 60, workSec: 35,
+        guide: {
+          synergy: "Allows full wrist supination (twisting pinky upward), which is the #1 function of the biceps brachii for peak height.",
+          grip: "Dumbbells — start neutral at your sides and twist palms up (supinate) as you curl.",
+          posture: "Stand tall with shoulder blades pulled back. Twist your pinky finger outward/upward at the top of the rep to maximize bicep contraction.",
+          tempo: "1 second curl, 1 second supinated squeeze at top, 2 seconds controlled lower."
+        }
+      },
+      {
+        id: "b_reverse_curl",
+        name: "Reverse Curl",
+        loc: "Gym",
+        target: "Brachialis & Upper Forearm (Brachioradialis)",
+        mode: "weight_reps",
+        sets: 3, reps: 12, kg: 10, restSec: 60, workSec: 35,
+        guide: {
+          synergy: "Targets the brachialis muscle underneath your bicep, pushing your bicep outward to make your arms look thicker from the front.",
+          grip: "EZ / Curly Bar or Straight Bar — overhand (pronated / palms-down) shoulder-width grip with thumbs locked.",
+          posture: "Keep wrists completely straight (do not let wrists flop backward) and elbows glued to your sides.",
+          tempo: "1 second lift to chest height, 1 second hold, 3 seconds slow lower."
+        }
+      },
+      {
+        id: "b_forearms",
+        name: "Forearms",
+        loc: "Gym",
+        target: "Forearm Flexors (Lower Arm Thickness)",
+        mode: "weight_reps",
+        sets: 3, reps: 15, kg: 10, restSec: 45, workSec: 35,
+        guide: {
+          synergy: "Completes your arm aesthetic and protects your elbows during heavy pulling.",
+          grip: "Straight Barbell or Dumbbells — palms facing up, forearms resting flat on a bench or your thighs.",
+          posture: "Let the bar roll down slightly into your fingertips at the bottom, then curl your wrists upward as high as possible.",
+          tempo: "1 second curl up, 1 second peak squeeze, 2 seconds slow lower into finger stretch."
+        }
+      }
+    ];
+
+    // ============================================================================
+    // FULL-BODY BOTTOM-TO-TOP STRETCH ROUTINE (UNDER 20 MINUTES, EVERY DAY)
+    // ============================================================================
+    const STRETCH_ROUTINE = [
+      {
+        id: "st_1_calves",
+        name: "1. Calf & Soleus Wall Stretch (Bottom)",
+        loc: "Stretch",
+        target: "Bottom 1/8: Calves & Ankle Mobility",
+        mode: "time_only",
+        sets: 2, sec: 30, restSec: 15, workSec: 30,
+        guide: {
+          synergy: "Starts at the very bottom of your body. Releases tight calves and Achilles tendons to improve squat depth and standing posture.",
+          grip: "Hands pressed against a wall at chest height.",
+          posture: "Step one foot back, keep rear heel glued flat to the floor and knee straight. Drive your hips forward until you feel a deep stretch in the upper calf.",
+          tempo: "Hold 30 seconds per side with slow nasal breathing."
+        }
+      },
+      {
+        id: "st_2_hamstrings",
+        name: "2. Standing Hamstring Hinge Stretch",
+        loc: "Stretch",
+        target: "Bottom 2/8: Hamstrings & Posterior Chain",
+        mode: "time_only",
+        sets: 2, sec: 30, restSec: 15, workSec: 30,
+        guide: {
+          synergy: "Loosens tight hamstrings without rounding your lower spine.",
+          grip: "Hands resting on your hips or upper thigh.",
+          posture: "Place one heel forward on a low step or floor with toes pulled up. Keep your back 100% flat and hinge your hips backward until your hamstring stretches.",
+          tempo: "Hold 30 seconds per leg, exhaling deeper into the hinge."
+        }
+      },
+      {
+        id: "st_3_hip_flexor",
+        name: "3. Kneeling Hip Flexor Stretch (APT Fix)",
+        loc: "Stretch",
+        target: "Bottom 3/8: Psoas & Hip Flexors",
+        mode: "time_only",
+        sets: 2, sec: 45, restSec: 15, workSec: 45,
+        guide: {
+          synergy: "CRITICAL FOR YOUR STOMACH & POSTURE: Tight hip flexors pull your pelvis forward (Anterior Pelvic Tilt), forcing your belly out. Stretching them unlocks a flat waist.",
+          grip: "Half-kneeling lunge on a mat/towel, hands on front knee.",
+          posture: "Before leaning forward, squeeze your rear glute as hard as possible and tuck your tailbone under (flatten lower back). Shift hips slightly forward by 2 inches.",
+          tempo: "Hold 45 seconds per side while keeping rear glute squeezed."
+        }
+      },
+      {
+        id: "st_4_glute_fig4",
+        name: "4. Supine Figure-4 Glute & Piriformis",
+        loc: "Stretch",
+        target: "Mid 4/8: Glutes & External Hip Rotators",
+        mode: "time_only",
+        sets: 2, sec: 30, restSec: 15, workSec: 30,
+        guide: {
+          synergy: "Releases hip capsule tightness after squats and glute bridges.",
+          grip: "Lie on your back, cross right ankle over left knee, and thread hands behind your left thigh.",
+          posture: "Keep your head and shoulders relaxed on the floor and gently pull your thigh toward your chest.",
+          tempo: "Hold 30 seconds per side."
+        }
+      },
+      {
+        id: "st_5_child_lats",
+        name: "5. Child's Pose Thoracic & Lat Opener",
+        loc: "Stretch",
+        target: "Mid 5/8: Lower Back & Latissimus Dorsi",
+        mode: "time_only",
+        sets: 2, sec: 40, restSec: 15, workSec: 40,
+        guide: {
+          synergy: "Lengthens the fascia around your lats and decompresses the lumbar spine for wider V-taper expansion.",
+          grip: "Kneel on floor, sit hips back onto heels, reach arms far forward on the floor with thumbs pointing up.",
+          posture: "Let your chest sink gently toward the floor while walking your fingertips forward.",
+          tempo: "Hold 40 seconds taking deep ribcage breaths."
+        }
+      },
+      {
+        id: "st_6_doorway_chest",
+        name: "6. Doorway Pec & Anterior Delt Stretch",
+        loc: "Stretch",
+        target: "Upper 6/8: Chest & Front Shoulders",
+        mode: "time_only",
+        sets: 2, sec: 30, restSec: 15, workSec: 30,
+        guide: {
+          synergy: "Tight chest muscles pull your shoulders forward and hide your V-taper width. Opening the pecs lets your shoulders sit wide and back.",
+          grip: "Forearm placed vertically against a doorframe with elbow at 90 degrees.",
+          posture: "Step through gently with the same-side foot until you feel a gentle stretch across the front of your chest. Do not force if your left shoulder feels pinched.",
+          tempo: "Hold 30 seconds per side."
+        }
+      },
+      {
+        id: "st_7_overhead_tricep",
+        name: "7. Overhead Tricep & Side-Lat Reach",
+        loc: "Stretch",
+        target: "Upper 7/8: Triceps Long Head & Side Torso",
+        mode: "time_only",
+        sets: 2, sec: 30, restSec: 15, workSec: 30,
+        guide: {
+          synergy: "Stretches the tricep long head and upper intercostals/lats.",
+          grip: "Reach one arm overhead, bend elbow so hand touches upper back, gently hold elbow with opposite hand.",
+          posture: "Stand tall with ribs tucked down and gently lean 10 degrees to the opposite side.",
+          tempo: "Hold 30 seconds per arm."
+        }
+      },
+      {
+        id: "st_8_neck_top",
+        name: "8. Upper Trap & Neck Release (Top)",
+        loc: "Stretch",
+        target: "Top 8/8: Cervical Spine & Levator Scapulae",
+        mode: "time_only",
+        sets: 2, sec: 25, restSec: 15, workSec: 25,
+        guide: {
+          synergy: "Finishes at the very top of the body, releasing tension from neck curls/extensions and shoulder work.",
+          grip: "Sit or stand tall; place one hand behind your lower back and gently tilt head away.",
+          posture: "Keep both shoulders relaxed down. Gently tilt ear toward opposite shoulder—never yank forcefully.",
+          tempo: "Hold 25 seconds per side."
+        }
+      }
+    ];
+
+    // ============================================================================
+    // STATE MANAGEMENT & ONE-TIME SERVER PURGE
+    // ============================================================================
+    let currentDay = 'A';
+    let currentFilter = 'ALL';
+    let appData = {
+      history: [],
+      bodyWeights: [],
+      waterLogs: {},
+      customExercises: { A: [], B: [], BOTH: [] }
+    };
+    let tempDaySession = {};
+    let confirmCallback = null;
+
+    function initDate() {
+      const d = new Date();
+      const localStr = new Date(d.getTime() - (d.getTimezoneOffset() * 60000)).toISOString().split('T')[0];
+      document.getElementById('sessionDate').value = localStr;
+      document.getElementById('bwDate').value = localStr;
+    }
+
+    window.syncDates = function(val) {
+      if (!val) return;
+      document.getElementById('sessionDate').value = val;
+      document.getElementById('bwDate').value = val;
+      window.renderWaterTracker();
+    };
+
+    function ensureDataShape(data) {
+      if (!data || typeof data !== 'object') data = {};
+      if (!Array.isArray(data.history)) data.history = [];
+      if (!Array.isArray(data.bodyWeights)) data.bodyWeights = [];
+      if (!data.waterLogs || typeof data.waterLogs !== 'object') data.waterLogs = {};
+      if (!data.customExercises || typeof data.customExercises !== 'object') {
+        data.customExercises = { A: [], B: [], BOTH: [] };
+      }
+      if (!Array.isArray(data.customExercises.A)) data.customExercises.A = [];
+      if (!Array.isArray(data.customExercises.B)) data.customExercises.B = [];
+      if (!Array.isArray(data.customExercises.BOTH)) data.customExercises.BOTH = [];
+      return data;
+    }
+
+    async function loadData() {
+      // ONE-TIME AUTOMATIC WIPE OF OLD SERVER & LOCAL DATA (AS REQUESTED IN NOTES)
+      const purgeFlag = localStorage.getItem('gymv_v2_purged_2026');
+      if (!purgeFlag) {
+        appData = {
+          history: [],
+          bodyWeights: [],
+          waterLogs: {},
+          customExercises: { A: [], B: [], BOTH: [] }
+        };
+        localStorage.removeItem('gymv_data');
+        localStorage.setItem('gymv_v2_purged_2026', 'true');
+        localStorage.setItem('gymv_data', JSON.stringify(appData));
+        if (isCloudReady && navigator.onLine) {
+          try {
+            await setDoc(doc(db, "userdata", "main_profile"), appData);
+            document.getElementById('cloudStatus').innerText = 'SERVER WIPED CLEAN';
+          } catch (e) {
+            console.error("Initial purge error:", e);
+          }
+        }
+      } else {
+        const local = localStorage.getItem('gymv_data');
+        if (local) {
+          try { appData = ensureDataShape(JSON.parse(local)); } catch (e) {}
+        }
+      }
+
+      if (isCloudReady) {
+        onSnapshot(doc(db, "userdata", "main_profile"), (snapshot) => {
+          if (snapshot.exists()) {
+            const cloudData = ensureDataShape(snapshot.data());
+            appData = cloudData;
+            localStorage.setItem('gymv_data', JSON.stringify(appData));
+            window.updateBwHeader();
+            window.renderWaterTracker();
+            if (document.getElementById('workoutView').style.display !== 'none') {
+              window.renderExercises();
+            } else {
+              window.renderHistory();
+            }
+          }
+        }, (error) => {
+          console.error("Firebase read error:", error);
+        });
+      }
+
+      window.updateBwHeader();
+      window.renderWaterTracker();
+      window.renderExercises();
+    }
+
+    window.saveData = async function() {
+      appData = ensureDataShape(appData);
+      localStorage.setItem('gymv_data', JSON.stringify(appData));
+
+      if (isCloudReady && navigator.onLine) {
+        document.getElementById('cloudStatus').innerText = 'SYNCING...';
+        try {
+          await setDoc(doc(db, "userdata", "main_profile"), appData);
+          document.getElementById('cloudDot').className = 'dot live';
+          document.getElementById('cloudStatus').innerText = 'CLOUD SAVED';
+          setTimeout(updateNetworkStatus, 2000);
+        } catch (error) {
+          console.error("Firebase Save Error:", error);
+          document.getElementById('cloudDot').className = 'dot err';
+          document.getElementById('cloudStatus').innerText = 'SYNC ERROR';
+        }
+      }
+    };
+
+    // ============================================================================
+    // DAILY WATER TRACKER (IN GLASSES)
+    // ============================================================================
+    window.renderWaterTracker = function() {
+      const dateStr = document.getElementById('bwDate').value || 'today';
+      const count = (appData.waterLogs && appData.waterLogs[dateStr]) ? appData.waterLogs[dateStr] : 0;
+      document.getElementById('waterCountDisplay').innerText = `${count} / 10 Glasses (${count * 250} ml)`;
+
+      const container = document.getElementById('waterPillsContainer');
+      container.innerHTML = '';
+      for (let i = 1; i <= 10; i++) {
+        const pill = document.createElement('div');
+        pill.className = `water-pill ${i <= count ? 'filled' : ''}`;
+        pill.onclick = () => window.setWaterDirect(i);
+        container.appendChild(pill);
+      }
+    };
+
+    window.adjustWater = async function(delta) {
+      const dateStr = document.getElementById('bwDate').value || 'today';
+      let current = (appData.waterLogs && appData.waterLogs[dateStr]) ? appData.waterLogs[dateStr] : 0;
+      current += delta;
+      if (current < 0) current = 0;
+      if (current > 20) current = 20;
+      appData.waterLogs[dateStr] = current;
+      window.renderWaterTracker();
+      await window.saveData();
+    };
+
+    window.setWaterDirect = async function(val) {
+      const dateStr = document.getElementById('bwDate').value || 'today';
+      const current = appData.waterLogs[dateStr] || 0;
+      appData.waterLogs[dateStr] = (current === val) ? val - 1 : val;
+      window.renderWaterTracker();
+      await window.saveData();
+    };
+
+    // ============================================================================
+    // SMART COUNTDOWN TIMER (REST + NEXT SET WORK TIME)
+    // ============================================================================
+    let timerInterval = null;
+    let timerRemaining = 0;
+    let timerTotal = 0;
+    let timerRestPortion = 0;
+    let timerWorkPortion = 0;
+
+    function playTimerBeep() {
+      try {
+        const ctx = new (window.AudioContext || window.webkitAudioContext)();
+        const osc = ctx.createOscillator();
+        const gain = ctx.createGain();
+        osc.type = 'sine';
+        osc.frequency.setValueAtTime(880, ctx.currentTime);
+        gain.gain.setValueAtTime(0.15, ctx.currentTime);
+        osc.connect(gain);
+        gain.connect(ctx.destination);
+        osc.start();
+        osc.stop(ctx.currentTime + 0.25);
+      } catch (e) {}
+    }
+
+    window.startSmartSetTimer = function(exName, restSec, workSec, setNum) {
+      if (timerInterval) clearInterval(timerInterval);
+      timerRestPortion = Number(restSec) || 60;
+      timerWorkPortion = Number(workSec) || 35;
+      timerTotal = timerRestPortion + timerWorkPortion;
+      timerRemaining = timerTotal;
+
+      document.getElementById('restTimerBar').style.display = 'block';
+      document.getElementById('timerExTitle').innerText = `${exName} (SET ${setNum} DONE → NEXT SET)`;
+      updateTimerUI();
+
+      timerInterval = setInterval(() => {
+        timerRemaining--;
+        if (timerRemaining === timerWorkPortion) {
+          playTimerBeep(); // Beep when rest ends and next set work window begins
+        }
+        if (timerRemaining <= 0) {
+          playTimerBeep();
+          window.stopRestTimer();
+          return;
+        }
+        updateTimerUI();
+      }, 1000);
+    };
+
+    function updateTimerUI() {
+      const mins = Math.floor(timerRemaining / 60);
+      const secs = timerRemaining % 60;
+      const digitsEl = document.getElementById('timerDigits');
+      digitsEl.innerText = `${String(mins).padStart(2, '0')}:${String(secs).padStart(2, '0')}`;
+
+      const subEl = document.getElementById('timerBreakdown');
+      if (timerRemaining > timerWorkPortion) {
+        const restLeft = timerRemaining - timerWorkPortion;
+        subEl.innerText = `Resting: ${restLeft}s left  |  Next Set Window: ${timerWorkPortion}s`;
+        digitsEl.className = 'timer-digits';
+      } else {
+        subEl.innerText = `REST COMPLETE — PERFORM NEXT SET NOW (${timerRemaining}s window)`;
+        digitsEl.className = 'timer-digits timer-Phase-pos';
+      }
+
+      const pct = Math.max(0, (timerRemaining / timerTotal) * 100);
+      document.getElementById('timerProgressFill').style.width = `${pct}%`;
+    }
+
+    window.adjustTimer = function(delta) {
+      timerRemaining = Math.max(1, timerRemaining + delta);
+      timerTotal = Math.max(timerTotal, timerRemaining);
+      updateTimerUI();
+    };
+
+    window.stopRestTimer = function() {
+      if (timerInterval) clearInterval(timerInterval);
+      timerInterval = null;
+      document.getElementById('restTimerBar').style.display = 'none';
+    };
+
+    window.onSetCheckClick = function(btn, exName, restSec, workSec, setNum) {
+      btn.classList.toggle('done');
+      if (btn.classList.contains('done')) {
+        window.startSmartSetTimer(exName, restSec, workSec, setNum);
+      }
+    };
+
+    // ============================================================================
+    // EXERCISE LIST, CUSTOM EXERCISES & BIOMECHANICAL GUIDE MODAL
+    // ============================================================================
+    function getActiveExerciseList() {
+      const base = currentDay === 'A' ? BASE_DAY_A : BASE_DAY_B;
+      const customDay = (appData.customExercises && appData.customExercises[currentDay]) ? appData.customExercises[currentDay] : [];
+      const customBoth = (appData.customExercises && appData.customExercises.BOTH) ? appData.customExercises.BOTH : [];
+      return [...base, ...customDay, ...STRETCH_ROUTINE, ...customBoth];
+    }
+
+    window.openGuideModal = function(exId) {
+      const all = [...BASE_DAY_A, ...BASE_DAY_B, ...STRETCH_ROUTINE, ...(appData.customExercises.A || []), ...(appData.customExercises.B || []), ...(appData.customExercises.BOTH || [])];
+      const ex = all.find(item => item.id === exId);
+      if (!ex) return;
+
+      document.getElementById('guideTitle').innerText = ex.name;
+      const g = ex.guide || {};
+      document.getElementById('guideSynergy').innerText = g.synergy || `Targets ${ex.target} for balanced V-Taper development.`;
+      document.getElementById('guideGrip').innerText = g.grip || "Standard ergonomic grip; keep wrists neutral and stacked.";
+      document.getElementById('guidePosture').innerText = g.posture || "Brace your core, squeeze glutes to prevent lower-back arch, and keep your left shoulder stable.";
+      document.getElementById('guideTempo').innerText = g.tempo || "2 seconds controlled eccentric stretch, 1 second peak contraction, 1 second lift.";
+      document.getElementById('guideModal').style.display = 'flex';
+    };
+
+    window.closeGuideModal = function() {
+      document.getElementById('guideModal').style.display = 'none';
+    };
+
+    window.toggleCustomForm = function() {
+      const form = document.getElementById('customExForm');
+      const icon = document.getElementById('customToggleIcon');
+      if (form.style.display === 'none') {
+        form.style.display = 'block';
+        icon.innerText = '[-]';
+      } else {
+        form.style.display = 'none';
+        icon.innerText = '[+]';
+      }
+    };
+
+    window.addCustomExercise = async function() {
+      const name = document.getElementById('custName').value.trim();
+      const day = document.getElementById('custDay').value;
+      const loc = document.getElementById('custLoc').value;
+      const target = document.getElementById('custTarget').value.trim() || "Custom Target";
+      const mode = document.getElementById('custMode').value;
+      const restSec = parseInt(document.getElementById('custRest').value) || 60;
+      const guideText = document.getElementById('custGuide').value.trim();
+
+      if (!name) return;
+
+      const newEx = {
+        id: 'cust_' + Date.now(),
+        isCustom: true,
+        name,
+        loc,
+        target,
+        mode,
+        sets: 3,
+        reps: 10,
+        kg: 0,
+        sec: 30,
+        restSec,
+        workSec: 35,
+        guide: {
+          synergy: `Targets ${target} as part of your custom V-Taper program.`,
+          grip: "Use comfortable bar/dumbbell grip with straight wrists.",
+          posture: guideText || "Keep core braced, pelvis neutral, and shoulder blades stable.",
+          tempo: "2s slow lower (stretch), 1s pause/squeeze, 1s concentric."
+        }
+      };
+
+      if (!appData.customExercises[day]) appData.customExercises[day] = [];
+      appData.customExercises[day].push(newEx);
+
+      document.getElementById('custName').value = '';
+      document.getElementById('custTarget').value = '';
+      document.getElementById('custGuide').value = '';
+      window.toggleCustomForm();
+
+      await window.saveData();
+      window.renderExercises();
+    };
+
+    window.deleteCustomExercise = async function(exId) {
+      ['A', 'B', 'BOTH'].forEach(d => {
+        if (appData.customExercises[d]) {
+          appData.customExercises[d] = appData.customExercises[d].filter(item => item.id !== exId);
+        }
+      });
+      delete tempDaySession[exId];
+      await window.saveData();
+      window.renderExercises();
+    };
+
+    // ============================================================================
+    // VOLUME & STREAK CALCULATIONS (SUPPORTS WEIGHT, TIME_ONLY, TIME_REPS)
+    // ============================================================================
+    function calcVol(sets, mode) {
+      if (!Array.isArray(sets)) return 0;
+      let v = 0;
+      sets.forEach(s => {
+        if (mode === 'time_only') {
+          v += (Number(s.sec) || 0);
+        } else if (mode === 'time_reps') {
+          // Combines dead hang seconds + pull-up reps (each pull-up weighted as 15s equivalent volume)
+          v += (Number(s.sec) || 0) + ((Number(s.reps) || 0) * 15);
+        } else {
+          const r = Number(s.reps) || 0;
+          const k = Number(s.kg) || 0;
+          v += r * (k > 0 ? k : 1);
+        }
+      });
+      return v;
+    }
+
+    function getLastSets(exName) {
+      for (let i = appData.history.length - 1; i >= 0; i--) {
+        if (appData.history[i].exercises && appData.history[i].exercises[exName]) {
+          return appData.history[i].exercises[exName];
+        }
+      }
+      return null;
+    }
+
+    function getDurationStatus(ex) {
+      let streak = 0;
+      let lastMetric = null;
+
+      for (let i = appData.history.length - 1; i >= 0; i--) {
+        const entry = appData.history[i];
+        if (entry.exercises && entry.exercises[ex.name]) {
+          const sets = entry.exercises[ex.name];
+          let metric = 0;
+          if (ex.mode === 'time_only' || ex.mode === 'time_reps') {
+            metric = Math.max(...sets.map(s => Number(s.sec) || 0));
+          } else {
+            metric = Math.max(...sets.map(s => Number(s.kg) || 0));
+          }
+          if (lastMetric === null) {
+            lastMetric = metric;
+            streak = 1;
+          } else if (lastMetric === metric) {
+            streak++;
+          } else {
+            break;
+          }
+        }
+      }
+      if (streak === 0) return `Target Rest: ${ex.restSec}s + ${ex.workSec}s set window`;
+      if (ex.mode === 'time_only' || ex.mode === 'time_reps') {
+        return `Holding ${lastMetric}s for last ${streak} workout day${streak > 1 ? 's' : ''}`;
+      }
+      return `Using ${lastMetric} kg for last ${streak} workout day${streak > 1 ? 's' : ''}`;
+    }
+
+    // ============================================================================
+    // RENDER WORKOUT CARDS & SET ROWS
+    // ============================================================================
+    window.adj = function(id, delta) {
+      const el = document.getElementById(id);
+      if (!el) return;
+      let val = parseFloat(el.value) || 0;
+      val = Number((val + delta).toFixed(1));
+      if (val < 0) val = 0;
+      el.value = val;
+    };
+
+    function buildSetRowHtml(ex, exIdx, s, defObj) {
+      const mode = ex.mode || 'weight_reps';
+      const safeName = ex.name.replace(/'/g, "\\'");
+
+      if (mode === 'time_only') {
+        // SUPERMAN HOLDS, STOMACH VACUUMS, STRETCHES: ONLY SETS + TIME (SEC)
+        const secVal = defObj.sec !== undefined ? defObj.sec : (ex.sec || 30);
+        return `
+          <div class="set-row single-col" id="row-${exIdx}-${s}">
+            <div class="set-label">S${s}</div>
+            <div class="input-box">
+              <span>HOLD TIME (SECONDS)</span>
+              <div class="num-ctrl">
+                <div class="btn" onclick="window.adj('sec-${exIdx}-${s}', -5)">-</div>
+                <input type="number" id="sec-${exIdx}-${s}" value="${secVal}">
+                <div class="btn" onclick="window.adj('sec-${exIdx}-${s}', 5)">+</div>
+              </div>
+            </div>
+            <button type="button" class="check-btn" onclick="window.onSetCheckClick(this, '${safeName}', ${ex.restSec || 45}, ${ex.workSec || 30}, ${s})">✓</button>
+          </div>`;
+      }
+
+      if (mode === 'time_reps') {
+        // DEAD HANGS: TIME (SEC) + FUTURE PULL-UP REPS (NO KG)
+        const secVal = defObj.sec !== undefined ? defObj.sec : (ex.sec || 30);
+        const repVal = defObj.reps !== undefined ? defObj.reps : (ex.reps || 0);
+        return `
+          <div class="set-row" id="row-${exIdx}-${s}">
+            <div class="set-label">S${s}</div>
+            <div class="input-box">
+              <span>HANG (SEC)</span>
+              <div class="num-ctrl">
+                <div class="btn" onclick="window.adj('sec-${exIdx}-${s}', -5)">-</div>
+                <input type="number" id="sec-${exIdx}-${s}" value="${secVal}">
+                <div class="btn" onclick="window.adj('sec-${exIdx}-${s}', 5)">+</div>
+              </div>
+            </div>
+            <div class="input-box">
+              <span>PULL-UP REPS</span>
+              <div class="num-ctrl">
+                <div class="btn" onclick="window.adj('reps-${exIdx}-${s}', -1)">-</div>
+                <input type="number" id="reps-${exIdx}-${s}" value="${repVal}">
+                <div class="btn" onclick="window.adj('reps-${exIdx}-${s}', 1)">+</div>
+              </div>
+            </div>
+            <button type="button" class="check-btn" onclick="window.onSetCheckClick(this, '${safeName}', ${ex.restSec || 60}, ${ex.workSec || 30}, ${s})">✓</button>
+          </div>`;
+      }
+
+      // STANDARD WEIGHT + REPS
+      const repVal = defObj.reps !== undefined ? defObj.reps : (ex.reps || 10);
+      const kgVal = defObj.kg !== undefined ? defObj.kg : (ex.kg || 0);
+      return `
+        <div class="set-row" id="row-${exIdx}-${s}">
+          <div class="set-label">S${s}</div>
+          <div class="input-box">
+            <span>REPS</span>
+            <div class="num-ctrl">
+              <div class="btn" onclick="window.adj('reps-${exIdx}-${s}', -1)">-</div>
+              <input type="number" id="reps-${exIdx}-${s}" value="${repVal}">
+              <div class="btn" onclick="window.adj('reps-${exIdx}-${s}', 1)">+</div>
+            </div>
+          </div>
+          <div class="input-box">
+            <span>KG</span>
+            <div class="num-ctrl">
+              <div class="btn" onclick="window.adj('kg-${exIdx}-${s}', -2.5)">-</div>
+              <input type="number" step="0.5" id="kg-${exIdx}-${s}" value="${kgVal}">
+              <div class="btn" onclick="window.adj('kg-${exIdx}-${s}', 2.5)">+</div>
+            </div>
+          </div>
+          <button type="button" class="check-btn" onclick="window.onSetCheckClick(this, '${safeName}', ${ex.restSec || 60}, ${ex.workSec || 35}, ${s})">✓</button>
+        </div>`;
+    }
+
+    window.renderExercises = function() {
+      const list = getActiveExerciseList();
+      const container = document.getElementById('exercisesContainer');
+      container.innerHTML = '';
+
+      list.forEach((ex, exIdx) => {
+        if (currentFilter === 'ALL' && ex.loc === 'Stretch') return; // Keep Stretch tab clean unless Stretch selected, or show if Stretch filter active
+        if (currentFilter !== 'ALL' && ex.loc !== currentFilter) return;
+
+        const savedEntry = tempDaySession[ex.name];
+        const lastSets = savedEntry ? savedEntry.sets : getLastSets(ex.name);
+        const setCount = lastSets ? lastSets.length : ex.sets;
+
+        const card = document.createElement('div');
+        card.className = `exercise-card ${savedEntry ? 'saved' : ''}`;
+        card.id = `card-${exIdx}`;
+
+        let setsHtml = '';
+        for (let s = 1; s <= setCount; s++) {
+          const defObj = (lastSets && lastSets[s - 1]) ? lastSets[s - 1] : {};
+          setsHtml += buildSetRowHtml(ex, exIdx, s, defObj);
+        }
+
+        const safeName = ex.name.replace(/'/g, "\\'");
+        const badgeHtml = savedEntry ? savedEntry.badgeHtml : '';
+
+        // LOG BUTTON + RED UNLOG/DELETE BUTTON WHEN LOGGED
+        const actionBtnsHtml = savedEntry
+          ? `<div class="log-btn-group">
+               <button class="save-ex-btn saved" onclick="window.saveSingleExercise('${safeName}', ${exIdx}, '${ex.mode || 'weight_reps'}')">✓ SAVED (TAP TO UPDATE)</button>
+               <button class="unlog-ex-btn" onclick="window.unlogSingleExercise('${safeName}')">UNLOG / X</button>
+             </div>`
+          : `<div class="log-btn-group">
+               <button class="save-ex-btn" onclick="window.saveSingleExercise('${safeName}', ${exIdx}, '${ex.mode || 'weight_reps'}')">LOG EXERCISE</button>
+             </div>`;
+
+        const customDeleteBtn = ex.isCustom
+          ? `<button class="delete-btn" style="margin-left:6px;" onclick="window.deleteCustomExercise('${ex.id}')">DEL</button>`
+          : '';
+
+        card.innerHTML = `
+          <div class="ex-header">
+            <div class="ex-title-wrap">
+              <span class="ex-name">${ex.name}</span>
+              <button type="button" class="info-btn" title="How to perform & muscle guide" onclick="window.openGuideModal('${ex.id}')">i</button>
+              <span id="badge-${exIdx}">${badgeHtml}</span>
+            </div>
+            <div style="display:flex; align-items:center;">
+              <div class="loc-badge">${ex.loc}</div>
+              ${customDeleteBtn}
+            </div>
+          </div>
+          <div class="ex-meta-row">
+            <span>${ex.target}</span>
+            <span class="rest-tag">${getDurationStatus(ex)}</span>
+          </div>
+          <div id="sets-wrapper-${exIdx}">${setsHtml}</div>
+          <div class="set-actions-bar">
+            <button class="add-rem-btn" onclick="window.addSet(${exIdx}, '${ex.id}')">+ SET</button>
+            <button class="add-rem-btn" onclick="window.removeSet(${exIdx})">- SET</button>
+          </div>
+          ${actionBtnsHtml}
+        `;
+        container.appendChild(card);
+      });
+    };
+
+    window.addSet = function(exIdx, exId) {
+      const list = getActiveExerciseList();
+      const ex = list[exIdx];
+      if (!ex) return;
+
+      const wrapper = document.getElementById(`sets-wrapper-${exIdx}`);
+      const s = wrapper.children.length + 1;
+      const defObj = {};
+
+      if (s > 1) {
+        const prevSec = document.getElementById(`sec-${exIdx}-${s - 1}`);
+        const prevReps = document.getElementById(`reps-${exIdx}-${s - 1}`);
+        const prevKg = document.getElementById(`kg-${exIdx}-${s - 1}`);
+        if (prevSec) defObj.sec = prevSec.value;
+        if (prevReps) defObj.reps = prevReps.value;
+        if (prevKg) defObj.kg = prevKg.value;
+      }
+
+      wrapper.insertAdjacentHTML('beforeend', buildSetRowHtml(ex, exIdx, s, defObj));
+    };
+
+    window.removeSet = function(exIdx) {
+      const wrapper = document.getElementById(`sets-wrapper-${exIdx}`);
+      if (wrapper && wrapper.children.length > 1) {
+        wrapper.removeChild(wrapper.lastElementChild);
+      }
+    };
+
+    // ============================================================================
+    // LOG / UNLOG SINGLE EXERCISE
+    // ============================================================================
+    window.saveSingleExercise = function(exName, exIdx, mode) {
+      const wrapper = document.getElementById(`sets-wrapper-${exIdx}`);
+      const rows = wrapper.children.length;
+      const loggedSets = [];
+
+      for (let s = 1; s <= rows; s++) {
+        if (mode === 'time_only') {
+          const secEl = document.getElementById(`sec-${exIdx}-${s}`);
+          const secVal = secEl ? Number(secEl.value) : 0;
+          if (secVal > 0) loggedSets.push({ set: s, sec: secVal, mode: 'time_only' });
+        } else if (mode === 'time_reps') {
+          const secEl = document.getElementById(`sec-${exIdx}-${s}`);
+          const repEl = document.getElementById(`reps-${exIdx}-${s}`);
+          const secVal = secEl ? Number(secEl.value) : 0;
+          const repVal = repEl ? Number(repEl.value) : 0;
+          if (secVal > 0 || repVal > 0) loggedSets.push({ set: s, sec: secVal, reps: repVal, mode: 'time_reps' });
+        } else {
+          const r = document.getElementById(`reps-${exIdx}-${s}`);
+          const k = document.getElementById(`kg-${exIdx}-${s}`);
+          if (r && Number(r.value) > 0) {
+            loggedSets.push({ set: s, reps: Number(r.value), kg: Number(k ? k.value : 0) || 0, mode: 'weight_reps' });
+          }
+        }
+      }
+
+      if (loggedSets.length === 0) return;
+
+      const curVol = calcVol(loggedSets, mode);
+      const pastSets = getLastSets(exName);
+      const pastVol = pastSets ? calcVol(pastSets, mode) : 0;
+
+      let badgeHtml = '';
+      let pctStr = 'NEW';
+      let pctCls = 'pct-neu';
+
+      if (pastVol > 0) {
+        const diff = ((curVol - pastVol) / pastVol) * 100;
+        pctCls = diff >= 0 ? 'pct-pos' : 'pct-neg';
+        const sign = diff >= 0 ? '+' : '';
+        pctStr = `${sign}${diff.toFixed(1)}%`;
+        badgeHtml = `<span class="pct-badge ${pctCls}">${pctStr}</span>`;
+      } else {
+        badgeHtml = `<span class="pct-badge pct-neu">NEW</span>`;
+      }
+
+      tempDaySession[exName] = {
+        mode,
+        sets: loggedSets,
+        badgeHtml,
+        pctStr,
+        pctCls
+      };
+
+      window.renderExercises();
+    };
+
+    // UNLOG / DELETE LOGGED EXERCISE IMMEDIATELY
+    window.unlogSingleExercise = function(exName) {
+      delete tempDaySession[exName];
+      window.renderExercises();
+    };
+
+    // ============================================================================
+    // SAVE & ANALYZE FULL DAY (UPLOADS TO SERVER + SAVES LOCAL + COMPARES)
+    // ============================================================================
+    window.saveDayAnalysis = function() {
+      const keys = Object.keys(tempDaySession);
+      if (keys.length === 0) return;
+
+      let todayVol = 0;
+      let breakdownHtml = '';
+
+      keys.forEach(exName => {
+        const item = tempDaySession[exName];
+        todayVol += calcVol(item.sets, item.mode);
+        breakdownHtml += `
+          <div class="row-between" style="padding: 6px 0; border-bottom: 1px solid #1c1c1c; font-size: 0.8rem;">
+            <span style="color: var(--white); font-weight: 700;">${exName}</span>
+            <span class="pct-badge ${item.pctCls}">${item.pctStr}</span>
+          </div>`;
+      });
+
+      let lastDayVol = 0;
+      for (let i = appData.history.length - 1; i >= 0; i--) {
+        if (appData.history[i].type === `Day ${currentDay}`) {
+          for (let k in appData.history[i].exercises) {
+            const sArr = appData.history[i].exercises[k];
+            const m = (sArr[0] && sArr[0].mode) ? sArr[0].mode : 'weight_reps';
+            lastDayVol += calcVol(sArr, m);
+          }
+          break;
+        }
+      }
+
+      let dayPctStr = "BASE SESSION";
+      let dayCls = "pct-pos";
+      if (lastDayVol > 0) {
+        const diff = ((todayVol - lastDayVol) / lastDayVol) * 100;
+        dayCls = diff >= 0 ? "pct-pos" : "pct-neg";
+        dayPctStr = diff >= 0 ? `+${diff.toFixed(1)}%` : `${diff.toFixed(1)}%`;
+      }
+
+      document.getElementById('modalDayScore').className = `modal-day-score ${dayCls}`;
+      document.getElementById('modalDayScore').innerText = dayPctStr;
+      document.getElementById('modalExBreakdown').innerHTML = breakdownHtml;
+      document.getElementById('progressModal').style.display = 'flex';
+    };
+
+    window.confirmAndSaveSession = async function() {
+      const rawDate = document.getElementById('sessionDate').value;
+      let displayDate = "Unknown Date";
+      if (rawDate) {
+        const [y, m, d] = rawDate.split('-');
+        displayDate = new Date(y, m - 1, d).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+      }
+
+      const exercisesMap = {};
+      const progressMap = {};
+      for (let exName in tempDaySession) {
+        exercisesMap[exName] = tempDaySession[exName].sets;
+        progressMap[exName] = {
+          str: tempDaySession[exName].pctStr,
+          cls: tempDaySession[exName].pctCls
+        };
+      }
+
+      const workoutPayload = {
+        date: displayDate,
+        rawDate: rawDate || '',
+        timestamp: Date.now(),
+        type: `Day ${currentDay}`,
+        dayScore: document.getElementById('modalDayScore').innerText,
+        dayCls: document.getElementById('modalDayScore').className.includes('pct-neg') ? 'pct-neg' : 'pct-pos',
+        waterGlasses: (appData.waterLogs && appData.waterLogs[rawDate]) ? appData.waterLogs[rawDate] : 0,
+        exercises: exercisesMap,
+        progress: progressMap
+      };
+
+      appData.history.push(workoutPayload);
+      await window.saveData();
+      tempDaySession = {};
+      document.getElementById('progressModal').style.display = 'none';
+      window.switchTab('history');
+    };
+
+    // ============================================================================
+    // BODY WEIGHT, HISTORY, DOWNLOAD JSON BACKUP & FACTORY RESET
+    // ============================================================================
+    window.logBodyWeight = async function() {
+      const val = parseFloat(document.getElementById('bwInput').value);
+      const rawDate = document.getElementById('bwDate').value;
+      if (!val || isNaN(val) || !rawDate) return;
+
+      const [y, m, d] = rawDate.split('-');
+      const displayDate = new Date(y, m - 1, d).toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+
+      appData.bodyWeights.push({ date: displayDate, weight: val, timestamp: Date.now() });
+      document.getElementById('bwInput').value = '';
+      await window.saveData();
+      window.updateBwHeader();
+    };
+
+    window.updateBwHeader = function() {
+      const d = document.getElementById('lastBwDisplay');
+      if (appData.bodyWeights && appData.bodyWeights.length > 0) {
+        const last = appData.bodyWeights[appData.bodyWeights.length - 1];
+        let pctHtml = '';
+        if (appData.bodyWeights.length > 1) {
+          const prev = appData.bodyWeights[appData.bodyWeights.length - 2];
+          const diff = ((last.weight - prev.weight) / prev.weight) * 100;
+          const cls = diff > 0 ? 'pct-neg' : (diff < 0 ? 'pct-pos' : 'pct-neu');
+          const sign = diff > 0 ? '+' : '';
+          pctHtml = `<span class="pct-badge ${cls}">${sign}${diff.toFixed(1)}%</span>`;
+        }
+        d.innerHTML = `Last: ${last.weight} kg (${last.date}) ${pctHtml}`;
+      } else {
+        d.innerText = "Last: Not logged";
+      }
+    };
+
+    // CUSTOM CONFIRM MODAL HELPERS
+    function askConfirmation(title, message, onConfirm) {
+      document.getElementById('confirmTitle').innerText = title;
+      document.getElementById('confirmMessage').innerText = message;
+      confirmCallback = onConfirm;
+      document.getElementById('confirmModal').style.display = 'flex';
+    }
+
+    window.closeConfirmModal = function() {
+      document.getElementById('confirmModal').style.display = 'none';
+      confirmCallback = null;
+    };
+
+    document.getElementById('confirmActionBtn').onclick = async function() {
+      if (confirmCallback) await confirmCallback();
+      window.closeConfirmModal();
+    };
+
+    window.deleteWorkout = function(ts) {
+      askConfirmation("Delete Workout?", "Permanently remove this workout session from phone and server?", async () => {
+        appData.history = appData.history.filter(h => h.timestamp !== ts);
+        await window.saveData();
+        window.renderHistory();
+      });
+    };
+
+    window.deleteWeight = function(ts) {
+      askConfirmation("Delete Body Weight?", "Permanently remove this body weight entry?", async () => {
+        appData.bodyWeights = appData.bodyWeights.filter(b => b.timestamp !== ts);
+        await window.saveData();
+        window.renderHistory();
+        window.updateBwHeader();
+      });
+    };
+
+    window.openResetConfirmModal = function() {
+      askConfirmation("Wipe Server & Local?", "This will permanently delete all workouts, body weights, and custom exercises from Firebase and this phone.", async () => {
+        appData = {
+          history: [],
+          bodyWeights: [],
+          waterLogs: {},
+          customExercises: { A: [], B: [], BOTH: [] }
+        };
+        tempDaySession = {};
+        await window.saveData();
+        window.updateBwHeader();
+        window.renderWaterTracker();
+        window.renderHistory();
+      });
+    };
+
+    window.downloadBackupFile = function() {
+      const dateStr = new Date().toISOString().split('T')[0];
+      const blob = new Blob([JSON.stringify(appData, null, 2)], { type: 'application/json' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `gymv-backup-${dateStr}.json`;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+    };
+
+    window.importBackupFile = function(event) {
+      const file = event.target.files[0];
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = async (e) => {
+        try {
+          const parsed = ensureDataShape(JSON.parse(e.target.result));
+          appData = parsed;
+          await window.saveData();
+          window.updateBwHeader();
+          window.renderWaterTracker();
+          window.renderHistory();
+        } catch (err) {
+          console.error("Invalid backup JSON:", err);
+        }
+      };
+      reader.readAsText(file);
+    };
+
+    function formatSetSummary(s) {
+      if (s.mode === 'time_only') return `${s.sec}s`;
+      if (s.mode === 'time_reps') {
+        return s.reps > 0 ? `${s.sec}s + ${s.reps} reps` : `${s.sec}s hang`;
+      }
+      return `${s.kg}kg×${s.reps}`;
+    }
+
+    window.renderHistory = function() {
+      const container = document.getElementById('historyList');
+      container.innerHTML = '';
+
+      // 30-DAY MONTHLY PERFORMANCE
+      if (appData.history.length >= 30) {
+        const latest30 = appData.history.slice(-30);
+        const prev30 = appData.history.slice(-60, -30);
+        let lVol = 0, pVol = 0;
+
+        latest30.forEach(w => {
+          for (let ex in w.exercises) {
+            const arr = w.exercises[ex];
+            lVol += calcVol(arr, arr[0]?.mode || 'weight_reps');
+          }
+        });
+        prev30.forEach(w => {
+          for (let ex in w.exercises) {
+            const arr = w.exercises[ex];
+            pVol += calcVol(arr, arr[0]?.mode || 'weight_reps');
+          }
+        });
+
+        if (pVol > 0) {
+          const diff = ((lVol - pVol) / pVol) * 100;
+          const mCls = diff >= 0 ? "pct-pos" : "pct-neg";
+          const mStr = diff >= 0 ? `+${diff.toFixed(1)}%` : `${diff.toFixed(1)}%`;
+          container.innerHTML += `
+            <div class="history-card" style="border-color:var(--ash); background:#151515;">
+              <div class="hist-head" style="color:var(--white);"><span>30-DAY MONTHLY PERFORMANCE</span></div>
+              <div style="display:flex; align-items:center; gap:16px;">
+                <div style="font-size:2rem; font-weight:800;" class="${mCls}">${mStr}</div>
+                <div style="font-size:0.75rem; color:var(--ash-light);">Total volume compared against your previous 30 workout days.</div>
+              </div>
+            </div>`;
+        }
+      } else {
+        const rem = 30 - appData.history.length;
+        container.innerHTML += `
+          <div class="history-card">
+            <div class="hist-head"><span>30-DAY MONTHLY PROGRESS</span><span>${appData.history.length} / 30 DAYS</span></div>
+            <div style="font-size:0.76rem; color:var(--ash-light);">${rem} more workout sessions until full 30-day monthly comparison unlocks.</div>
+          </div>`;
+      }
+
+      if (appData.bodyWeights && appData.bodyWeights.length > 0) {
+        let bwHtml = `<div class="history-card"><div class="hist-head"><span>BODY WEIGHT LOG</span><span>${appData.bodyWeights.length} ENTRIES</span></div>`;
+        appData.bodyWeights.slice().reverse().forEach(b => {
+          bwHtml += `<div class="hist-entry"><span>${b.date} &nbsp; <strong>${b.weight} kg</strong></span><button class="delete-btn" onclick="window.deleteWeight(${b.timestamp})">X</button></div>`;
+        });
+        container.innerHTML += bwHtml + `</div>`;
+      }
+
+      appData.history.slice().reverse().forEach(h => {
+        const card = document.createElement('div');
+        card.className = 'history-card';
+        let exHtml = '';
+        for (let name in h.exercises) {
+          const summary = h.exercises[name].map(formatSetSummary).join(' | ');
+          const prog = (h.progress && h.progress[name]) ? `<span class="pct-badge ${h.progress[name].cls}">${h.progress[name].str}</span>` : '';
+          exHtml += `
+            <div class="hist-entry" style="display:block; margin-bottom: 8px;">
+              <div class="row-between">
+                <span style="color:var(--white); font-weight:700;">${name}</span>
+                ${prog}
+              </div>
+              <div style="font-size:0.74rem; color:var(--ash-light); margin-top:2px;">${summary}</div>
+            </div>`;
+        }
+        const dayBadge = h.dayScore ? `<span class="pct-badge ${h.dayCls || 'pct-pos'}">${h.dayScore}</span>` : '';
+        const waterTag = h.waterGlasses ? ` • 💧 ${h.waterGlasses}G` : '';
+        card.innerHTML = `
+          <div class="hist-head">
+            <span>${h.type} (${h.date})${waterTag} ${dayBadge}</span>
+            <button class="delete-btn" onclick="window.deleteWorkout(${h.timestamp})">X</button>
+          </div>${exHtml}`;
+        container.appendChild(card);
+      });
+    };
+
+    window.switchTab = function(tab) {
+      document.querySelectorAll('.tabs .tab-btn').forEach(b => b.classList.remove('active'));
+      if (tab === 'workout') {
+        document.querySelector('.tabs .tab-btn:nth-child(1)').classList.add('active');
+        document.getElementById('workoutView').style.display = 'block';
+        document.getElementById('historyView').style.display = 'none';
+        window.renderExercises();
+      } else {
+        document.querySelector('.tabs .tab-btn:nth-child(2)').classList.add('active');
+        document.getElementById('workoutView').style.display = 'none';
+        document.getElementById('historyView').style.display = 'block';
+        window.renderHistory();
+      }
+    };
+
+    window.setDay = function(day) {
+      currentDay = day;
+      tempDaySession = {};
+      document.getElementById('dayABtn').className = day === 'A' ? 'tab-btn active' : 'tab-btn';
+      document.getElementById('dayBBtn').className = day === 'B' ? 'tab-btn active' : 'tab-btn';
+      window.renderExercises();
+    };
+
+    window.setFilter = function(filter) {
+      currentFilter = filter;
+      document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+      const map = { ALL: 'flt-all', Home: 'flt-home', Gym: 'flt-gym', Stretch: 'flt-stretch' };
+      if (map[filter]) document.getElementById(map[filter]).classList.add('active');
+      window.renderExercises();
+    };
+
+    // START IMMEDIATELY ON LOAD (NO PIN)
+    initDate();
+    loadData();
+  </script>
+</body>
+</html>
