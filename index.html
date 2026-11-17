@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-  <title>GYM.V</title>
+  <title>GYM V2</title>
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <style>
@@ -62,7 +62,6 @@
     .loc-badge { font-size: 0.62rem; background: #1d1d1d; border: 1px solid var(--card-border); padding: 2px 6px; border-radius: 4px; color: var(--ash-light); text-transform: uppercase; font-weight: 700; white-space: nowrap; }
 
     .ex-meta-row { display: flex; justify-content: space-between; align-items: center; font-size: 0.72rem; color: var(--ash-light); margin-bottom: 12px; border-bottom: 1px solid var(--card-border); padding-bottom: 8px; }
-    .rest-tag { font-size: 0.65rem; color: var(--ash); font-family: monospace; }
 
     .set-row { display: grid; grid-template-columns: 28px 1fr 1fr 38px; gap: 8px; align-items: center; margin-bottom: 10px; }
     .set-row.single-col { grid-template-columns: 28px 1fr 38px; }
@@ -106,24 +105,13 @@
     .modal-content h2 { font-size: 1.05rem; margin-bottom: 12px; color: var(--white); text-transform: uppercase; letter-spacing: 0.5px; }
     .modal-day-score { font-size: 2.4rem; font-weight: 900; margin: 10px 0; text-align: center; }
     .close-modal-btn { width: 100%; padding: 13px; background: var(--white); color: #000; font-weight: 900; border: none; border-radius: 6px; cursor: pointer; margin-top: 10px; text-transform: uppercase; }
-
-    #restTimerBar { position: fixed; bottom: 14px; left: 50%; transform: translateX(-50%); width: calc(100% - 28px); max-width: 572px; background: #0d0d0d; border: 1px solid var(--ash-light); border-radius: 10px; padding: 12px 14px; z-index: 900; display: none; box-shadow: 0 10px 30px rgba(0,0,0,0.85); }
-    .timer-top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px; }
-    .timer-title { font-size: 0.72rem; font-weight: 800; color: var(--ash-light); text-transform: uppercase; }
-    .timer-digits { font-size: 1.35rem; font-weight: 900; font-family: monospace; color: var(--white); }
-    .timer-Phase-pos { color: var(--pos); }
-    .timer-sub { font-size: 0.68rem; color: var(--ash); display: flex; justify-content: space-between; margin-bottom: 8px; }
-    .timer-progress-bg { width: 100%; height: 5px; background: #222; border-radius: 3px; overflow: hidden; margin-bottom: 8px; }
-    .timer-progress-fill { height: 100%; background: var(--white); width: 100%; transition: width 0.3s linear; }
-    .timer-btns { display: flex; gap: 6px; }
-    .timer-btn { flex: 1; padding: 6px; background: #1a1a1a; border: 1px solid var(--card-border); color: var(--ash-light); font-size: 0.68rem; font-weight: 800; border-radius: 4px; cursor: pointer; text-transform: uppercase; }
   </style>
 </head>
 <body>
   <div id="appContent">
     <header>
       <div>
-        <h1>GYM.V</h1>
+        <h1>GYM V2</h1>
         <div style="font-size: 0.65rem; color: var(--ash); font-weight: 700;">V-TAPER & POSTURE SYSTEM</div>
       </div>
       <div class="status-badge"><span class="dot" id="cloudDot"></span><span id="cloudStatus">CHECKING NET...</span></div>
@@ -212,12 +200,6 @@
       </div>
       <div id="historyList"></div>
     </div>
-  </div>
-
-  <div id="restTimerBar">
-    <div class="timer-top"><div><div class="timer-title" id="timerExTitle">NEXT SET COUNTDOWN</div><div class="timer-sub" id="timerBreakdown">Resting...</div></div><div class="timer-digits" id="timerDigits">01:35</div></div>
-    <div class="timer-progress-bg"><div class="timer-progress-fill" id="timerProgressFill"></div></div>
-    <div class="timer-btns"><button class="timer-btn" onclick="window.adjustTimer(-15)">-15S</button><button class="timer-btn" onclick="window.adjustTimer(15)">+15S</button><button class="timer-btn" style="color: var(--neg); border-color: var(--neg);" onclick="window.stopRestTimer()">SKIP</button></div>
   </div>
 
   <div id="guideModal" class="modal-overlay" onclick="window.closeGuideModal()"><div class="modal-content" onclick="event.stopPropagation()"><h2 id="guideTitle">Info</h2><p id="guideSynergy" style="font-size:0.85rem; color:var(--white); line-height:1.4;"></p><button class="close-modal-btn" onclick="window.closeGuideModal()">GOT IT</button></div></div>
@@ -367,28 +349,6 @@
     window.adjustWater = async function(delta) { const dateStr = document.getElementById('bwDate').value || 'today'; let current = appData.waterLogs[dateStr] || 0; current = Math.max(0, Math.min(20, current + delta)); appData.waterLogs[dateStr] = current; window.renderWaterTracker(); await window.saveData(); };
     window.setWaterDirect = async function(val) { const dateStr = document.getElementById('bwDate').value || 'today'; const current = appData.waterLogs[dateStr] || 0; appData.waterLogs[dateStr] = (current === val) ? val - 1 : val; window.renderWaterTracker(); await window.saveData(); };
 
-    let timerInterval = null; let timerRemaining = 0; let timerTotal = 0; let timerWorkPortion = 0;
-    window.startSmartSetTimer = function(exName, restSec, workSec, setNum) {
-      if (timerInterval) clearInterval(timerInterval);
-      timerWorkPortion = Number(workSec) || 35; timerTotal = (Number(restSec) || 60) + timerWorkPortion; timerRemaining = timerTotal;
-      document.getElementById('restTimerBar').style.display = 'block'; document.getElementById('timerExTitle').innerText = `${exName} (SET ${setNum})`;
-      updateTimerUI();
-      timerInterval = setInterval(() => {
-        timerRemaining--; if (timerRemaining <= 0) { window.stopRestTimer(); return; } updateTimerUI();
-      }, 1000);
-    };
-    function updateTimerUI() {
-      const mins = Math.floor(timerRemaining / 60), secs = timerRemaining % 60;
-      const digitsEl = document.getElementById('timerDigits'), subEl = document.getElementById('timerBreakdown');
-      digitsEl.innerText = `${String(mins).padStart(2, '0')}:${String(secs).padStart(2, '0')}`;
-      if (timerRemaining > timerWorkPortion) { subEl.innerText = `Resting: ${timerRemaining - timerWorkPortion}s left | Next Set: ${timerWorkPortion}s window`; digitsEl.className = 'timer-digits'; } 
-      else { subEl.innerText = `REST COMPLETE — PERFORM SET NOW`; digitsEl.className = 'timer-digits timer-Phase-pos'; }
-      document.getElementById('timerProgressFill').style.width = `${Math.max(0, (timerRemaining / timerTotal) * 100)}%`;
-    }
-    window.adjustTimer = function(delta) { timerRemaining = Math.max(1, timerRemaining + delta); timerTotal = Math.max(timerTotal, timerRemaining); updateTimerUI(); };
-    window.stopRestTimer = function() { if (timerInterval) clearInterval(timerInterval); timerInterval = null; document.getElementById('restTimerBar').style.display = 'none'; };
-    window.onSetCheckClick = function(btn, exName, restSec, workSec, setNum) { btn.classList.toggle('done'); if (btn.classList.contains('done')) window.startSmartSetTimer(exName, restSec, workSec, setNum); };
-
     function getActiveExerciseList() { const base = currentDay === 'A' ? BASE_DAY_A : BASE_DAY_B; const customDay = appData.customExercises[currentDay] || []; const customBoth = appData.customExercises.BOTH || []; return [...base, ...customDay, ...STRETCH_ROUTINE, ...customBoth]; }
     
     // DEAD HANG PULLUP UNLOCK CHECK (Robust data scanning)
@@ -404,25 +364,25 @@
     }
 
     function buildSetRowHtml(ex, exId, s, defObj) {
-      const mode = ex.mode || 'weight_reps'; const safeName = ex.name.replace(/'/g, "\\'");
+      const mode = ex.mode || 'weight_reps'; 
       if (mode === 'time_only') {
         const secVal = defObj.sec !== undefined ? defObj.sec : (ex.sec || 30);
         return `<div class="set-row single-col" id="row-${exId}-${s}">
             <div class="set-label">S${s}</div><div class="input-box"><span>SEC</span><div class="num-ctrl"><div class="btn" onclick="window.adj('sec-${exId}-${s}', -5)">-</div><input type="number" id="sec-${exId}-${s}" value="${secVal}"><div class="btn" onclick="window.adj('sec-${exId}-${s}', 5)">+</div></div></div>
-            <button type="button" class="check-btn" onclick="window.onSetCheckClick(this, '${safeName}', 60, 30, ${s})">✓</button></div>`;
+            <button type="button" class="check-btn" onclick="this.classList.toggle('done')">✓</button></div>`;
       }
       if (mode === 'time_reps') {
         const secVal = defObj.sec !== undefined ? defObj.sec : (ex.sec || 30); const repVal = defObj.reps !== undefined ? defObj.reps : (ex.reps || 0);
         return `<div class="set-row" id="row-${exId}-${s}">
             <div class="set-label">S${s}</div><div class="input-box"><span>SEC</span><div class="num-ctrl"><div class="btn" onclick="window.adj('sec-${exId}-${s}', -5)">-</div><input type="number" id="sec-${exId}-${s}" value="${secVal}"><div class="btn" onclick="window.adj('sec-${exId}-${s}', 5)">+</div></div></div>
             <div class="input-box"><span>PULL-UP REPS</span><div class="num-ctrl"><div class="btn" onclick="window.adj('reps-${exId}-${s}', -1)">-</div><input type="number" id="reps-${exId}-${s}" value="${repVal}"><div class="btn" onclick="window.adj('reps-${exId}-${s}', 1)">+</div></div></div>
-            <button type="button" class="check-btn" onclick="window.onSetCheckClick(this, '${safeName}', 60, 30, ${s})">✓</button></div>`;
+            <button type="button" class="check-btn" onclick="this.classList.toggle('done')">✓</button></div>`;
       }
       const repVal = defObj.reps !== undefined ? defObj.reps : (ex.reps || 10); const kgVal = defObj.kg !== undefined ? defObj.kg : (ex.kg || 0);
       return `<div class="set-row" id="row-${exId}-${s}">
           <div class="set-label">S${s}</div><div class="input-box"><span>REPS</span><div class="num-ctrl"><div class="btn" onclick="window.adj('reps-${exId}-${s}', -1)">-</div><input type="number" id="reps-${exId}-${s}" value="${repVal}"><div class="btn" onclick="window.adj('reps-${exId}-${s}', 1)">+</div></div></div>
           <div class="input-box"><span>KG</span><div class="num-ctrl"><div class="btn" onclick="window.adj('kg-${exId}-${s}', -2.5)">-</div><input type="number" step="0.5" id="kg-${exId}-${s}" value="${kgVal}"><div class="btn" onclick="window.adj('kg-${exId}-${s}', 2.5)">+</div></div></div>
-          <button type="button" class="check-btn" onclick="window.onSetCheckClick(this, '${safeName}', 60, 35, ${s})">✓</button></div>`;
+          <button type="button" class="check-btn" onclick="this.classList.toggle('done')">✓</button></div>`;
     }
 
     window.adj = function(id, delta) { const el = document.getElementById(id); if (!el) return; let val = parseFloat(el.value) || 0; val = Number((val + delta).toFixed(1)); if (val < 0) val = 0; el.value = val; };
@@ -459,7 +419,7 @@
       });
     };
 
-    // FIXED BUG: ADD / REMOVE SETS USING UNIQUE ID INSTEAD OF ARRAY INDEX
+    // UNIQUE ID SYSTEM FOR ADD/REMOVE SETS
     window.addSet = function(exId) {
       const list = getActiveExerciseList(); const ex = list.find(e => e.id === exId); if (!ex) return;
       const wrapper = document.getElementById(`sets-wrapper-${exId}`); const s = wrapper.children.length + 1; const defObj = {};
