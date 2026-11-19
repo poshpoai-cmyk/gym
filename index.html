@@ -1,1 +1,1839 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <title>GYM V2</title>
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <style>
+    :root {
+      --bg: #050505;
+      --card: #111111;
+      --card-border: #222222;
+      --ash: #888888;
+      --ash-light: #d1d1d1;
+      --white: #f5f5f5;
+      --accent: #333333;
+      --pos: #2ecc71;
+      --neg: #e74c3c;
+      --warn: #f1c40f;
+    }
 
+    * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
+    html, body { background-color: var(--bg); color: var(--white); width: 100%; overflow-x: hidden; }
+    body { padding: env(safe-area-inset-top, 16px) 14px env(safe-area-inset-bottom, 90px) 14px; min-height: 100vh; max-width: 600px; margin: 0 auto; }
+
+    header { padding: 12px 0; border-bottom: 1px solid var(--card-border); display: flex; justify-content: space-between; align-items: center; }
+    h1 { font-size: 1.25rem; letter-spacing: 2px; text-transform: uppercase; font-weight: 900; }
+    .status-badge { font-size: 0.65rem; font-weight: 700; color: var(--ash); background: var(--card); border: 1px solid var(--card-border); padding: 6px 10px; border-radius: 4px; display: flex; align-items: center; gap: 6px; }
+    .dot { width: 8px; height: 8px; border-radius: 50%; background: var(--ash); }
+    .dot.live { background: var(--pos); box-shadow: 0 0 6px var(--pos); }
+    .dot.err { background: var(--neg); box-shadow: 0 0 6px var(--neg); }
+
+    .toast-banner { display: none; background: rgba(46, 204, 113, 0.14); border: 1px solid var(--pos); color: var(--pos); font-size: 0.74rem; font-weight: 800; padding: 10px 12px; border-radius: 6px; margin-top: 12px; text-align: center; }
+
+    .tabs { display: flex; gap: 8px; margin: 14px 0; }
+    .tab-btn { flex: 1; padding: 12px 8px; background: var(--card); border: 1px solid var(--card-border); color: var(--ash); font-size: 0.8rem; font-weight: 800; border-radius: 6px; cursor: pointer; text-transform: uppercase; }
+    .tab-btn.active { color: var(--white); border-color: var(--ash-light); background: #1c1c1c; }
+
+    .day-tabs { display: grid; grid-template-columns: repeat(5, 1fr); gap: 6px; margin-bottom: 8px; }
+    .day-btn { padding: 11px 4px; background: var(--card); border: 1px solid var(--card-border); color: var(--ash); font-size: 0.82rem; font-weight: 900; border-radius: 6px; cursor: pointer; text-transform: uppercase; text-align: center; }
+    .day-btn.active { color: #000; background: var(--white); border-color: var(--white); }
+
+    .day-title-bar { background: #0c0c0c; border: 1px solid var(--card-border); border-radius: 6px; padding: 9px 12px; margin-bottom: 10px; display: flex; justify-content: space-between; align-items: center; gap: 8px; }
+    .day-title-text { font-size: 0.82rem; font-weight: 900; color: var(--white); text-transform: uppercase; letter-spacing: 0.5px; }
+    .day-sub-rec { font-size: 0.66rem; font-weight: 800; color: var(--pos); text-transform: uppercase; text-align: right; }
+
+    .filter-tabs { display: grid; grid-template-columns: repeat(4, 1fr); gap: 4px; margin-bottom: 12px; background: #000; padding: 4px; border-radius: 6px; border: 1px solid var(--card-border); }
+    .filter-btn { padding: 8px 2px; background: transparent; border: none; color: var(--ash); font-size: 0.66rem; font-weight: 800; border-radius: 4px; cursor: pointer; text-transform: uppercase; }
+    .filter-btn.active { background: var(--card); color: var(--white); border: 1px solid var(--card-border); }
+
+    .tracker-card { background: var(--card); border: 1px solid var(--card-border); border-radius: 8px; padding: 12px 14px; margin-bottom: 12px; display: flex; flex-direction: column; gap: 10px; }
+    .row-between { display: flex; justify-content: space-between; align-items: center; gap: 8px; }
+    .card-label { font-size: 0.78rem; color: var(--ash-light); font-weight: 800; text-transform: uppercase; letter-spacing: 0.5px; }
+    .sub-label { font-size: 0.72rem; color: var(--ash); margin-top: 2px; }
+
+    .bw-input-wrap { display: flex; align-items: center; gap: 6px; }
+    .bw-input-wrap input { width: 72px; background: #000; border: 1px solid var(--card-border); color: var(--white); padding: 8px; font-size: 0.9rem; border-radius: 4px; text-align: center; font-weight: 700; }
+    .action-btn-white { background: var(--white); color: #000; padding: 9px 14px; font-size: 0.75rem; border-radius: 4px; font-weight: 800; border: none; cursor: pointer; text-transform: uppercase; }
+    .date-input { background: #000; border: 1px solid var(--card-border); color: var(--white); padding: 6px 8px; border-radius: 4px; font-family: monospace; font-size: 0.85rem; }
+
+    .water-pills { display: grid; grid-template-columns: repeat(12, 1fr); gap: 3px; margin-top: 2px; }
+    .water-pill { height: 18px; border-radius: 3px; background: #050505; border: 1px solid var(--card-border); cursor: pointer; transition: all 0.15s; }
+    .water-pill.filled { background: var(--ash-light); border-color: var(--white); }
+    .water-ctrl-btn { width: 34px; height: 32px; background: #000; border: 1px solid var(--card-border); color: var(--white); font-weight: 900; font-size: 1rem; border-radius: 4px; cursor: pointer; }
+
+    .live-score-card { background: #0d0d0d; border: 1px solid var(--card-border); border-radius: 8px; padding: 11px 14px; margin-bottom: 12px; }
+    .live-score-val { font-size: 1.05rem; font-weight: 900; }
+    .draft-pill { font-size: 0.62rem; font-weight: 800; color: var(--ash); text-transform: uppercase; letter-spacing: 0.4px; margin-top: 4px; display: flex; justify-content: space-between; align-items: center; }
+
+    .phase-divider { font-size: 0.68rem; font-weight: 900; color: var(--ash); text-transform: uppercase; letter-spacing: 1.2px; margin: 14px 0 8px; display: flex; align-items: center; gap: 8px; }
+    .phase-divider::after { content: ""; flex: 1; height: 1px; background: var(--card-border); }
+
+    .exercise-card { background: var(--card); border: 1px solid var(--card-border); border-radius: 8px; padding: 14px; margin-bottom: 12px; transition: border 0.2s, opacity 0.2s; }
+    .exercise-card.saved { border-color: var(--pos); }
+    .exercise-card.skipped { opacity: 0.52; border-style: dashed; }
+    .ex-header { display: flex; justify-content: space-between; align-items: flex-start; gap: 8px; margin-bottom: 5px; }
+    .ex-title-wrap { display: flex; align-items: center; flex-wrap: wrap; gap: 6px; }
+    .ex-name { font-size: 0.96rem; font-weight: 800; color: var(--white); }
+    .info-btn { width: 22px; height: 22px; border-radius: 50%; background: #1f1f1f; border: 1px solid var(--ash); color: var(--white); font-size: 0.72rem; font-weight: 900; font-family: Georgia, serif; font-style: italic; display: inline-flex; align-items: center; justify-content: center; cursor: pointer; flex-shrink: 0; }
+    .loc-badge { font-size: 0.6rem; background: #1d1d1d; border: 1px solid var(--card-border); padding: 2px 6px; border-radius: 4px; color: var(--ash-light); text-transform: uppercase; font-weight: 700; white-space: nowrap; }
+    .opt-badge { font-size: 0.58rem; background: rgba(241, 196, 15, 0.14); border: 1px solid var(--warn); color: var(--warn); padding: 2px 6px; border-radius: 4px; font-weight: 800; text-transform: uppercase; }
+
+    .ex-meta-row { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 6px; font-size: 0.72rem; color: var(--ash); margin-bottom: 10px; border-bottom: 1px solid var(--card-border); padding-bottom: 8px; }
+    .target-tag { color: var(--ash-light); font-weight: 700; font-size: 0.7rem; }
+
+    .overload-hint { display: inline-flex; align-items: center; gap: 5px; background: rgba(46, 204, 113, 0.14); border: 1px solid var(--pos); color: var(--pos); font-size: 0.68rem; font-weight: 900; padding: 4px 8px; border-radius: 4px; margin-bottom: 10px; text-transform: uppercase; letter-spacing: 0.3px; }
+    .unlock-hint { display: inline-flex; align-items: center; gap: 5px; background: rgba(241, 196, 15, 0.14); border: 1px solid var(--warn); color: var(--warn); font-size: 0.68rem; font-weight: 800; padding: 4px 8px; border-radius: 4px; margin-bottom: 10px; }
+
+    .set-row { display: grid; grid-template-columns: 28px 1fr 1fr 38px; gap: 8px; align-items: center; margin-bottom: 10px; }
+    .set-row.single-col { grid-template-columns: 28px 1fr 38px; }
+    .set-label { font-size: 0.72rem; color: var(--ash); font-weight: 800; }
+    .input-box { display: flex; flex-direction: column; min-width: 0; }
+    .input-box span { font-size: 0.58rem; color: var(--ash); margin-bottom: 3px; font-weight: 700; text-align: center; text-transform: uppercase; }
+    .num-ctrl { display: flex; background: #000; border: 1px solid var(--card-border); border-radius: 6px; height: 36px; overflow: hidden; }
+    .num-ctrl .btn { width: 32px; display: flex; align-items: center; justify-content: center; background: #181818; color: var(--ash-light); font-size: 1.1rem; cursor: pointer; user-select: none; font-weight: bold; flex-shrink: 0; }
+    .num-ctrl input { flex: 1; width: 100%; min-width: 0; background: transparent; border: none; color: var(--white); text-align: center; font-size: 0.9rem; font-weight: 800; padding: 0; appearance: none; -webkit-appearance: none; }
+
+    .check-btn { height: 36px; background: #181818; border: 1px solid var(--card-border); color: var(--ash); border-radius: 4px; display: flex; align-items: center; justify-content: center; font-size: 0.95rem; cursor: pointer; margin-top: 13px; }
+    .check-btn.done { background: var(--white); color: #000; font-weight: 900; border-color: var(--white); }
+
+    .set-actions-bar { display: flex; gap: 8px; margin-top: 10px; }
+    .add-rem-btn { flex: 1; padding: 8px; background: #000; border: 1px solid var(--card-border); color: var(--ash); font-size: 0.68rem; font-weight: 800; border-radius: 4px; cursor: pointer; text-transform: uppercase; }
+    .skip-toggle-btn { padding: 8px 12px; background: #1a1a1a; border: 1px solid var(--card-border); color: var(--ash-light); font-size: 0.66rem; font-weight: 800; border-radius: 4px; cursor: pointer; text-transform: uppercase; }
+    .skip-toggle-btn.is-skipped { background: rgba(46, 204, 113, 0.14); border-color: var(--pos); color: var(--pos); }
+
+    .date-picker-bar { margin-top: 18px; padding: 12px 14px; background: var(--card); border: 1px solid var(--card-border); border-radius: 8px; display: flex; justify-content: space-between; align-items: center; }
+    .save-session-btn { width: 100%; padding: 16px; margin: 14px 0 10px; background: var(--white); color: #000; font-weight: 900; text-transform: uppercase; letter-spacing: 1px; font-size: 0.9rem; border: none; border-radius: 6px; cursor: pointer; }
+    .clear-draft-btn { width: 100%; padding: 11px; margin: 0 0 36px; background: #151515; color: var(--ash); border: 1px solid var(--card-border); font-weight: 800; text-transform: uppercase; font-size: 0.72rem; border-radius: 6px; cursor: pointer; }
+
+    .history-card { background: var(--card); border: 1px solid var(--card-border); border-radius: 8px; padding: 14px; margin-bottom: 12px; }
+    .hist-head { display: flex; justify-content: space-between; align-items: center; font-size: 0.75rem; color: var(--ash); margin-bottom: 10px; border-bottom: 1px solid var(--card-border); padding-bottom: 8px; font-weight: 800; gap: 8px; }
+    .hist-entry { font-size: 0.82rem; margin-bottom: 8px; display: flex; justify-content: space-between; align-items: center; }
+    .delete-btn { background: #250a0a; color: var(--neg); border: 1px solid var(--neg); font-size: 0.68rem; padding: 4px 8px; border-radius: 4px; cursor: pointer; font-weight: 800; }
+
+    .pct-badge { font-size: 0.68rem; padding: 3px 6px; border-radius: 4px; font-weight: 800; margin-left: 4px; display: inline-block; }
+    .pct-pos { color: var(--pos); background: rgba(46, 204, 113, 0.15); }
+    .pct-neg { color: var(--neg); background: rgba(231, 76, 60, 0.15); }
+    .pct-neu { color: var(--ash); background: rgba(136, 136, 136, 0.15); }
+
+    .custom-ex-box { margin-top: 20px; background: var(--card); border: 1px dashed var(--card-border); border-radius: 8px; padding: 14px; }
+    .form-input, .form-select { width: 100%; background: #000; border: 1px solid var(--card-border); color: var(--white); padding: 10px; border-radius: 4px; font-size: 0.82rem; margin-bottom: 10px; }
+
+    .modal-overlay { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.92); display: none; z-index: 1000; align-items: center; justify-content: center; padding: 16px; }
+    .modal-content { background: var(--card); border: 1px solid var(--ash); width: 100%; max-width: 440px; max-height: 85vh; overflow-y: auto; border-radius: 10px; padding: 18px; }
+    .modal-content h2 { font-size: 1.02rem; margin-bottom: 12px; color: var(--white); text-transform: uppercase; letter-spacing: 0.5px; }
+    .guide-section { background: #090909; border: 1px solid var(--card-border); border-radius: 6px; padding: 10px 12px; margin-bottom: 10px; }
+    .guide-label { font-size: 0.65rem; font-weight: 900; color: var(--ash); text-transform: uppercase; letter-spacing: 0.6px; margin-bottom: 4px; }
+    .guide-text { font-size: 0.84rem; color: var(--white); line-height: 1.45; }
+    .guide-safe { border-color: rgba(241, 196, 15, 0.45); }
+    .guide-safe .guide-label { color: var(--warn); }
+    .modal-day-score { font-size: 2.3rem; font-weight: 900; margin: 10px 0; text-align: center; }
+    .close-modal-btn { width: 100%; padding: 13px; background: var(--white); color: #000; font-weight: 900; border: none; border-radius: 6px; cursor: pointer; margin-top: 10px; text-transform: uppercase; }
+  </style>
+</head>
+<body>
+  <div id="appContent">
+    <header>
+      <div>
+        <h1>GYM V2</h1>
+        <div style="font-size: 0.65rem; color: var(--ash); font-weight: 700;">5-DAY V-TAPER SYSTEM</div>
+      </div>
+      <div class="status-badge"><span class="dot" id="cloudDot"></span><span id="cloudStatus">CHECKING NET...</span></div>
+    </header>
+
+    <div id="toastBanner" class="toast-banner"></div>
+
+    <div class="tabs">
+      <button class="tab-btn active" onclick="window.switchTab('workout')">WORKOUT</button>
+      <button class="tab-btn" onclick="window.switchTab('history')">HISTORY & BACKUP</button>
+    </div>
+
+    <div class="tracker-card">
+      <div class="row-between">
+        <div>
+          <div class="card-label">Body Weight</div>
+          <div class="sub-label" id="lastBwDisplay">Last: Not logged</div>
+        </div>
+        <div class="bw-input-wrap">
+          <input type="number" step="0.1" id="bwInput" placeholder="kg">
+          <button class="action-btn-white" onclick="window.logBodyWeight()">LOG</button>
+        </div>
+      </div>
+      <div class="row-between" style="border-top: 1px solid var(--card-border); padding-top: 8px;">
+        <span style="font-size: 0.7rem; font-weight: 700; color: var(--ash-light);">ACTIVE LOG DATE:</span>
+        <input type="date" id="bwDate" class="date-input" onchange="window.syncDates(this.value)">
+      </div>
+    </div>
+
+    <div class="tracker-card">
+      <div class="row-between">
+        <div>
+          <div class="card-label">Daily Water Intake</div>
+          <div class="sub-label" id="waterCountDisplay">0 / 12 Glasses</div>
+        </div>
+        <div style="display: flex; gap: 6px; align-items: center;">
+          <button class="water-ctrl-btn" onclick="window.adjustWater(-1)">-</button>
+          <button class="water-ctrl-btn" onclick="window.adjustWater(1)">+</button>
+        </div>
+      </div>
+      <div class="water-pills" id="waterPillsContainer"></div>
+    </div>
+
+    <div id="workoutView">
+      <div class="day-tabs">
+        <button class="day-btn" id="dayBtn-D1" onclick="window.setDay('D1')">D1</button>
+        <button class="day-btn" id="dayBtn-D2" onclick="window.setDay('D2')">D2</button>
+        <button class="day-btn" id="dayBtn-D3" onclick="window.setDay('D3')">D3</button>
+        <button class="day-btn" id="dayBtn-D4" onclick="window.setDay('D4')">D4</button>
+        <button class="day-btn" id="dayBtn-D5" onclick="window.setDay('D5')">D5</button>
+      </div>
+
+      <div class="day-title-bar">
+        <span class="day-title-text" id="dayTitleText">D1 • Chest & Side Delts</span>
+        <span class="day-sub-rec" id="smartRecommendBanner">NEXT: D1</span>
+      </div>
+
+      <div class="live-score-card">
+        <div class="row-between">
+          <div>
+            <div class="card-label">Today's Live Result</div>
+            <div class="sub-label" id="liveSetsSummary">0 sets checked • Auto-saves as you type</div>
+          </div>
+          <div class="live-score-val pct-pos" id="liveDayScore">BASE</div>
+        </div>
+        <div class="draft-pill">
+          <span id="draftSaveLabel">DRAFT AUTO-SAVED</span>
+          <span>AUTO-COMMITS AT DAY END</span>
+        </div>
+      </div>
+
+      <div class="filter-tabs">
+        <button class="filter-btn active" id="flt-ALL" onclick="window.setFilter('ALL')">ALL</button>
+        <button class="filter-btn" id="flt-Stretch" onclick="window.setFilter('Stretch')">1. STRETCH</button>
+        <button class="filter-btn" id="flt-Gym" onclick="window.setFilter('Gym')">2. GYM</button>
+        <button class="filter-btn" id="flt-No Equip" onclick="window.setFilter('No Equip')">3. NO EQUIP</button>
+      </div>
+
+      <div id="exercisesContainer"></div>
+
+      <div class="custom-ex-box">
+        <div class="row-between" style="cursor: pointer;" onclick="window.toggleCustomForm()">
+          <span class="card-label">+ ADD CUSTOM / BONUS EXERCISE</span>
+          <span id="customToggleIcon" style="font-weight: 900; color: var(--ash-light);">[+]</span>
+        </div>
+        <div id="customExForm" style="display: none; margin-top: 12px; border-top: 1px solid var(--card-border); padding-top: 12px;">
+          <input type="text" id="custName" class="form-input" placeholder="Exercise Name (e.g. Hammer Curl)">
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px;">
+            <select id="custDay" class="form-select">
+              <option value="D1">D1 (Chest & Side Delts)</option>
+              <option value="D2">D2 (Back Width)</option>
+              <option value="D3">D3 (Legs & Waist)</option>
+              <option value="D4">D4 (Shoulders & Arms)</option>
+              <option value="D5">D5 (Back Thick & Upper Chest)</option>
+              <option value="ALL">All Days</option>
+            </select>
+            <select id="custLoc" class="form-select">
+              <option value="Stretch">1. Stretch</option>
+              <option value="Gym" selected>2. Gym</option>
+              <option value="No Equip">3. No Equip</option>
+            </select>
+          </div>
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px;">
+            <select id="custMode" class="form-select">
+              <option value="weight_reps">Sets + Reps + KG</option>
+              <option value="time_only">Sets + Time (Sec)</option>
+              <option value="time_reps">Time (Sec) + Reps</option>
+            </select>
+            <input type="number" id="custTarget" class="form-input" placeholder="Target Reps or Sec (10)" value="10">
+          </div>
+          <input type="text" id="custTargetMuscle" class="form-input" placeholder="Muscle Target (optional)">
+          <button class="action-btn-white" style="width: 100%; padding: 12px;" onclick="window.addCustomExercise()">SAVE TO LIST</button>
+        </div>
+      </div>
+
+      <div class="date-picker-bar">
+        <span style="font-size: 0.78rem; font-weight: 800; color: var(--ash-light);">WORKOUT DATE:</span>
+        <input type="date" id="sessionDate" class="date-input" onchange="window.syncDates(this.value)">
+      </div>
+
+      <button class="save-session-btn" onclick="window.openCommitModal()">FINISH & COMMIT DAY NOW</button>
+      <button class="clear-draft-btn" onclick="window.openClearDraftModal()">REST DAY / DISCARD TODAY'S DRAFT</button>
+    </div>
+
+    <div id="historyView" style="display: none;">
+      <div class="history-card">
+        <div class="hist-head"><span>DATA BACKUP & SERVER CONTROL</span></div>
+        <div style="display: flex; gap: 8px; margin-bottom: 10px;">
+          <button class="action-btn-white" style="flex: 1;" onclick="window.downloadBackupFile()">DOWNLOAD JSON</button>
+          <label class="action-btn-white" style="flex: 1; text-align: center; background: #222; color: var(--white); border: 1px solid var(--ash); cursor: pointer;">
+            IMPORT FILE <input type="file" accept=".json" style="display: none;" onchange="window.importBackupFile(event)">
+          </label>
+        </div>
+        <button class="delete-btn" style="width: 100%; padding: 9px;" onclick="window.openResetConfirmModal()">WIPE & RESET ALL SERVER DATA</button>
+      </div>
+      <div id="historyList"></div>
+    </div>
+  </div>
+
+  <div id="guideModal" class="modal-overlay" onclick="window.closeGuideModal()">
+    <div class="modal-content" onclick="event.stopPropagation()">
+      <h2 id="guideTitle">Exercise Guide</h2>
+      <div class="guide-section">
+        <div class="guide-label">Muscle Target</div>
+        <p id="guideMuscle" class="guide-text"></p>
+      </div>
+      <div class="guide-section guide-safe">
+        <div class="guide-label">Left-Shoulder Safe Form</div>
+        <p id="guideForm" class="guide-text"></p>
+      </div>
+      <div class="guide-section">
+        <div class="guide-label">Effort Rule</div>
+        <p class="guide-text">Keep 1–2 reps in reserve on your first sets. Push the last set to clean technical failure only. Stop right away if your left shoulder feels wobbly.</p>
+      </div>
+      <button class="close-modal-btn" onclick="window.closeGuideModal()">GOT IT</button>
+    </div>
+  </div>
+
+  <div id="progressModal" class="modal-overlay" onclick="window.closeProgressModal()">
+    <div class="modal-content" onclick="event.stopPropagation()">
+      <h2 style="text-align: center;">COMMIT DAY TO HISTORY</h2>
+      <div id="modalDayScore" class="modal-day-score pct-pos">+0.0%</div>
+      <div id="modalExBreakdown" style="max-height: 230px; overflow-y: auto; border-top: 1px solid var(--card-border); padding-top: 10px;"></div>
+      <button class="close-modal-btn" onclick="window.confirmAndSaveSession()">SAVE TO SERVER & LOCAL</button>
+      <button class="close-modal-btn" style="background: #222; color: var(--white);" onclick="window.closeProgressModal()">KEEP EDITING</button>
+    </div>
+  </div>
+
+  <div id="confirmModal" class="modal-overlay">
+    <div class="modal-content" style="text-align: center;">
+      <h2 id="confirmTitle">Confirm Action</h2>
+      <p id="confirmMessage" style="font-size: 0.85rem; color: var(--ash-light); margin-bottom: 18px;"></p>
+      <div style="display: flex; gap: 10px;">
+        <button class="close-modal-btn" style="background: #222; color: var(--white); margin-top: 0;" onclick="window.closeConfirmModal()">CANCEL</button>
+        <button id="confirmActionBtn" class="close-modal-btn" style="background: var(--neg); color: var(--white); margin-top: 0;">CONFIRM</button>
+      </div>
+    </div>
+  </div>
+
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+    import { getFirestore, doc, setDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyB5zoyx9_f41-e3oBWRoFj5Si2eM9v5uwE",
+      authDomain: "gymv-4baac.firebaseapp.com",
+      projectId: "gymv-4baac",
+      storageBucket: "gymv-4baac.firebasestorage.app",
+      messagingSenderId: "21885539570",
+      appId: "1:21885539570:web:6480453fee2c5e5979ac6b",
+      measurementId: "G-8NWPQN2E63"
+    };
+
+    const WATER_GOAL = 12;
+    const DAY_ORDER = ['D1', 'D2', 'D3', 'D4', 'D5'];
+    const DAY_META = {
+      D1: { short: 'D1', title: 'Chest & Side Delts' },
+      D2: { short: 'D2', title: 'Back Width' },
+      D3: { short: 'D3', title: 'Legs & Waist' },
+      D4: { short: 'D4', title: 'Shoulders & Arms' },
+      D5: { short: 'D5', title: 'Back Thickness & Upper Chest' }
+    };
+    const PHASE_ORDER = ['Stretch', 'Gym', 'No Equip'];
+    const PHASE_LABELS = {
+      'Stretch': 'PHASE 1 • STRETCH',
+      'Gym': 'PHASE 2 • GYM',
+      'No Equip': 'PHASE 3 • NO EQUIPMENT'
+    };
+
+    const STRETCHES = {
+      hipFlexor: (day) => ({
+        id: `${day}_st_hip`,
+        name: "Kneeling Hip Flexor Stretch",
+        loc: "Stretch",
+        mode: "time_only",
+        sets: 2,
+        sec: 45,
+        guide: {
+          muscle: "Hip flexors and front pelvis. Helps fix anterior pelvic tilt and flatten your lower stomach.",
+          form: "Squeeze your back glute and tuck your ribs down. Keep your arms relaxed at your sides so your left shoulder stays calm."
+        }
+      }),
+      doorwayPec: (day) => ({
+        id: `${day}_st_pec`,
+        name: "Doorway Pec Stretch",
+        loc: "Stretch",
+        mode: "time_only",
+        sets: 2,
+        sec: 30,
+        guide: {
+          muscle: "Chest (pectorals) and front shoulders. Opens your posture for a wider V-taper.",
+          form: "Keep your elbow slightly below shoulder height and lean gently. Never force a deep pull in the front of your left shoulder."
+        }
+      }),
+      childsPose: (day) => ({
+        id: `${day}_st_child`,
+        name: "Child's Pose Lat Opener",
+        loc: "Stretch",
+        mode: "time_only",
+        sets: 2,
+        sec: 40,
+        guide: {
+          muscle: "Lats, upper back, and lower back decompression before heavy pulling.",
+          form: "Reach forward only as far as feels stable. Keep your left shoulder blade pulled gently down away from your ear."
+        }
+      }),
+      hamCalf: (day) => ({
+        id: `${day}_st_hamcalf`,
+        name: "Hamstring & Calf Stretch",
+        loc: "Stretch",
+        mode: "time_only",
+        sets: 2,
+        sec: 30,
+        guide: {
+          muscle: "Hamstrings (back of thighs) and calves for safer squatting and hinge depth.",
+          form: "Hinge from your hips with a flat back. Let your arms hang loosely without rounding your shoulders forward."
+        }
+      })
+    };
+
+    const BASE_DAYS = {
+      D1: [
+        STRETCHES.hipFlexor('d1'),
+        STRETCHES.doorwayPec('d1'),
+        {
+          id: "d1_inc_db_press",
+          name: "Incline DB Press",
+          loc: "Gym",
+          mode: "weight_reps",
+          sets: 3,
+          reps: 10,
+          kg: 10,
+          guide: {
+            muscle: "Upper chest (clavicular pecs) and front delts for a full upper shelf.",
+            form: "Set the bench to 30 degrees, not too steep. Tuck elbows to 45 degrees and keep shoulder blades pinned back. Stop just before the dumbbells drop below chest level if your left shoulder feels loose."
+          }
+        },
+        {
+          id: "d1_dec_bench",
+          name: "Decline Bench Press",
+          loc: "Gym",
+          mode: "weight_reps",
+          sets: 3,
+          reps: 10,
+          kg: 20,
+          guide: {
+            muscle: "Lower and mid chest for sharp chest thickness and pressing strength.",
+            form: "Pack both shoulder blades tightly into the bench before unracking. Lower with control to your lower chest with elbows tucked at 45 degrees. Stop the set immediately if the left arm wobbles."
+          }
+        },
+        {
+          id: "d1_lat_raise",
+          name: "Lateral Raises",
+          loc: "Gym",
+          mode: "weight_reps",
+          sets: 4,
+          reps: 15,
+          kg: 5,
+          guide: {
+            muscle: "Side delts — your #1 muscle for V-taper shoulder width.",
+            form: "Raise dumbbells slightly forward of your body (about 30 degrees in front) instead of straight out to the side. Keep thumbs neutral or slightly up, never pouring water down, to protect your left shoulder joint."
+          }
+        },
+        {
+          id: "d1_cable_fly",
+          name: "Cable Fly",
+          loc: "Gym",
+          mode: "weight_reps",
+          sets: 3,
+          reps: 12,
+          kg: 5,
+          guide: {
+            muscle: "Inner and outer chest fibers with smooth, steady tension.",
+            form: "Keep a soft bend in your elbows and stop the stretch when your hands align with your torso. Do not let the cables yank your left shoulder behind your back."
+          }
+        }
+      ],
+
+      D2: [
+        STRETCHES.hipFlexor('d2'),
+        STRETCHES.childsPose('d2'),
+        {
+          id: "d2_lat_pulldown",
+          name: "Lat Pulldown",
+          loc: "Gym",
+          mode: "weight_reps",
+          sets: 4,
+          reps: 10,
+          kg: 25,
+          guide: {
+            muscle: "Outer lats for a wide V-taper back.",
+            form: "Use a grip just outside shoulder width, never super wide. Pull shoulder blades down first, then drive elbows toward your ribs. Avoid letting your left shoulder shrug completely loose at the top."
+          }
+        },
+        {
+          id: "d2_cg_pulldown",
+          name: "Close-Grip Pulldown",
+          loc: "Gym",
+          mode: "weight_reps",
+          sets: 3,
+          reps: 10,
+          kg: 25,
+          guide: {
+            muscle: "Lower lats and mid-back width with a shoulder-friendly neutral grip.",
+            form: "Use a V-bar or shoulder-width neutral handle. Keep your chest tall and pull smoothly to your upper chest without jerking your left shoulder at the top stretch."
+          }
+        },
+        {
+          id: "d2_seated_row",
+          name: "Seated Cable Row",
+          loc: "Gym",
+          mode: "weight_reps",
+          sets: 3,
+          reps: 10,
+          kg: 15,
+          guide: {
+            muscle: "Mid-back (rhomboids, middle traps) and lats for thick back density.",
+            form: "Keep your torso upright and pull the handle toward your belly button. Squeeze your shoulder blades together without rolling your left shoulder forward at the end."
+          }
+        },
+        {
+          id: "d2_face_pull",
+          name: "Face Pull",
+          loc: "Gym",
+          mode: "weight_reps",
+          sets: 3,
+          reps: 15,
+          kg: 10,
+          guide: {
+            muscle: "Rear delts, upper traps, and rotator cuff — key stabilizer for your left shoulder.",
+            form: "Pull the rope toward your forehead while externally rotating your hands back. Use light, controlled reps with zero swinging so your left rotator cuff gets stronger."
+          }
+        },
+        {
+          id: "d2_dead_hangs",
+          name: "Dead Hangs",
+          loc: "No Equip",
+          mode: "time_only",
+          sets: 3,
+          sec: 30,
+          reps: 0,
+          guide: {
+            muscle: "Grip strength, forearms, lats, and spine decompression. Hold 30s on all sets to unlock Pull-ups.",
+            form: "Use an active hang: pull your shoulders gently down away from your ears instead of hanging totally limp. Stop right away if your left shoulder feels pinched or unstable."
+          }
+        }
+      ],
+
+      D3: [
+        STRETCHES.hipFlexor('d3'),
+        STRETCHES.hamCalf('d3'),
+        {
+          id: "d3_leg_press",
+          name: "Leg Press / Squat",
+          loc: "Gym",
+          mode: "weight_reps",
+          sets: 4,
+          reps: 10,
+          kg: 40,
+          guide: {
+            muscle: "Quads, glutes, and overall leg mass for an athletic base.",
+            form: "On Leg Press, grip the side handles firmly to keep your upper body still. If squatting with a bar, take a slightly wider hand grip so your left shoulder does not feel twisted."
+          }
+        },
+        {
+          id: "d3_rdl",
+          name: "Romanian Deadlift",
+          loc: "Gym",
+          mode: "weight_reps",
+          sets: 3,
+          reps: 10,
+          kg: 20,
+          guide: {
+            muscle: "Hamstrings (back of thighs), glutes, and lower back.",
+            form: "Pull your lats tight like squeezing oranges in your armpits. Keep the weight close to your thighs and hinge your hips back so your left shoulder stays locked in place."
+          }
+        },
+        {
+          id: "d3_calf_raise",
+          name: "Standing Calf Raises",
+          loc: "Gym",
+          mode: "weight_reps",
+          sets: 4,
+          reps: 15,
+          kg: 20,
+          guide: {
+            muscle: "Calves (back of lower leg) for thick lower-leg shape.",
+            form: "Pause 1 second at the bottom stretch and squeeze hard at the top. If using shoulder pads, keep your shoulder blades lightly engaged so the pad rests on your traps, not the left shoulder joint."
+          }
+        },
+        {
+          id: "d3_back_ext",
+          name: "Back Extensions",
+          loc: "No Equip",
+          mode: "weight_reps",
+          sets: 3,
+          reps: 12,
+          kg: 0,
+          guide: {
+            muscle: "Lower back (spinal erectors) and glutes for a strong, thick lower back.",
+            form: "Cross your arms over your chest and rise only until your body is straight — do not hyperextend past neutral. Keep your neck neutral and shoulders relaxed."
+          }
+        },
+        {
+          id: "d3_vacuums",
+          name: "Stomach Vacuums",
+          loc: "No Equip",
+          mode: "time_only",
+          sets: 4,
+          sec: 30,
+          guide: {
+            muscle: "Deep core (transverse abdominis) to tighten your waist and flatten your belly.",
+            form: "Exhale all air out, pull your belly button inward toward your spine, and hold while taking tiny shallow breaths. Keep your chest and shoulders relaxed."
+          }
+        }
+      ],
+
+      D4: [
+        STRETCHES.hipFlexor('d4'),
+        STRETCHES.doorwayPec('d4'),
+        {
+          id: "d4_db_sh_press",
+          name: "DB Shoulder Press",
+          loc: "Gym",
+          mode: "weight_reps",
+          sets: 3,
+          reps: 10,
+          kg: 10,
+          guide: {
+            muscle: "Front and side delts plus upper triceps for capped shoulders.",
+            form: "Use a slight incline (one notch below vertical) and keep elbows angled 30–45 degrees forward, never flared straight out. Stop at ear level on the way down to keep your left shoulder stable."
+          }
+        },
+        {
+          id: "d4_lat_raise",
+          name: "Lateral Raises",
+          loc: "Gym",
+          mode: "weight_reps",
+          sets: 4,
+          reps: 15,
+          kg: 5,
+          guide: {
+            muscle: "Side delts for broad V-taper shoulder width.",
+            form: "Lift in the scapular plane (slightly forward of your sides) with soft elbows. Keep your traps down and avoid jerky reps that pull on your left shoulder."
+          }
+        },
+        {
+          id: "d4_rear_delt",
+          name: "Rear Delt Fly",
+          loc: "Gym",
+          mode: "weight_reps",
+          sets: 3,
+          reps: 15,
+          kg: 5,
+          guide: {
+            muscle: "Rear delts and upper back for 3D shoulders and healthy posture.",
+            form: "Use a neutral grip (palms facing each other) and sweep your arms out only until they line up with your torso. Do not over-pinch or force your left arm far behind your back."
+          }
+        },
+        {
+          id: "d4_bb_curl",
+          name: "Barbell Curl",
+          loc: "Gym",
+          mode: "weight_reps",
+          sets: 3,
+          reps: 10,
+          kg: 15,
+          guide: {
+            muscle: "Full biceps mass and forearm thickness.",
+            form: "Pin your elbows lightly at your sides and keep your chest up. Do not swing your back or let your left shoulder roll forward at the top of the curl."
+          }
+        },
+        {
+          id: "d4_tri_oh",
+          name: "Tricep Overhead Extension",
+          loc: "Gym",
+          mode: "weight_reps",
+          sets: 3,
+          reps: 10,
+          kg: 7.5,
+          guide: {
+            muscle: "Triceps long head — the biggest part of full, thick arms.",
+            form: "Keep elbows pointed slightly forward instead of flared wide. Lower only as deep as feels smooth and pain-free for your left shoulder, and brace your core so your lower back stays flat."
+          }
+        },
+        {
+          id: "d4_neck_opt",
+          name: "Neck Curls & Extensions",
+          loc: "No Equip",
+          mode: "weight_reps",
+          sets: 3,
+          reps: 15,
+          kg: 0,
+          optional: true,
+          guide: {
+            muscle: "Front and back neck muscles for a stronger, balanced athletic frame (optional finisher).",
+            form: "Move slowly with zero jerking and keep your shoulders pressed down and relaxed on the bench or floor. Stop if you feel any pinch or dizziness."
+          }
+        }
+      ],
+
+      D5: [
+        STRETCHES.hipFlexor('d5'),
+        STRETCHES.childsPose('d5'),
+        {
+          id: "d5_pullups",
+          name: "Pull-ups / Assisted Pull-ups",
+          loc: "Gym",
+          mode: "weight_reps",
+          sets: 4,
+          reps: 8,
+          kg: 0,
+          isMax: true,
+          guide: {
+            muscle: "Lats, upper back, and biceps — top compound builder for V-taper width and thickness.",
+            form: "Use a shoulder-width or neutral grip. Start each rep by pulling your shoulder blades down, and never drop into a sloppy dead bottom if your left shoulder feels unstable."
+          }
+        },
+        {
+          id: "d5_1arm_row",
+          name: "One-Arm DB Row",
+          loc: "Gym",
+          mode: "weight_reps",
+          sets: 3,
+          reps: 10,
+          kg: 15,
+          guide: {
+            muscle: "Lats and thick mid-back, helping fix left-to-right strength balance.",
+            form: "Start with your left arm first and match that exact rep count on your right arm. Drive your elbow back toward your hip pocket without letting your left shoulder drop loosely at the bottom."
+          }
+        },
+        {
+          id: "d5_sa_pulldown",
+          name: "Straight-Arm Pulldown",
+          loc: "Gym",
+          mode: "weight_reps",
+          sets: 3,
+          reps: 12,
+          kg: 15,
+          guide: {
+            muscle: "Pure lat isolation for a wider back without tiring your biceps.",
+            form: "Keep a tiny bend in your elbows and hinge slightly forward. Raise your arms only to eye level on the return so your left shoulder stays tight and safe."
+          }
+        },
+        {
+          id: "d5_inc_db_press",
+          name: "Incline DB Press",
+          loc: "Gym",
+          mode: "weight_reps",
+          sets: 3,
+          reps: 10,
+          kg: 10,
+          guide: {
+            muscle: "Upper chest thickness and pressing balance on your second chest touch of the week.",
+            form: "Set bench to 30 degrees, tuck elbows 45 degrees, and keep shoulder blades pinned down. Control the bottom and stop early if your left shoulder feels wobbly."
+          }
+        },
+        {
+          id: "d5_lat_raise_hi",
+          name: "Lateral Raises (High-Rep)",
+          loc: "Gym",
+          mode: "weight_reps",
+          sets: 3,
+          reps: 20,
+          kg: 4,
+          guide: {
+            muscle: "Side delt pump and endurance to cap off your V-taper width.",
+            form: "Use light 4 kg dumbbells with smooth tempo and zero momentum. Lift slightly forward in the scapular plane to keep your left shoulder completely comfortable."
+          }
+        }
+      ]
+    };
+
+    let app, db, isCloudReady = false;
+    let currentDay = 'D1';
+    let currentFilter = 'ALL';
+    let confirmCallback = null;
+    let cloudSaveTimer = null;
+    let lastLocalWriteMs = 0;
+
+    let appData = {
+      history: [],
+      bodyWeights: [],
+      waterLogs: {},
+      customExercises: { D1: [], D2: [], D3: [], D4: [], D5: [], ALL: [] },
+      activeDraft: null,
+      updatedAt: 0
+    };
+
+    function getLocalTodayStr() {
+      const d = new Date();
+      return new Date(d.getTime() - (d.getTimezoneOffset() * 60000)).toISOString().split('T')[0];
+    }
+
+    function formatDisplayDate(rawDate) {
+      if (!rawDate) return "Unknown Date";
+      const [y, m, d] = rawDate.split('-');
+      return new Date(y, m - 1, d).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+    }
+
+    function showToast(msg) {
+      const el = document.getElementById('toastBanner');
+      if (!el) return;
+      el.innerText = msg;
+      el.style.display = 'block';
+      clearTimeout(el._t);
+      el._t = setTimeout(() => { el.style.display = 'none'; }, 5500);
+    }
+
+    function updateNetworkStatus() {
+      const dot = document.getElementById('cloudDot');
+      const stat = document.getElementById('cloudStatus');
+      if (!dot || !stat) return;
+      if (navigator.onLine) {
+        dot.className = 'dot live';
+        stat.innerText = 'ONLINE & READY';
+      } else {
+        dot.className = 'dot err';
+        stat.innerText = 'OFFLINE (LOCAL)';
+      }
+    }
+
+    window.addEventListener('online', () => { updateNetworkStatus(); window.saveData(true); });
+    window.addEventListener('offline', updateNetworkStatus);
+
+    try {
+      app = initializeApp(firebaseConfig);
+      db = getFirestore(app);
+      isCloudReady = true;
+      updateNetworkStatus();
+    } catch (e) {
+      document.getElementById('cloudDot').className = 'dot err';
+      document.getElementById('cloudStatus').innerText = 'FIREBASE ERROR';
+    }
+
+    function ensureDataShape(data) {
+      if (!data || typeof data !== 'object') data = {};
+      if (!Array.isArray(data.history)) data.history = [];
+      if (!Array.isArray(data.bodyWeights)) data.bodyWeights = [];
+      if (!data.waterLogs || typeof data.waterLogs !== 'object') data.waterLogs = {};
+      if (!data.customExercises || typeof data.customExercises !== 'object') data.customExercises = {};
+      ['D1', 'D2', 'D3', 'D4', 'D5', 'ALL'].forEach(k => {
+        if (!Array.isArray(data.customExercises[k])) data.customExercises[k] = [];
+      });
+      if (!data.updatedAt) data.updatedAt = 0;
+      return data;
+    }
+
+    function initDate() {
+      const today = getLocalTodayStr();
+      document.getElementById('sessionDate').value = today;
+      document.getElementById('bwDate').value = today;
+    }
+
+    window.syncDates = function(val) {
+      if (!val) return;
+      document.getElementById('sessionDate').value = val;
+      document.getElementById('bwDate').value = val;
+      if (appData.activeDraft) {
+        appData.activeDraft.date = val;
+        persistDraftQuick();
+      }
+      window.renderWaterTracker();
+    };
+
+    function getNextRecommendedDay() {
+      if (!appData.history || appData.history.length === 0) return 'D1';
+      for (let i = appData.history.length - 1; i >= 0; i--) {
+        const t = String(appData.history[i].dayKey || appData.history[i].type || '');
+        const match = t.match(/D([1-5])/i);
+        if (match) {
+          const num = parseInt(match[1], 10);
+          return `D${(num % 5) + 1}`;
+        }
+      }
+      return 'D1';
+    }
+
+    function getLastCommittedDayLabel() {
+      if (!appData.history || appData.history.length === 0) return null;
+      const last = appData.history[appData.history.length - 1];
+      return last.dayKey || last.type || null;
+    }
+
+    window.checkPullupUnlock = function() {
+      for (let i = 0; i < appData.history.length; i++) {
+        const histEx = appData.history[i].exercises;
+        if (histEx) {
+          const dh = histEx['Dead Hangs'] || histEx['Dead Hangs & Pull-ups'];
+          if (Array.isArray(dh) && dh.length > 0 && dh.every(s => (Number(s.sec) || 0) >= 30)) {
+            return true;
+          }
+        }
+      }
+      return false;
+    };
+
+    function getExercisesForDay(day) {
+      const pullupsUnlocked = window.checkPullupUnlock();
+      const base = (BASE_DAYS[day] || BASE_DAYS.D1).map(ex => {
+        const copy = { ...ex, guide: ex.guide ? { ...ex.guide } : {} };
+        if (copy.id === 'd2_dead_hangs') {
+          if (pullupsUnlocked) {
+            copy.mode = 'time_reps';
+            copy.name = 'Dead Hangs & Pull-ups';
+            copy.guide.muscle = "Pull-ups UNLOCKED! Lats, upper back, and grip strength.";
+          } else {
+            copy.mode = 'time_only';
+            copy.name = 'Dead Hangs';
+          }
+        }
+        return copy;
+      });
+      const customDay = (appData.customExercises[day] || []).map(c => ({ ...c }));
+      const customAll = (appData.customExercises.ALL || []).map(c => ({ ...c }));
+      const combined = [...base, ...customDay, ...customAll];
+      combined.sort((a, b) => {
+        const pa = PHASE_ORDER.indexOf(a.loc);
+        const pb = PHASE_ORDER.indexOf(b.loc);
+        return (pa === -1 ? 99 : pa) - (pb === -1 ? 99 : pb);
+      });
+      return combined;
+    }
+
+    function getLastSetsForExercise(ex) {
+      for (let i = appData.history.length - 1; i >= 0; i--) {
+        const h = appData.history[i];
+        if (h.exercisesById && h.exercisesById[ex.id]) return h.exercisesById[ex.id];
+        if (h.exercises && h.exercises[ex.name]) return h.exercises[ex.name];
+        if (ex.id === 'd2_dead_hangs' && h.exercises) {
+          if (h.exercises['Dead Hangs & Pull-ups']) return h.exercises['Dead Hangs & Pull-ups'];
+          if (h.exercises['Dead Hangs']) return h.exercises['Dead Hangs'];
+        }
+      }
+      return null;
+    }
+
+    function didHitAllTargetRepsLastSession(ex) {
+      if (ex.mode !== 'weight_reps' || ex.isMax || ex.optional) return false;
+      const lastSets = getLastSetsForExercise(ex);
+      if (!Array.isArray(lastSets) || lastSets.length < ex.sets) return false;
+      const targetReps = Number(ex.reps) || 0;
+      if (targetReps <= 0) return false;
+      return lastSets.every(s => (Number(s.reps) || 0) >= targetReps);
+    }
+
+    function calcVol(sets, mode) {
+      if (!Array.isArray(sets)) return 0;
+      let v = 0;
+      sets.forEach(s => {
+        const m = s.mode || mode || 'weight_reps';
+        if (m === 'time_only') v += (Number(s.sec) || 0);
+        else if (m === 'time_reps') v += (Number(s.sec) || 0) + ((Number(s.reps) || 0) * 15);
+        else v += (Number(s.reps) || 0) * (Number(s.kg) > 0 ? Number(s.kg) : 1);
+      });
+      return v;
+    }
+
+    function buildDefaultDraftForExercise(ex) {
+      const lastSets = getLastSetsForExercise(ex);
+      const count = (Array.isArray(lastSets) && lastSets.length > 0) ? lastSets.length : (ex.sets || 3);
+      const sets = [];
+      for (let s = 1; s <= count; s++) {
+        const prev = (lastSets && lastSets[s - 1]) ? lastSets[s - 1] : {};
+        if (ex.mode === 'time_only') {
+          sets.push({ set: s, sec: prev.sec !== undefined ? Number(prev.sec) : (ex.sec || 30), done: false, mode: 'time_only' });
+        } else if (ex.mode === 'time_reps') {
+          sets.push({
+            set: s,
+            sec: prev.sec !== undefined ? Number(prev.sec) : (ex.sec || 30),
+            reps: prev.reps !== undefined ? Number(prev.reps) : (ex.reps || 0),
+            done: false,
+            mode: 'time_reps'
+          });
+        } else {
+          sets.push({
+            set: s,
+            reps: prev.reps !== undefined ? Number(prev.reps) : (ex.reps || 10),
+            kg: prev.kg !== undefined ? Number(prev.kg) : (ex.kg || 0),
+            done: false,
+            mode: 'weight_reps'
+          });
+        }
+      }
+      return {
+        id: ex.id,
+        name: ex.name,
+        mode: ex.mode,
+        skipped: Boolean(ex.optional),
+        touched: false,
+        sets
+      };
+    }
+
+    function ensureDayDraft(day) {
+      const today = document.getElementById('sessionDate')?.value || getLocalTodayStr();
+      if (!appData.activeDraft || typeof appData.activeDraft !== 'object') {
+        appData.activeDraft = { date: today, activeDay: day, byDay: {}, updatedAt: Date.now() };
+      }
+      if (!appData.activeDraft.byDay) appData.activeDraft.byDay = {};
+      if (!appData.activeDraft.byDay[day]) appData.activeDraft.byDay[day] = {};
+      const dayDraft = appData.activeDraft.byDay[day];
+      const list = getExercisesForDay(day);
+      list.forEach(ex => {
+        if (!dayDraft[ex.id]) {
+          dayDraft[ex.id] = buildDefaultDraftForExercise(ex);
+        } else {
+          // Sync name/mode in case Dead Hangs unlocked pull-ups
+          dayDraft[ex.id].name = ex.name;
+          if (dayDraft[ex.id].mode !== ex.mode) {
+            dayDraft[ex.id].mode = ex.mode;
+            dayDraft[ex.id].sets.forEach(st => {
+              st.mode = ex.mode;
+              if (ex.mode === 'time_reps' && st.reps === undefined) st.reps = 0;
+            });
+          }
+        }
+      });
+      return dayDraft;
+    }
+
+    function buildSessionPayloadFromDraft(day, rawDate, autoCommitted = false) {
+      const list = getExercisesForDay(day);
+      const dayDraft = (appData.activeDraft && appData.activeDraft.byDay && appData.activeDraft.byDay[day])
+        ? appData.activeDraft.byDay[day]
+        : ensureDayDraft(day);
+
+      const exercisesMap = {};
+      const exercisesByIdMap = {};
+      const progressMap = {};
+      let todayVol = 0;
+
+      list.forEach(ex => {
+        const entry = dayDraft[ex.id] || buildDefaultDraftForExercise(ex);
+        if (entry.skipped) return;
+        const cleanSets = (entry.sets || []).map((st, idx) => {
+          if (ex.mode === 'time_only') return { set: idx + 1, sec: Number(st.sec) || 0, mode: 'time_only' };
+          if (ex.mode === 'time_reps') return { set: idx + 1, sec: Number(st.sec) || 0, reps: Number(st.reps) || 0, mode: 'time_reps' };
+          return { set: idx + 1, reps: Number(st.reps) || 0, kg: Number(st.kg) || 0, mode: 'weight_reps' };
+        }).filter(st => {
+          if (st.mode === 'time_only') return st.sec > 0;
+          if (st.mode === 'time_reps') return st.sec > 0 || st.reps > 0;
+          return st.reps > 0;
+        });
+
+        if (cleanSets.length === 0) return;
+        const curVol = calcVol(cleanSets, ex.mode);
+        const pastVol = calcVol(getLastSetsForExercise(ex), ex.mode);
+        let pctStr = 'NEW', pctCls = 'pct-neu';
+        if (pastVol > 0) {
+          const diff = ((curVol - pastVol) / pastVol) * 100;
+          pctCls = diff >= 0 ? 'pct-pos' : 'pct-neg';
+          pctStr = `${diff >= 0 ? '+' : ''}${diff.toFixed(1)}%`;
+        }
+        exercisesMap[ex.name] = cleanSets;
+        exercisesByIdMap[ex.id] = cleanSets;
+        progressMap[ex.name] = { str: pctStr, cls: pctCls };
+        todayVol += curVol;
+      });
+
+      let lastDayVol = 0;
+      for (let i = appData.history.length - 1; i >= 0; i--) {
+        const h = appData.history[i];
+        const matchKey = h.dayKey || (String(h.type || '').match(/D[1-5]/i)?.[0]?.toUpperCase());
+        if (matchKey === day) {
+          for (let k in h.exercises) {
+            const sArr = h.exercises[k];
+            lastDayVol += calcVol(sArr, sArr[0]?.mode || 'weight_reps');
+          }
+          break;
+        }
+      }
+
+      let dayScore = 'BASE SESSION', dayCls = 'pct-pos';
+      if (lastDayVol > 0) {
+        const diff = ((todayVol - lastDayVol) / lastDayVol) * 100;
+        dayCls = diff >= 0 ? 'pct-pos' : 'pct-neg';
+        dayScore = `${diff >= 0 ? '+' : ''}${diff.toFixed(1)}%`;
+      }
+
+      const meta = DAY_META[day] || { short: day, title: '' };
+      return {
+        date: formatDisplayDate(rawDate),
+        rawDate: rawDate || '',
+        timestamp: Date.now(),
+        dayKey: day,
+        type: `${meta.short} — ${meta.title}`,
+        dayScore,
+        dayCls,
+        autoCommitted,
+        waterGlasses: appData.waterLogs[rawDate] || 0,
+        exercises: exercisesMap,
+        exercisesById: exercisesByIdMap,
+        progress: progressMap
+      };
+    }
+
+    async function checkAndAutoCommitPreviousDay() {
+      const today = getLocalTodayStr();
+      const draft = appData.activeDraft;
+      if (!draft || !draft.date || draft.date >= today) return false;
+
+      const draftDay = DAY_ORDER.includes(draft.activeDay) ? draft.activeDay : 'D1';
+      const alreadyCommitted = appData.history.some(h => h.rawDate === draft.date && (h.dayKey === draftDay || String(h.type || '').startsWith(draftDay)));
+
+      if (!alreadyCommitted) {
+        const payload = buildSessionPayloadFromDraft(draftDay, draft.date, true);
+        if (Object.keys(payload.exercises).length > 0) {
+          appData.history.push(payload);
+          showToast(`Auto-saved ${draftDay} from ${payload.date} at day end.`);
+        }
+      }
+
+      appData.activeDraft = null;
+      await window.saveData(true);
+      return true;
+    }
+
+    function persistDraftQuick() {
+      appData.updatedAt = Date.now();
+      if (appData.activeDraft) appData.activeDraft.updatedAt = appData.updatedAt;
+      localStorage.setItem('gymv_data', JSON.stringify(appData));
+      const lbl = document.getElementById('draftSaveLabel');
+      if (lbl) lbl.innerText = 'DRAFT SAVED ' + new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+
+      clearTimeout(cloudSaveTimer);
+      cloudSaveTimer = setTimeout(() => { window.saveData(false); }, 650);
+    }
+
+    window.saveData = async function(immediate = true) {
+      appData = ensureDataShape(appData);
+      appData.updatedAt = Date.now();
+      lastLocalWriteMs = appData.updatedAt;
+      localStorage.setItem('gymv_data', JSON.stringify(appData));
+      if (isCloudReady && navigator.onLine) {
+        const stat = document.getElementById('cloudStatus');
+        if (immediate && stat) stat.innerText = 'SYNCING...';
+        try {
+          await setDoc(doc(db, "userdata", "main_profile"), appData);
+          document.getElementById('cloudDot').className = 'dot live';
+          if (stat) stat.innerText = 'CLOUD SAVED';
+          setTimeout(updateNetworkStatus, 1800);
+        } catch (e) {
+          document.getElementById('cloudDot').className = 'dot err';
+          if (stat) stat.innerText = 'SYNC ERROR';
+        }
+      }
+    };
+
+    // Save draft immediately if Safari goes to background or closes
+    document.addEventListener('visibilitychange', () => {
+      if (document.visibilityState === 'hidden') {
+        localStorage.setItem('gymv_data', JSON.stringify(appData));
+      } else if (document.visibilityState === 'visible') {
+        checkAndAutoCommitPreviousDay().then((didCommit) => {
+          if (didCommit) {
+            initDate();
+            currentDay = getNextRecommendedDay();
+            ensureDayDraft(currentDay);
+            window.renderWorkoutHeader();
+            window.renderExercises();
+          }
+        });
+      }
+    });
+    window.addEventListener('pagehide', () => {
+      localStorage.setItem('gymv_data', JSON.stringify(appData));
+    });
+
+    async function loadData() {
+      const local = localStorage.getItem('gymv_data');
+      if (local) {
+        try { appData = ensureDataShape(JSON.parse(local)); } catch (e) {}
+      }
+
+      await checkAndAutoCommitPreviousDay();
+
+      const today = getLocalTodayStr();
+      if (appData.activeDraft && appData.activeDraft.date === today && DAY_ORDER.includes(appData.activeDraft.activeDay)) {
+        currentDay = appData.activeDraft.activeDay;
+        document.getElementById('sessionDate').value = appData.activeDraft.date;
+        document.getElementById('bwDate').value = appData.activeDraft.date;
+      } else {
+        currentDay = getNextRecommendedDay();
+      }
+      ensureDayDraft(currentDay);
+      localStorage.setItem('gymv_data', JSON.stringify(appData));
+
+      window.updateBwHeader();
+      window.renderWaterTracker();
+      window.renderWorkoutHeader();
+      window.renderExercises();
+
+      if (isCloudReady) {
+        onSnapshot(doc(db, "userdata", "main_profile"), async (snapshot) => {
+          if (!snapshot.exists()) return;
+          const remote = ensureDataShape(snapshot.data());
+          // Avoid interrupting active typing from our own recent save
+          if (Date.now() - lastLocalWriteMs < 2500) return;
+          if ((remote.updatedAt || 0) < (appData.updatedAt || 0)) return;
+
+          appData = remote;
+          localStorage.setItem('gymv_data', JSON.stringify(appData));
+          await checkAndAutoCommitPreviousDay();
+          if (appData.activeDraft && appData.activeDraft.date === getLocalTodayStr() && DAY_ORDER.includes(appData.activeDraft.activeDay)) {
+            currentDay = appData.activeDraft.activeDay;
+          }
+          ensureDayDraft(currentDay);
+          window.updateBwHeader();
+          window.renderWaterTracker();
+          window.renderWorkoutHeader();
+          if (document.getElementById('workoutView').style.display !== 'none') window.renderExercises();
+          else window.renderHistory();
+        });
+      }
+    }
+
+    window.renderWaterTracker = function() {
+      const dateStr = document.getElementById('bwDate').value || getLocalTodayStr();
+      const count = appData.waterLogs[dateStr] || 0;
+      document.getElementById('waterCountDisplay').innerText = `${count} / ${WATER_GOAL} Glasses`;
+      const container = document.getElementById('waterPillsContainer');
+      container.innerHTML = '';
+      for (let i = 1; i <= WATER_GOAL; i++) {
+        const pill = document.createElement('div');
+        pill.className = `water-pill ${i <= count ? 'filled' : ''}`;
+        pill.onclick = () => window.setWaterDirect(i);
+        container.appendChild(pill);
+      }
+    };
+
+    window.adjustWater = async function(delta) {
+      const dateStr = document.getElementById('bwDate').value || getLocalTodayStr();
+      let current = appData.waterLogs[dateStr] || 0;
+      current = Math.max(0, Math.min(24, current + delta));
+      appData.waterLogs[dateStr] = current;
+      window.renderWaterTracker();
+      await window.saveData(true);
+    };
+
+    window.setWaterDirect = async function(val) {
+      const dateStr = document.getElementById('bwDate').value || getLocalTodayStr();
+      const current = appData.waterLogs[dateStr] || 0;
+      appData.waterLogs[dateStr] = (current === val) ? val - 1 : val;
+      window.renderWaterTracker();
+      await window.saveData(true);
+    };
+
+    window.renderWorkoutHeader = function() {
+      DAY_ORDER.forEach(d => {
+        const btn = document.getElementById(`dayBtn-${d}`);
+        if (btn) btn.className = d === currentDay ? 'day-btn active' : 'day-btn';
+      });
+      const meta = DAY_META[currentDay];
+      document.getElementById('dayTitleText').innerText = `${meta.short} • ${meta.title}`;
+      const rec = getNextRecommendedDay();
+      const last = getLastCommittedDayLabel();
+      document.getElementById('smartRecommendBanner').innerText = last ? `NEXT: ${rec}` : `START: ${rec}`;
+    };
+
+    function updateLiveSummaryAndCardBadge(exId) {
+      const list = getExercisesForDay(currentDay);
+      const dayDraft = ensureDayDraft(currentDay);
+      const rawDate = document.getElementById('sessionDate').value || getLocalTodayStr();
+
+      let checkedSets = 0;
+      let totalSets = 0;
+
+      list.forEach(ex => {
+        const entry = dayDraft[ex.id];
+        if (!entry || entry.skipped) return;
+        entry.sets.forEach(st => {
+          totalSets++;
+          if (st.done) checkedSets++;
+        });
+      });
+
+      const payload = buildSessionPayloadFromDraft(currentDay, rawDate, false);
+      const scoreEl = document.getElementById('liveDayScore');
+      if (scoreEl) {
+        scoreEl.innerText = payload.dayScore;
+        scoreEl.className = `live-score-val ${payload.dayCls}`;
+      }
+      const sumEl = document.getElementById('liveSetsSummary');
+      if (sumEl) {
+        sumEl.innerText = `${checkedSets} / ${totalSets} sets checked • Auto-saves live`;
+      }
+
+      if (exId) {
+        const ex = list.find(e => e.id === exId);
+        const badgeEl = document.getElementById(`badge-${exId}`);
+        if (ex && badgeEl) {
+          const prog = payload.progress[ex.name];
+          badgeEl.innerHTML = prog ? `<span class="pct-badge ${prog.cls}">${prog.str}</span>` : '';
+        }
+        const cardEl = document.getElementById(`card-${exId}`);
+        const entry = dayDraft[exId];
+        if (cardEl && entry) {
+          const allDone = !entry.skipped && entry.sets.length > 0 && entry.sets.every(st => st.done);
+          cardEl.classList.toggle('saved', allDone);
+        }
+      }
+    }
+
+    function buildSetRowHtml(ex, s, setObj) {
+      const mode = ex.mode || 'weight_reps';
+      const doneCls = setObj.done ? 'done' : '';
+      if (mode === 'time_only') {
+        const secVal = setObj.sec !== undefined ? setObj.sec : (ex.sec || 30);
+        return `<div class="set-row single-col" id="row-${ex.id}-${s}">
+          <div class="set-label">S${s}</div>
+          <div class="input-box"><span>SEC</span>
+            <div class="num-ctrl">
+              <div class="btn" onclick="window.adj('${ex.id}', ${s}, 'sec', -5)">-</div>
+              <input type="number" id="sec-${ex.id}-${s}" value="${secVal}" oninput="window.onSetInput('${ex.id}', ${s}, 'sec', this.value)">
+              <div class="btn" onclick="window.adj('${ex.id}', ${s}, 'sec', 5)">+</div>
+            </div>
+          </div>
+          <button type="button" class="check-btn ${doneCls}" id="chk-${ex.id}-${s}" onclick="window.toggleSetCheck('${ex.id}', ${s})">✓</button>
+        </div>`;
+      }
+      if (mode === 'time_reps') {
+        const secVal = setObj.sec !== undefined ? setObj.sec : (ex.sec || 30);
+        const repVal = setObj.reps !== undefined ? setObj.reps : (ex.reps || 0);
+        return `<div class="set-row" id="row-${ex.id}-${s}">
+          <div class="set-label">S${s}</div>
+          <div class="input-box"><span>SEC</span>
+            <div class="num-ctrl">
+              <div class="btn" onclick="window.adj('${ex.id}', ${s}, 'sec', -5)">-</div>
+              <input type="number" id="sec-${ex.id}-${s}" value="${secVal}" oninput="window.onSetInput('${ex.id}', ${s}, 'sec', this.value)">
+              <div class="btn" onclick="window.adj('${ex.id}', ${s}, 'sec', 5)">+</div>
+            </div>
+          </div>
+          <div class="input-box"><span>PULL-UPS</span>
+            <div class="num-ctrl">
+              <div class="btn" onclick="window.adj('${ex.id}', ${s}, 'reps', -1)">-</div>
+              <input type="number" id="reps-${ex.id}-${s}" value="${repVal}" oninput="window.onSetInput('${ex.id}', ${s}, 'reps', this.value)">
+              <div class="btn" onclick="window.adj('${ex.id}', ${s}, 'reps', 1)">+</div>
+            </div>
+          </div>
+          <button type="button" class="check-btn ${doneCls}" id="chk-${ex.id}-${s}" onclick="window.toggleSetCheck('${ex.id}', ${s})">✓</button>
+        </div>`;
+      }
+      const repVal = setObj.reps !== undefined ? setObj.reps : (ex.reps || 10);
+      const kgVal = setObj.kg !== undefined ? setObj.kg : (ex.kg || 0);
+      return `<div class="set-row" id="row-${ex.id}-${s}">
+        <div class="set-label">S${s}</div>
+        <div class="input-box"><span>REPS</span>
+          <div class="num-ctrl">
+            <div class="btn" onclick="window.adj('${ex.id}', ${s}, 'reps', -1)">-</div>
+            <input type="number" id="reps-${ex.id}-${s}" value="${repVal}" oninput="window.onSetInput('${ex.id}', ${s}, 'reps', this.value)">
+            <div class="btn" onclick="window.adj('${ex.id}', ${s}, 'reps', 1)">+</div>
+          </div>
+        </div>
+        <div class="input-box"><span>KG</span>
+          <div class="num-ctrl">
+            <div class="btn" onclick="window.adj('${ex.id}', ${s}, 'kg', -2.5)">-</div>
+            <input type="number" step="0.5" id="kg-${ex.id}-${s}" value="${kgVal}" oninput="window.onSetInput('${ex.id}', ${s}, 'kg', this.value)">
+            <div class="btn" onclick="window.adj('${ex.id}', ${s}, 'kg', 2.5)">+</div>
+          </div>
+        </div>
+        <button type="button" class="check-btn ${doneCls}" id="chk-${ex.id}-${s}" onclick="window.toggleSetCheck('${ex.id}', ${s})">✓</button>
+      </div>`;
+    }
+
+    function getTargetLabel(ex) {
+      if (ex.mode === 'time_only') return `Target: ${ex.sets} × ${ex.sec}s`;
+      if (ex.mode === 'time_reps') return `Target: ${ex.sets} × ${ex.sec}s + Pull-ups`;
+      if (ex.isMax) return `Target: ${ex.sets} × MAX`;
+      return `Target: ${ex.sets} × ${ex.reps}${ex.kg > 0 ? ` • ${ex.kg}kg` : ''}`;
+    }
+
+    window.renderExercises = function() {
+      const list = getExercisesForDay(currentDay);
+      const dayDraft = ensureDayDraft(currentDay);
+      const container = document.getElementById('exercisesContainer');
+      container.innerHTML = '';
+
+      const rawDate = document.getElementById('sessionDate').value || getLocalTodayStr();
+      const livePayload = buildSessionPayloadFromDraft(currentDay, rawDate, false);
+      const pullupsUnlocked = window.checkPullupUnlock();
+
+      let lastPhase = null;
+
+      list.forEach(ex => {
+        if (currentFilter !== 'ALL' && ex.loc !== currentFilter) return;
+
+        if (currentFilter === 'ALL' && ex.loc !== lastPhase) {
+          lastPhase = ex.loc;
+          const div = document.createElement('div');
+          div.className = 'phase-divider';
+          div.innerText = PHASE_LABELS[ex.loc] || ex.loc;
+          container.appendChild(div);
+        }
+
+        const entry = dayDraft[ex.id] || buildDefaultDraftForExercise(ex);
+        const allDone = !entry.skipped && entry.sets.length > 0 && entry.sets.every(st => st.done);
+        const prog = livePayload.progress[ex.name];
+        const badgeHtml = (!entry.skipped && prog) ? `<span class="pct-badge ${prog.cls}">${prog.str}</span>` : '';
+        const showPlusHint = didHitAllTargetRepsLastSession(ex);
+
+        let setsHtml = '';
+        entry.sets.forEach((st, idx) => { setsHtml += buildSetRowHtml(ex, idx + 1, st); });
+
+        let hintHtml = '';
+        if (showPlusHint) {
+          hintHtml = `<div class="overload-hint">▲ +2.5 kg next time (All target reps hit last session)</div>`;
+        } else if (ex.id === 'd2_dead_hangs' && !pullupsUnlocked) {
+          hintHtml = `<div class="unlock-hint">Hold 30s on all sets to unlock Pull-up Reps</div>`;
+        } else if (ex.id === 'd2_dead_hangs' && pullupsUnlocked) {
+          hintHtml = `<div class="overload-hint">★ Pull-up Reps Unlocked</div>`;
+        }
+
+        const card = document.createElement('div');
+        card.id = `card-${ex.id}`;
+        card.className = `exercise-card ${allDone ? 'saved' : ''} ${entry.skipped ? 'skipped' : ''}`;
+        card.innerHTML = `
+          <div class="ex-header">
+            <div class="ex-title-wrap">
+              <span class="ex-name">${ex.name}</span>
+              <button type="button" class="info-btn" onclick="window.openGuideModal('${ex.id}')">i</button>
+              ${ex.optional ? `<span class="opt-badge">OPTIONAL</span>` : ''}
+              <span id="badge-${ex.id}">${badgeHtml}</span>
+            </div>
+            <div style="display:flex; align-items:center;">
+              <div class="loc-badge">${ex.loc}</div>
+              ${ex.isCustom ? `<button class="delete-btn" style="margin-left:6px;" onclick="window.deleteCustomExercise('${ex.id}')">DEL</button>` : ''}
+            </div>
+          </div>
+          <div class="ex-meta-row">
+            <span class="target-tag">${getTargetLabel(ex)}</span>
+            <span>${entry.skipped ? 'Skipped for today' : 'Auto-saving'}</span>
+          </div>
+          ${hintHtml}
+          <div id="sets-wrapper-${ex.id}" style="${entry.skipped ? 'display:none;' : ''}">${setsHtml}</div>
+          <div class="set-actions-bar">
+            ${!entry.skipped ? `
+              <button class="add-rem-btn" onclick="window.addSet('${ex.id}')">+ SET</button>
+              <button class="add-rem-btn" onclick="window.removeSet('${ex.id}')">- SET</button>
+            ` : ''}
+            <button class="skip-toggle-btn ${entry.skipped ? 'is-skipped' : ''}" onclick="window.toggleSkipExercise('${ex.id}')">
+              ${entry.skipped ? '+ INCLUDE TODAY' : 'SKIP TODAY'}
+            </button>
+          </div>
+        `;
+        container.appendChild(card);
+      });
+
+      updateLiveSummaryAndCardBadge();
+    };
+
+    window.onSetInput = function(exId, setNum, field, rawVal) {
+      const dayDraft = ensureDayDraft(currentDay);
+      const entry = dayDraft[exId];
+      if (!entry || !entry.sets[setNum - 1]) return;
+      let val = parseFloat(rawVal);
+      if (isNaN(val) || val < 0) val = 0;
+      entry.sets[setNum - 1][field] = val;
+      entry.touched = true;
+      entry.skipped = false;
+      appData.activeDraft.activeDay = currentDay;
+      persistDraftQuick();
+      updateLiveSummaryAndCardBadge(exId);
+    };
+
+    window.adj = function(exId, setNum, field, delta) {
+      const inputEl = document.getElementById(`${field}-${exId}-${setNum}`);
+      if (!inputEl) return;
+      let val = parseFloat(inputEl.value) || 0;
+      val = Number((val + delta).toFixed(1));
+      if (val < 0) val = 0;
+      inputEl.value = val;
+      window.onSetInput(exId, setNum, field, val);
+    };
+
+    window.toggleSetCheck = function(exId, setNum) {
+      const dayDraft = ensureDayDraft(currentDay);
+      const entry = dayDraft[exId];
+      if (!entry || !entry.sets[setNum - 1]) return;
+      entry.sets[setNum - 1].done = !entry.sets[setNum - 1].done;
+      entry.touched = true;
+      entry.skipped = false;
+      appData.activeDraft.activeDay = currentDay;
+
+      const btn = document.getElementById(`chk-${exId}-${setNum}`);
+      if (btn) btn.classList.toggle('done', entry.sets[setNum - 1].done);
+
+      persistDraftQuick();
+      updateLiveSummaryAndCardBadge(exId);
+    };
+
+    window.toggleSkipExercise = function(exId) {
+      const dayDraft = ensureDayDraft(currentDay);
+      const entry = dayDraft[exId];
+      if (!entry) return;
+      entry.skipped = !entry.skipped;
+      entry.touched = true;
+      appData.activeDraft.activeDay = currentDay;
+      persistDraftQuick();
+      window.renderExercises();
+    };
+
+    window.addSet = function(exId) {
+      const list = getExercisesForDay(currentDay);
+      const ex = list.find(e => e.id === exId);
+      const dayDraft = ensureDayDraft(currentDay);
+      const entry = dayDraft[exId];
+      if (!ex || !entry) return;
+
+      const prev = entry.sets[entry.sets.length - 1] || {};
+      const nextNum = entry.sets.length + 1;
+      if (ex.mode === 'time_only') {
+        entry.sets.push({ set: nextNum, sec: prev.sec !== undefined ? prev.sec : (ex.sec || 30), done: false, mode: 'time_only' });
+      } else if (ex.mode === 'time_reps') {
+        entry.sets.push({ set: nextNum, sec: prev.sec !== undefined ? prev.sec : (ex.sec || 30), reps: prev.reps !== undefined ? prev.reps : (ex.reps || 0), done: false, mode: 'time_reps' });
+      } else {
+        entry.sets.push({ set: nextNum, reps: prev.reps !== undefined ? prev.reps : (ex.reps || 10), kg: prev.kg !== undefined ? prev.kg : (ex.kg || 0), done: false, mode: 'weight_reps' });
+      }
+      entry.touched = true;
+      appData.activeDraft.activeDay = currentDay;
+      persistDraftQuick();
+      window.renderExercises();
+    };
+
+    window.removeSet = function(exId) {
+      const dayDraft = ensureDayDraft(currentDay);
+      const entry = dayDraft[exId];
+      if (!entry || entry.sets.length <= 1) return;
+      entry.sets.pop();
+      entry.touched = true;
+      appData.activeDraft.activeDay = currentDay;
+      persistDraftQuick();
+      window.renderExercises();
+    };
+
+    window.openCommitModal = function() {
+      const rawDate = document.getElementById('sessionDate').value || getLocalTodayStr();
+      const payload = buildSessionPayloadFromDraft(currentDay, rawDate, false);
+      const keys = Object.keys(payload.exercises);
+      if (keys.length === 0) {
+        showToast("No active exercises to save.");
+        return;
+      }
+
+      let breakdownHtml = '';
+      keys.forEach(exName => {
+        const p = payload.progress[exName] || { str: 'NEW', cls: 'pct-neu' };
+        breakdownHtml += `<div class="row-between" style="padding: 6px 0; border-bottom: 1px solid #1c1c1c; font-size: 0.8rem;">
+          <span style="color: var(--white); font-weight: 700;">${exName}</span>
+          <span class="pct-badge ${p.cls}">${p.str}</span>
+        </div>`;
+      });
+
+      document.getElementById('modalDayScore').className = `modal-day-score ${payload.dayCls}`;
+      document.getElementById('modalDayScore').innerText = payload.dayScore;
+      document.getElementById('modalExBreakdown').innerHTML = breakdownHtml;
+      document.getElementById('progressModal').style.display = 'flex';
+    };
+
+    window.closeProgressModal = function() {
+      document.getElementById('progressModal').style.display = 'none';
+    };
+
+    window.confirmAndSaveSession = async function() {
+      const rawDate = document.getElementById('sessionDate').value || getLocalTodayStr();
+      const payload = buildSessionPayloadFromDraft(currentDay, rawDate, false);
+      if (Object.keys(payload.exercises).length === 0) return;
+
+      appData.history.push(payload);
+      // Clear active draft for committed day
+      appData.activeDraft = null;
+      await window.saveData(true);
+
+      document.getElementById('progressModal').style.display = 'none';
+      currentDay = getNextRecommendedDay();
+      window.renderWorkoutHeader();
+      showToast(`${payload.dayKey} committed to history!`);
+      window.switchTab('history');
+    };
+
+    window.openClearDraftModal = function() {
+      askConfirmation(
+        "Discard Today's Draft?",
+        "This clears today's unsaved workout draft so nothing auto-saves tonight (great for a rest day).",
+        async () => {
+          appData.activeDraft = null;
+          await window.saveData(true);
+          showToast("Draft cleared for rest day.");
+          window.renderExercises();
+        }
+      );
+    };
+
+    window.logBodyWeight = async function() {
+      const val = parseFloat(document.getElementById('bwInput').value);
+      const rawDate = document.getElementById('bwDate').value;
+      if (!val || isNaN(val) || !rawDate) return;
+      const [y, m, d] = rawDate.split('-');
+      appData.bodyWeights.push({
+        date: new Date(y, m - 1, d).toLocaleDateString('en-US', { month: 'short', day: 'numeric' }),
+        weight: val,
+        timestamp: Date.now()
+      });
+      document.getElementById('bwInput').value = '';
+      await window.saveData(true);
+      window.updateBwHeader();
+    };
+
+    window.updateBwHeader = function() {
+      const d = document.getElementById('lastBwDisplay');
+      if (appData.bodyWeights && appData.bodyWeights.length > 0) {
+        const last = appData.bodyWeights[appData.bodyWeights.length - 1];
+        let pctHtml = '';
+        if (appData.bodyWeights.length > 1) {
+          const prev = appData.bodyWeights[appData.bodyWeights.length - 2];
+          const diff = ((last.weight - prev.weight) / prev.weight) * 100;
+          pctHtml = `<span class="pct-badge ${diff > 0 ? 'pct-neg' : (diff < 0 ? 'pct-pos' : 'pct-neu')}">${diff > 0 ? '+' : ''}${diff.toFixed(1)}%</span>`;
+        }
+        d.innerHTML = `Last: ${last.weight} kg (${last.date}) ${pctHtml}`;
+      } else {
+        d.innerText = "Last: Not logged";
+      }
+    };
+
+    window.toggleCustomForm = function() {
+      const form = document.getElementById('customExForm');
+      const icon = document.getElementById('customToggleIcon');
+      if (form.style.display === 'none') { form.style.display = 'block'; icon.innerText = '[-]'; }
+      else { form.style.display = 'none'; icon.innerText = '[+]'; }
+    };
+
+    window.addCustomExercise = async function() {
+      const name = document.getElementById('custName').value.trim();
+      if (!name) return;
+      const dayKey = document.getElementById('custDay').value;
+      const loc = document.getElementById('custLoc').value;
+      const mode = document.getElementById('custMode').value;
+      const targetVal = Number(document.getElementById('custTarget').value) || 10;
+      const muscleText = document.getElementById('custTargetMuscle').value.trim();
+
+      appData.customExercises[dayKey].push({
+        id: 'cust_' + Date.now(),
+        isCustom: true,
+        name,
+        loc,
+        mode,
+        sets: 3,
+        reps: mode === 'time_only' ? 0 : targetVal,
+        kg: 0,
+        sec: mode === 'weight_reps' ? 0 : targetVal,
+        guide: {
+          muscle: muscleText || "Custom exercise added to your routine.",
+          form: "Use smooth control, keep 1–2 reps in reserve on early sets, and stop if your left shoulder feels unstable."
+        }
+      });
+
+      document.getElementById('custName').value = '';
+      document.getElementById('custTargetMuscle').value = '';
+      window.toggleCustomForm();
+      ensureDayDraft(currentDay);
+      await window.saveData(true);
+      window.renderExercises();
+    };
+
+    window.deleteCustomExercise = async function(exId) {
+      ['D1', 'D2', 'D3', 'D4', 'D5', 'ALL'].forEach(d => {
+        appData.customExercises[d] = (appData.customExercises[d] || []).filter(item => item.id !== exId);
+        if (appData.activeDraft && appData.activeDraft.byDay && appData.activeDraft.byDay[d]) {
+          delete appData.activeDraft.byDay[d][exId];
+        }
+      });
+      await window.saveData(true);
+      window.renderExercises();
+    };
+
+    window.openGuideModal = function(exId) {
+      const ex = getExercisesForDay(currentDay).find(item => item.id === exId);
+      if (!ex) return;
+      document.getElementById('guideTitle').innerText = ex.name;
+      document.getElementById('guideMuscle').innerText = ex.guide?.muscle || "Targeted strength movement.";
+      document.getElementById('guideForm').innerText = ex.guide?.form || "Control every rep and stop right away if your left shoulder feels wobbly.";
+      document.getElementById('guideModal').style.display = 'flex';
+    };
+
+    window.closeGuideModal = function() {
+      document.getElementById('guideModal').style.display = 'none';
+    };
+
+    function formatSetSummary(s) {
+      if (s.mode === 'time_only') return `${s.sec}s`;
+      if (s.mode === 'time_reps') return s.reps > 0 ? `${s.sec}s + ${s.reps} reps` : `${s.sec}s hang`;
+      return `${s.kg}kg×${s.reps}`;
+    }
+
+    window.renderHistory = function() {
+      const container = document.getElementById('historyList');
+      container.innerHTML = '';
+
+      if (appData.bodyWeights && appData.bodyWeights.length > 0) {
+        let bwHtml = `<div class="history-card"><div class="hist-head"><span>BODY WEIGHT LOG</span><span>${appData.bodyWeights.length} ENTRIES</span></div>`;
+        appData.bodyWeights.slice().reverse().forEach(b => {
+          bwHtml += `<div class="hist-entry"><span>${b.date} &nbsp; <strong>${b.weight} kg</strong></span><button class="delete-btn" onclick="window.deleteWeight(${b.timestamp})">X</button></div>`;
+        });
+        container.innerHTML += bwHtml + `</div>`;
+      }
+
+      if (!appData.history || appData.history.length === 0) {
+        container.innerHTML += `<div class="history-card"><div class="sub-label" style="text-align:center;">No workouts committed yet. Your draft auto-saves at day end, or tap Finish & Commit anytime.</div></div>`;
+        return;
+      }
+
+      appData.history.slice().reverse().forEach(h => {
+        const card = document.createElement('div');
+        card.className = 'history-card';
+        let exHtml = '';
+        for (let name in h.exercises) {
+          exHtml += `<div class="hist-entry" style="display:block; margin-bottom: 8px;">
+            <div class="row-between">
+              <span style="color:var(--white); font-weight:700;">${name}</span>
+              ${h.progress?.[name] ? `<span class="pct-badge ${h.progress[name].cls}">${h.progress[name].str}</span>` : ''}
+            </div>
+            <div style="font-size:0.74rem; color:var(--ash-light); margin-top:2px;">${h.exercises[name].map(formatSetSummary).join(' | ')}</div>
+          </div>`;
+        }
+        const autoTag = h.autoCommitted ? ` <span class="pct-badge pct-neu">AUTO</span>` : '';
+        card.innerHTML = `<div class="hist-head">
+          <span>${h.type} (${h.date})${h.waterGlasses ? ` • 💧 ${h.waterGlasses}G` : ''}${autoTag} ${h.dayScore ? `<span class="pct-badge ${h.dayCls || 'pct-pos'}">${h.dayScore}</span>` : ''}</span>
+          <button class="delete-btn" onclick="window.deleteWorkout(${h.timestamp})">X</button>
+        </div>${exHtml}`;
+        container.appendChild(card);
+      });
+    };
+
+    window.switchTab = function(tab) {
+      document.querySelectorAll('.tabs .tab-btn').forEach(b => b.classList.remove('active'));
+      if (tab === 'workout') {
+        document.querySelector('.tabs .tab-btn:nth-child(1)').classList.add('active');
+        document.getElementById('workoutView').style.display = 'block';
+        document.getElementById('historyView').style.display = 'none';
+        ensureDayDraft(currentDay);
+        window.renderWorkoutHeader();
+        window.renderExercises();
+      } else {
+        document.querySelector('.tabs .tab-btn:nth-child(2)').classList.add('active');
+        document.getElementById('workoutView').style.display = 'none';
+        document.getElementById('historyView').style.display = 'block';
+        window.renderHistory();
+      }
+    };
+
+    window.setDay = function(day) {
+      if (!DAY_ORDER.includes(day)) return;
+      currentDay = day;
+      ensureDayDraft(currentDay);
+      appData.activeDraft.activeDay = currentDay;
+      persistDraftQuick();
+      window.renderWorkoutHeader();
+      window.renderExercises();
+    };
+
+    window.setFilter = function(filter) {
+      currentFilter = filter;
+      document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+      const btn = document.getElementById(`flt-${filter}`);
+      if (btn) btn.classList.add('active');
+      window.renderExercises();
+    };
+
+    function askConfirmation(title, message, onConfirm) {
+      document.getElementById('confirmTitle').innerText = title;
+      document.getElementById('confirmMessage').innerText = message;
+      confirmCallback = onConfirm;
+      document.getElementById('confirmModal').style.display = 'flex';
+    }
+    window.closeConfirmModal = function() {
+      document.getElementById('confirmModal').style.display = 'none';
+      confirmCallback = null;
+    };
+    document.getElementById('confirmActionBtn').onclick = async function() {
+      if (confirmCallback) await confirmCallback();
+      window.closeConfirmModal();
+    };
+
+    window.deleteWorkout = function(ts) {
+      askConfirmation("Delete Workout?", "Permanently remove this workout session?", async () => {
+        appData.history = appData.history.filter(h => h.timestamp !== ts);
+        await window.saveData(true);
+        window.renderWorkoutHeader();
+        window.renderHistory();
+      });
+    };
+
+    window.deleteWeight = function(ts) {
+      askConfirmation("Delete Weight?", "Permanently remove this body weight entry?", async () => {
+        appData.bodyWeights = appData.bodyWeights.filter(b => b.timestamp !== ts);
+        await window.saveData(true);
+        window.renderHistory();
+        window.updateBwHeader();
+      });
+    };
+
+    window.openResetConfirmModal = function() {
+      askConfirmation("Wipe Server & Local?", "Permanently delete all workouts, weights, water logs, and custom exercises?", async () => {
+        appData = {
+          history: [],
+          bodyWeights: [],
+          waterLogs: {},
+          customExercises: { D1: [], D2: [], D3: [], D4: [], D5: [], ALL: [] },
+          activeDraft: null,
+          updatedAt: Date.now()
+        };
+        currentDay = 'D1';
+        await window.saveData(true);
+        window.updateBwHeader();
+        window.renderWaterTracker();
+        window.renderWorkoutHeader();
+        window.renderHistory();
+      });
+    };
+
+    window.downloadBackupFile = function() {
+      const blob = new Blob([JSON.stringify(appData, null, 2)], { type: 'application/json' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `gymv2-backup-${getLocalTodayStr()}.json`;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+    };
+
+    window.importBackupFile = function(event) {
+      const file = event.target.files[0];
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = async (e) => {
+        try {
+          appData = ensureDataShape(JSON.parse(e.target.result));
+          await window.saveData(true);
+          currentDay = getNextRecommendedDay();
+          ensureDayDraft(currentDay);
+          window.updateBwHeader();
+          window.renderWaterTracker();
+          window.renderWorkoutHeader();
+          window.renderHistory();
+          showToast("Backup imported successfully.");
+        } catch (err) {
+          showToast("Invalid backup file.");
+        }
+      };
+      reader.readAsText(file);
+    };
+
+    initDate();
+    loadData();
+  </script>
+</body>
+</html>
