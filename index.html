@@ -119,15 +119,15 @@
       background: #1c1c1c;
     }
 
-    /* 5-DAY SELECTOR */
+    /* 2-DAY SELECTOR (DAY A / DAY B) */
     .day-tabs {
       display: grid;
-      grid-template-columns: repeat(5, 1fr);
-      gap: 6px;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 8px;
       margin-bottom: 8px;
     }
     .day-btn {
-      padding: 11px 4px;
+      padding: 12px 8px;
       background: var(--card);
       border: 1px solid var(--card-border);
       color: var(--ash);
@@ -147,10 +147,10 @@
     .day-btn.has-progress::after {
       content: "";
       position: absolute;
-      top: 5px;
-      right: 5px;
-      width: 6px;
-      height: 6px;
+      top: 7px;
+      right: 7px;
+      width: 7px;
+      height: 7px;
       border-radius: 50%;
       background: var(--pos);
     }
@@ -167,7 +167,7 @@
       gap: 8px;
     }
     .day-title-text {
-      font-size: 0.82rem;
+      font-size: 0.8rem;
       font-weight: 900;
       color: var(--white);
       text-transform: uppercase;
@@ -209,7 +209,7 @@
       border: 1px solid var(--card-border);
     }
 
-    /* TRACKER CARDS */
+    /* TRACKER CARD */
     .tracker-card {
       background: var(--card);
       border: 1px solid var(--card-border);
@@ -270,37 +270,6 @@
       border-radius: 6px;
       font-family: monospace;
       font-size: 0.84rem;
-    }
-
-    /* WATER TRACKER (12 GLASSES) */
-    .water-pills {
-      display: grid;
-      grid-template-columns: repeat(12, 1fr);
-      gap: 3px;
-      margin-top: 2px;
-    }
-    .water-pill {
-      height: 18px;
-      border-radius: 4px;
-      background: #050505;
-      border: 1px solid var(--card-border);
-      cursor: pointer;
-      transition: all 0.15s;
-    }
-    .water-pill.filled {
-      background: var(--ash-light);
-      border-color: var(--white);
-    }
-    .water-ctrl-btn {
-      width: 34px;
-      height: 32px;
-      background: #000;
-      border: 1px solid var(--card-border);
-      color: var(--white);
-      font-weight: 900;
-      font-size: 1rem;
-      border-radius: 6px;
-      cursor: pointer;
     }
 
     /* LIVE SUMMARY CARD */
@@ -420,16 +389,6 @@
       text-transform: uppercase;
       font-weight: 700;
       white-space: nowrap;
-    }
-    .opt-badge {
-      font-size: 0.58rem;
-      background: var(--warn-bg);
-      border: 1px solid var(--warn);
-      color: var(--warn);
-      padding: 2px 6px;
-      border-radius: 4px;
-      font-weight: 800;
-      text-transform: uppercase;
     }
 
     .ex-meta-row {
@@ -725,16 +684,16 @@
 
     .hist-day-filters {
       display: grid;
-      grid-template-columns: repeat(6, 1fr);
-      gap: 4px;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 6px;
       margin-bottom: 12px;
     }
     .hist-day-pill {
-      padding: 7px 2px;
+      padding: 8px 4px;
       background: var(--card);
       border: 1px solid var(--card-border);
       color: var(--ash);
-      font-size: 0.68rem;
+      font-size: 0.7rem;
       font-weight: 800;
       border-radius: 6px;
       cursor: pointer;
@@ -1031,7 +990,7 @@
     <header>
       <div>
         <h1>GYM V2</h1>
-        <div style="font-size: 0.65rem; color: var(--ash); font-weight: 700;">5-DAY V-TAPER SYSTEM</div>
+        <div style="font-size: 0.65rem; color: var(--ash); font-weight: 700;">2-DAY V-TAPER SYSTEM</div>
       </div>
       <div class="status-badge">
         <span class="dot" id="cloudDot"></span>
@@ -1066,37 +1025,19 @@
       </div>
     </div>
 
-    <!-- DAILY WATER TRACKER (12 GLASSES GOAL) -->
-    <div class="tracker-card">
-      <div class="row-between">
-        <div>
-          <div class="card-label">Daily Water Intake</div>
-          <div class="sub-label" id="waterCountDisplay">0 / 12 Glasses</div>
-        </div>
-        <div style="display: flex; gap: 6px; align-items: center;">
-          <button class="water-ctrl-btn" onclick="window.adjustWater(-1)">-</button>
-          <button class="water-ctrl-btn" onclick="window.adjustWater(1)">+</button>
-        </div>
-      </div>
-      <div class="water-pills" id="waterPillsContainer"></div>
-    </div>
-
     <!-- =======================================================
          WORKOUT VIEW
          ======================================================= -->
     <div id="workoutView">
-      <!-- 5-DAY SELECTOR (D1 - D5) -->
+      <!-- 2-DAY SELECTOR (DAY A / DAY B) -->
       <div class="day-tabs">
-        <button class="day-btn" id="dayBtn-D1" onclick="window.setDay('D1')">D1</button>
-        <button class="day-btn" id="dayBtn-D2" onclick="window.setDay('D2')">D2</button>
-        <button class="day-btn" id="dayBtn-D3" onclick="window.setDay('D3')">D3</button>
-        <button class="day-btn" id="dayBtn-D4" onclick="window.setDay('D4')">D4</button>
-        <button class="day-btn" id="dayBtn-D5" onclick="window.setDay('D5')">D5</button>
+        <button class="day-btn" id="dayBtn-A" onclick="window.setDay('A')">DAY A • PUSH</button>
+        <button class="day-btn" id="dayBtn-B" onclick="window.setDay('B')">DAY B • PULL</button>
       </div>
 
       <div class="day-title-bar">
-        <span class="day-title-text" id="dayTitleText">D1 • Chest &amp; Side Delts</span>
-        <span class="day-sub-rec" id="smartRecommendBanner">START: D1</span>
+        <span class="day-title-text" id="dayTitleText">DAY A • Push, Waist &amp; Lower Body</span>
+        <span class="day-sub-rec" id="smartRecommendBanner">START: DAY A</span>
       </div>
 
       <!-- LIVE PROGRESS & AUTO-SAVE STATUS -->
@@ -1134,12 +1075,9 @@
           <input type="text" id="custName" class="form-input" placeholder="Exercise Name (e.g. Hammer Curl)">
           <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px;">
             <select id="custDay" class="form-select">
-              <option value="D1">D1 (Chest &amp; Side Delts)</option>
-              <option value="D2">D2 (Back Width)</option>
-              <option value="D3">D3 (Legs &amp; Waist)</option>
-              <option value="D4">D4 (Shoulders &amp; Arms)</option>
-              <option value="D5">D5 (Back Thick &amp; Upper Chest)</option>
-              <option value="ALL">All Days</option>
+              <option value="A">Day A (Push &amp; Front Legs)</option>
+              <option value="B">Day B (Pull &amp; Posterior)</option>
+              <option value="BOTH">Both Days</option>
             </select>
             <select id="custLoc" class="form-select">
               <option value="Stretch">1. Stretch</option>
@@ -1188,11 +1126,8 @@
       <div id="histWorkoutsPane">
         <div class="hist-day-filters">
           <button class="hist-day-pill active" id="hdflt-ALL" onclick="window.setHistoryDayFilter('ALL')">ALL</button>
-          <button class="hist-day-pill" id="hdflt-D1" onclick="window.setHistoryDayFilter('D1')">D1</button>
-          <button class="hist-day-pill" id="hdflt-D2" onclick="window.setHistoryDayFilter('D2')">D2</button>
-          <button class="hist-day-pill" id="hdflt-D3" onclick="window.setHistoryDayFilter('D3')">D3</button>
-          <button class="hist-day-pill" id="hdflt-D4" onclick="window.setHistoryDayFilter('D4')">D4</button>
-          <button class="hist-day-pill" id="hdflt-D5" onclick="window.setHistoryDayFilter('D5')">D5</button>
+          <button class="hist-day-pill" id="hdflt-A" onclick="window.setHistoryDayFilter('A')">DAY A</button>
+          <button class="hist-day-pill" id="hdflt-B" onclick="window.setHistoryDayFilter('B')">DAY B</button>
         </div>
         <div id="historyWorkoutsList"></div>
       </div>
@@ -1207,7 +1142,7 @@
         <div class="bw-table-card">
           <div class="card-label" style="margin-bottom: 6px;">JSON Backup &amp; Restore</div>
           <p class="sub-label" style="margin-bottom: 12px; line-height: 1.4;">
-            Export a full backup of your workouts, body weights, water logs, and custom exercises, or import a previous JSON file.
+            Export a full backup of your workouts, body weights, and custom exercises, or import a previous JSON file.
           </p>
           <div style="display: flex; gap: 8px; margin-bottom: 14px;">
             <button class="action-btn-white" style="flex: 1;" onclick="window.downloadBackupFile()">DOWNLOAD JSON</button>
@@ -1284,295 +1219,96 @@
     };
 
     // =========================================================================
-    // CONSTANTS & 5-DAY SPLIT DEFINITION (STRETCH -> GYM -> NO EQUIP)
+    // CONSTANTS & 2-DAY SPLIT DEFINITION (STRETCH -> GYM -> NO EQUIP)
     // =========================================================================
-    const WATER_GOAL = 12;
-    const DAY_ORDER = ['D1', 'D2', 'D3', 'D4', 'D5'];
+    const DAY_ORDER = ['A', 'B'];
     const DAY_META = {
-      D1: { short: 'D1', title: 'Chest & Side Delts' },
-      D2: { short: 'D2', title: 'Back Width' },
-      D3: { short: 'D3', title: 'Legs & Waist' },
-      D4: { short: 'D4', title: 'Shoulders & Arms' },
-      D5: { short: 'D5', title: 'Back Thickness & Upper Chest' }
+      A: { short: 'DAY A', title: 'Push, Waist & Front Legs' },
+      B: { short: 'DAY B', title: 'Pull, Lower Back & Posterior' }
     };
     const PHASE_ORDER = ['Stretch', 'Gym', 'No Equip'];
     const PHASE_LABELS = {
       'Stretch': 'PHASE 1 • STRETCH',
-      'Gym': 'PHASE 2 • GYM',
+      'Gym': 'PHASE 2 • GYM (TRAINER PLAN)',
       'No Equip': 'PHASE 3 • NO EQUIPMENT'
     };
 
-    const STRETCHES = {
-      hipFlexor: (day) => ({
-        id: `${day}_st_hip`,
-        name: "Kneeling Hip Flexor Stretch",
-        loc: "Stretch",
-        mode: "time_only",
-        sets: 2,
-        sec: 45,
-        guide: {
-          muscle: "Hip flexors and front pelvis. Helps fix anterior pelvic tilt and flatten your lower stomach.",
-          form: "Squeeze your back glute and tuck your ribs down. Keep your arms relaxed at your sides so your left shoulder stays calm."
-        }
-      }),
-      doorwayPec: (day) => ({
-        id: `${day}_st_pec`,
-        name: "Doorway Pec Stretch",
-        loc: "Stretch",
-        mode: "time_only",
-        sets: 2,
-        sec: 30,
-        guide: {
-          muscle: "Chest (pectorals) and front shoulders. Opens your posture for a wider V-taper.",
-          form: "Keep your elbow slightly below shoulder height and lean gently. Never force a deep pull in the front of your left shoulder."
-        }
-      }),
-      childsPose: (day) => ({
-        id: `${day}_st_child`,
-        name: "Child's Pose Lat Opener",
-        loc: "Stretch",
-        mode: "time_only",
-        sets: 2,
-        sec: 40,
-        guide: {
-          muscle: "Lats, upper back, and lower back decompression before heavy pulling.",
-          form: "Reach forward only as far as feels stable. Keep your left shoulder blade pulled gently down away from your ear."
-        }
-      }),
-      hamCalf: (day) => ({
-        id: `${day}_st_hamcalf`,
-        name: "Hamstring & Calf Stretch",
-        loc: "Stretch",
-        mode: "time_only",
-        sets: 2,
-        sec: 30,
-        guide: {
-          muscle: "Hamstrings (back of thighs) and calves for safer squatting and hinge depth.",
-          form: "Hinge from your hips with a flat back. Let your arms hang loosely without rounding your shoulders forward."
-        }
-      })
-    };
-
     const BASE_DAYS = {
-      D1: [
-        STRETCHES.hipFlexor('d1'),
-        STRETCHES.doorwayPec('d1'),
+      A: [
+        // 1. STRETCH
         {
-          id: "d1_inc_db_press",
-          name: "Incline DB Press",
-          loc: "Gym",
-          mode: "weight_reps",
-          sets: 3, reps: 10, kg: 10,
+          id: "a_st_hip",
+          name: "Kneeling Hip Flexor Stretch",
+          loc: "Stretch",
+          mode: "time_only",
+          sets: 2, sec: 45,
           guide: {
-            muscle: "Upper chest (clavicular pecs) and front delts for a full upper shelf.",
-            form: "Set bench to 30°, tuck elbows 45°, and pin shoulder blades back. Stop just before the dumbbells drop below chest level if your left shoulder feels loose."
+            muscle: "Hip flexors and front pelvis. Fixes anterior pelvic tilt and flattens your lower belly.",
+            form: "Squeeze your back glute and tuck your ribs down. Keep your arms relaxed at your sides so your left shoulder stays calm."
           }
         },
         {
-          id: "d1_dec_bench",
+          id: "a_st_pec",
+          name: "Doorway Pec Stretch",
+          loc: "Stretch",
+          mode: "time_only",
+          sets: 2, sec: 30,
+          guide: {
+            muscle: "Chest (pectorals) and front shoulders. Opens your posture for a wider V-taper.",
+            form: "Keep your elbow slightly below shoulder height and lean gently. Never force a deep pull in the front of your left shoulder."
+          }
+        },
+
+        // 2. GYM (TRAINER'S EXACT LIST)
+        {
+          id: "a_dips",
+          name: "Parallel Bar Dips",
+          loc: "Gym",
+          mode: "weight_reps",
+          sets: 3, reps: 8, kg: 0,
+          guide: {
+            muscle: "Lower-outer chest and triceps for a sharp lower chest line.",
+            form: "Lean slightly forward, pull shoulder blades down, and stop when your upper arms reach parallel to the floor. Never sink past 90 degrees if your left shoulder feels pinched."
+          }
+        },
+        {
+          id: "a_decline_bench",
           name: "Decline Bench Press",
           loc: "Gym",
           mode: "weight_reps",
           sets: 3, reps: 10, kg: 20,
           guide: {
-            muscle: "Lower and mid chest for sharp chest thickness and pressing strength.",
-            form: "Pack both shoulder blades tightly into the bench before unracking. Lower with control to your lower chest with elbows tucked 45°. Stop immediately if your left arm wobbles."
+            muscle: "Chest thickness and pressing strength with less shoulder strain.",
+            form: "Pack both shoulder blades tightly into the bench before unracking. Lower with control to your lower chest with elbows tucked at 45 degrees. Stop right away if your left arm wobbles."
           }
         },
         {
-          id: "d1_lat_raise",
-          name: "Lateral Raises",
-          loc: "Gym",
-          mode: "weight_reps",
-          sets: 4, reps: 15, kg: 5,
-          guide: {
-            muscle: "Side delts — your #1 muscle for V-taper shoulder width.",
-            form: "Raise dumbbells slightly forward of your body (about 30° in front) instead of straight out. Keep thumbs neutral or slightly up to protect your left shoulder joint."
-          }
-        },
-        {
-          id: "d1_cable_fly",
-          name: "Cable Fly",
+          id: "a_front_raises",
+          name: "Front Raises",
           loc: "Gym",
           mode: "weight_reps",
           sets: 3, reps: 12, kg: 5,
           guide: {
-            muscle: "Inner and outer chest fibers with smooth, steady tension.",
-            form: "Keep a soft bend in your elbows and stop the stretch when your hands line up with your torso. Do not let the cables yank your left shoulder behind your back."
+            muscle: "Front shoulders (anterior delts) for rounded shoulder separation.",
+            form: "Use a neutral hammer grip (thumbs pointing up) and lift only to shoulder height without swinging. Keeping thumbs up gives your left shoulder joint extra room."
           }
-        }
-      ],
-
-      D2: [
-        STRETCHES.hipFlexor('d2'),
-        STRETCHES.childsPose('d2'),
+        },
         {
-          id: "d2_lat_pulldown",
-          name: "Lat Pulldown",
+          id: "a_lateral_raises",
+          name: "Standing Dumbbell Fly (Lateral Raises)",
+          aliases: ["Standing Dumbbell Fly", "Lateral Raises"],
           loc: "Gym",
           mode: "weight_reps",
-          sets: 4, reps: 10, kg: 25,
+          sets: 3, reps: 12, kg: 5,
           guide: {
-            muscle: "Outer lats for a wide V-taper back.",
-            form: "Use a grip just outside shoulder width, never super wide. Pull shoulder blades down first, then drive elbows toward your ribs. Avoid letting your left shoulder shrug completely loose at the top."
+            muscle: "Side delts — the #1 muscle for broad V-taper shoulder width.",
+            form: "Raise the dumbbells slightly forward of your body (about 30 degrees in front) instead of straight out to the side. Keep thumbs neutral or slightly up to protect your left shoulder."
           }
         },
         {
-          id: "d2_cg_pulldown",
-          name: "Close-Grip Pulldown",
-          loc: "Gym",
-          mode: "weight_reps",
-          sets: 3, reps: 10, kg: 25,
-          guide: {
-            muscle: "Lower lats and mid-back width with a shoulder-friendly neutral grip.",
-            form: "Use a V-bar or shoulder-width neutral handle. Keep your chest tall and pull smoothly to your upper chest without jerking your left shoulder at the top."
-          }
-        },
-        {
-          id: "d2_seated_row",
-          name: "Seated Cable Row",
-          loc: "Gym",
-          mode: "weight_reps",
-          sets: 3, reps: 10, kg: 15,
-          guide: {
-            muscle: "Mid-back (rhomboids, middle traps) and lats for thick back density.",
-            form: "Keep your torso upright and pull the handle toward your belly button. Squeeze shoulder blades together without rolling your left shoulder forward at the end."
-          }
-        },
-        {
-          id: "d2_face_pull",
-          name: "Face Pull",
-          loc: "Gym",
-          mode: "weight_reps",
-          sets: 3, reps: 15, kg: 10,
-          guide: {
-            muscle: "Rear delts, upper traps, and rotator cuff — key stabilizer for your left shoulder.",
-            form: "Pull the rope toward your forehead while rotating your hands back. Use light, controlled reps with zero swinging so your left rotator cuff gets stronger."
-          }
-        },
-        {
-          id: "d2_dead_hangs",
-          name: "Dead Hangs",
-          loc: "No Equip",
-          mode: "time_only",
-          sets: 3, sec: 30, reps: 0,
-          guide: {
-            muscle: "Grip strength, forearms, lats, and spine decompression. Hold 30s on all sets to unlock Pull-ups.",
-            form: "Use an active hang: pull your shoulders gently down away from your ears instead of hanging totally limp. Stop right away if your left shoulder feels pinched or unstable."
-          }
-        }
-      ],
-
-      D3: [
-        STRETCHES.hipFlexor('d3'),
-        STRETCHES.hamCalf('d3'),
-        {
-          id: "d3_leg_press",
-          name: "Leg Press / Squat",
-          loc: "Gym",
-          mode: "weight_reps",
-          sets: 4, reps: 10, kg: 40,
-          guide: {
-            muscle: "Quads, glutes, and overall leg mass for an athletic base.",
-            form: "On Leg Press, grip the side handles firmly to keep your upper body still. If squatting with a bar, use a slightly wider hand grip so your left shoulder does not feel twisted."
-          }
-        },
-        {
-          id: "d3_rdl",
-          name: "Romanian Deadlift",
-          loc: "Gym",
-          mode: "weight_reps",
-          sets: 3, reps: 10, kg: 20,
-          guide: {
-            muscle: "Hamstrings (back of thighs), glutes, and lower back.",
-            form: "Pull your lats tight like squeezing oranges in your armpits. Keep the weight close to your thighs and hinge your hips back so your left shoulder stays locked in place."
-          }
-        },
-        {
-          id: "d3_calf_raise",
-          name: "Standing Calf Raises",
-          loc: "Gym",
-          mode: "weight_reps",
-          sets: 4, reps: 15, kg: 20,
-          guide: {
-            muscle: "Calves (back of lower leg) for thick lower-leg shape.",
-            form: "Pause 1 second at the bottom stretch and squeeze hard at the top. Keep shoulder blades lightly engaged so pads rest on traps, not your left shoulder joint."
-          }
-        },
-        {
-          id: "d3_back_ext",
-          name: "Back Extensions",
-          loc: "No Equip",
-          mode: "weight_reps",
-          sets: 3, reps: 12, kg: 0,
-          guide: {
-            muscle: "Lower back (spinal erectors) and glutes for a strong, thick lower back.",
-            form: "Cross arms over your chest and rise only until your body is straight — do not hyperextend past neutral. Keep your neck neutral and shoulders relaxed."
-          }
-        },
-        {
-          id: "d3_vacuums",
-          name: "Stomach Vacuums",
-          loc: "No Equip",
-          mode: "time_only",
-          sets: 4, sec: 30,
-          guide: {
-            muscle: "Deep core (transverse abdominis) to tighten your waist and flatten your belly.",
-            form: "Exhale all air out, pull your belly button inward toward your spine, and hold while taking tiny shallow breaths. Keep your chest and shoulders relaxed."
-          }
-        }
-      ],
-
-      D4: [
-        STRETCHES.hipFlexor('d4'),
-        STRETCHES.doorwayPec('d4'),
-        {
-          id: "d4_db_sh_press",
-          name: "DB Shoulder Press",
-          loc: "Gym",
-          mode: "weight_reps",
-          sets: 3, reps: 10, kg: 10,
-          guide: {
-            muscle: "Front and side delts plus upper triceps for capped shoulders.",
-            form: "Use a slight incline (one notch below vertical) and keep elbows angled 30–45° forward, never flared straight out. Stop at ear level on the way down for left-shoulder stability."
-          }
-        },
-        {
-          id: "d4_lat_raise",
-          name: "Lateral Raises",
-          loc: "Gym",
-          mode: "weight_reps",
-          sets: 4, reps: 15, kg: 5,
-          guide: {
-            muscle: "Side delts for broad V-taper shoulder width.",
-            form: "Lift in the scapular plane (slightly forward of your sides) with soft elbows. Keep your traps down and avoid jerky reps that pull on your left shoulder."
-          }
-        },
-        {
-          id: "d4_rear_delt",
-          name: "Rear Delt Fly",
-          loc: "Gym",
-          mode: "weight_reps",
-          sets: 3, reps: 15, kg: 5,
-          guide: {
-            muscle: "Rear delts and upper back for 3D shoulders and healthy posture.",
-            form: "Use a neutral grip (palms facing each other) and sweep your arms out only until they align with your torso. Do not force your left arm far behind your back."
-          }
-        },
-        {
-          id: "d4_bb_curl",
-          name: "Barbell Curl",
-          loc: "Gym",
-          mode: "weight_reps",
-          sets: 3, reps: 10, kg: 15,
-          guide: {
-            muscle: "Full biceps mass and forearm thickness.",
-            form: "Pin elbows lightly at your sides and keep your chest up. Do not swing your back or let your left shoulder roll forward at the top."
-          }
-        },
-        {
-          id: "d4_tri_oh",
+          id: "a_tricep_overhead",
           name: "Tricep Overhead Extension",
+          aliases: ["Tricep Overhead Ext"],
           loc: "Gym",
           mode: "weight_reps",
           sets: 3, reps: 10, kg: 7.5,
@@ -1582,76 +1318,217 @@
           }
         },
         {
-          id: "d4_neck_opt",
-          name: "Neck Curls & Extensions",
+          id: "a_one_arm_tricep",
+          name: "One Arm Triceps",
+          loc: "Gym",
+          mode: "weight_reps",
+          sets: 3, reps: 10, kg: 5,
+          guide: {
+            muscle: "Unilateral triceps strength and left-to-right arm symmetry.",
+            form: "Start with your left arm first and match that exact rep count on your right arm. Keep your upper arm locked steady without letting your shoulder roll forward."
+          }
+        },
+
+        // 3. NO-EQUIPMENT FINISHERS (FILLING WHAT'S MISSING)
+        {
+          id: "a_bw_squats",
+          name: "Bodyweight Squats",
+          aliases: ["Free Squats"],
+          loc: "No Equip",
+          mode: "weight_reps",
+          sets: 3, reps: 20, kg: 0,
+          guide: {
+            muscle: "Big thighs (quads) and glutes to build a strong athletic lower body.",
+            form: "Control the drop for 2 seconds and drive up smoothly. Hold your hands loosely in front of your chest with shoulders relaxed."
+          }
+        },
+        {
+          id: "a_calf_raises",
+          name: "Standing Calf Raises (on a step)",
+          aliases: ["Standing Calf Raises"],
+          loc: "No Equip",
+          mode: "weight_reps",
+          sets: 3, reps: 20, kg: 0,
+          guide: {
+            muscle: "Lower-leg back muscle (calves) for thick, shaped lower legs.",
+            form: "Use a step or stair edge, pause 1 second in the deep bottom stretch, and squeeze hard at the top. Lightly touch a wall for balance with shoulders relaxed."
+          }
+        },
+        {
+          id: "a_vacuums",
+          name: "Stomach Vacuums",
+          loc: "No Equip",
+          mode: "time_only",
+          sets: 3, sec: 30,
+          guide: {
+            muscle: "Deep core (transverse abdominis) for a narrow, tight V-taper waist.",
+            form: "Exhale all air out, pull your belly button inward toward your spine, and hold with tiny shallow breaths. Keep your chest and shoulders completely relaxed."
+          }
+        },
+        {
+          id: "a_neck_curls",
+          name: "Neck Curls",
           loc: "No Equip",
           mode: "weight_reps",
           sets: 3, reps: 15, kg: 0,
-          optional: true,
           guide: {
-            muscle: "Front and back neck muscles for a stronger, balanced athletic frame (optional finisher).",
-            form: "Move slowly with zero jerking and keep your shoulders pressed down and relaxed on the bench or floor. Stop if you feel any pinch or dizziness."
+            muscle: "Front neck thickness for a strong, balanced masculine frame.",
+            form: "Lie on your back with shoulders pressed flat and relaxed. Tuck your chin gently to your chest with slow, controlled reps — zero jerking."
           }
         }
       ],
 
-      D5: [
-        STRETCHES.hipFlexor('d5'),
-        STRETCHES.childsPose('d5'),
+      B: [
+        // 1. STRETCH
         {
-          id: "d5_pullups",
-          name: "Pull-ups / Assisted Pull-ups",
-          loc: "Gym",
-          mode: "weight_reps",
-          sets: 4, reps: 8, kg: 0,
-          isMax: true,
+          id: "b_st_child",
+          name: "Child's Pose Lat Stretch",
+          aliases: ["Child's Pose Lat Opener"],
+          loc: "Stretch",
+          mode: "time_only",
+          sets: 2, sec: 40,
           guide: {
-            muscle: "Lats, upper back, and biceps — top compound builder for V-taper width and thickness.",
-            form: "Use a shoulder-width or neutral grip. Start each rep by pulling shoulder blades down, and never drop into a sloppy dead bottom if your left shoulder feels unstable."
+            muscle: "Lats and lower back decompression before heavy pulling.",
+            form: "Reach forward only as far as feels stable. Keep your left shoulder blade pulled gently down away from your ear."
           }
         },
         {
-          id: "d5_1arm_row",
-          name: "One-Arm DB Row",
+          id: "b_st_hamcalf",
+          name: "Hamstring & Calf Stretch",
+          loc: "Stretch",
+          mode: "time_only",
+          sets: 2, sec: 30,
+          guide: {
+            muscle: "Back of thighs (hamstrings) and calves for loose, healthy legs.",
+            form: "Hinge from your hips with a flat back. Let your arms hang loosely without rounding your shoulders forward."
+          }
+        },
+
+        // 2. GYM (TRAINER'S EXACT LIST)
+        {
+          id: "b_lat_pulldown",
+          name: "Lat Pulldown",
           loc: "Gym",
           mode: "weight_reps",
-          sets: 3, reps: 10, kg: 15,
+          sets: 3, reps: 10, kg: 25,
           guide: {
-            muscle: "Lats and thick mid-back, helping fix left-to-right strength balance.",
-            form: "Start with your left arm first and match that exact rep count on your right arm. Drive your elbow back toward your hip pocket without letting your left shoulder drop loosely."
+            muscle: "Outer lats for wide V-taper back width.",
+            form: "Grip just outside shoulder width, never super wide. Pull shoulder blades down first, then drive elbows toward your ribs without letting your left shoulder shrug completely loose at the top."
           }
         },
         {
-          id: "d5_sa_pulldown",
-          name: "Straight-Arm Pulldown",
+          id: "b_back_fly",
+          name: "Back Fly",
+          aliases: ["Rear Delt Fly"],
           loc: "Gym",
           mode: "weight_reps",
-          sets: 3, reps: 12, kg: 15,
+          sets: 3, reps: 12, kg: 5,
           guide: {
-            muscle: "Pure lat isolation for a wider back without tiring your biceps.",
-            form: "Keep a tiny bend in your elbows and hinge slightly forward. Raise your arms only to eye level on the return so your left shoulder stays tight and safe."
+            muscle: "Rear delts and upper-back posture muscles for 3D shoulders.",
+            form: "Use a neutral grip (palms facing each other) and sweep arms out only until they align with your torso. Do not force your left arm far behind your back."
           }
         },
         {
-          id: "d5_inc_db_press",
-          name: "Incline DB Press",
+          id: "b_pullovers",
+          name: "Pullovers",
           loc: "Gym",
           mode: "weight_reps",
           sets: 3, reps: 10, kg: 10,
           guide: {
-            muscle: "Upper chest thickness and pressing balance on your second chest touch of the week.",
-            form: "Set bench to 30°, tuck elbows 45°, and pin shoulder blades down. Control the bottom and stop early if your left shoulder feels wobbly."
+            muscle: "Lats, serratus, and ribcage expansion for a deep V-taper torso.",
+            form: "Keep a slight bend in your elbows and stop the overhead stretch as soon as your arms line up with your ears. Do not let a heavy dumbbell yank your left shoulder too far behind your head."
           }
         },
         {
-          id: "d5_lat_raise_hi",
-          name: "Lateral Raises (High-Rep)",
+          id: "b_barbell_curl",
+          name: "Barbell Curl",
           loc: "Gym",
           mode: "weight_reps",
-          sets: 3, reps: 20, kg: 4,
+          sets: 3, reps: 10, kg: 15,
           guide: {
-            muscle: "Side delt pump and endurance to cap off your V-taper width.",
-            form: "Use light 4 kg dumbbells with smooth tempo and zero momentum. Lift slightly forward in the scapular plane to keep your left shoulder completely comfortable."
+            muscle: "Full biceps mass for thick upper arms.",
+            form: "Pin elbows lightly at your sides and keep your chest up. Do not swing your back or let your left shoulder roll forward at the top."
+          }
+        },
+        {
+          id: "b_db_curl",
+          name: "Dumbbell Curl",
+          loc: "Gym",
+          mode: "weight_reps",
+          sets: 3, reps: 10, kg: 7.5,
+          guide: {
+            muscle: "Biceps peak and balanced left-to-right arm growth.",
+            form: "Lead with your left arm if alternating so both sides stay balanced. Keep your shoulder blades lightly back and curl smoothly without shrugging."
+          }
+        },
+        {
+          id: "b_reverse_curl",
+          name: "Reverse Curl",
+          loc: "Gym",
+          mode: "weight_reps",
+          sets: 3, reps: 12, kg: 10,
+          guide: {
+            muscle: "Brachialis (outer arm) and upper forearms for thicker arms top to bottom.",
+            form: "Keep wrists straight and elbows tucked at your sides. Use controlled weight so your left shoulder stays still and doesn't lift to help."
+          }
+        },
+        {
+          id: "b_forearms",
+          name: "Forearms",
+          loc: "Gym",
+          mode: "weight_reps",
+          sets: 3, reps: 15, kg: 10,
+          guide: {
+            muscle: "Lower-arm thickness and grip strength.",
+            form: "Rest your forearms flat on a bench or your thighs so only your wrists move and your shoulders remain completely relaxed."
+          }
+        },
+
+        // 3. NO-EQUIPMENT FINISHERS (FILLING WHAT'S MISSING)
+        {
+          id: "b_dead_hangs",
+          name: "Dead Hangs",
+          aliases: ["Dead Hangs & Pull-ups"],
+          loc: "No Equip",
+          mode: "time_only",
+          sets: 3, sec: 30, reps: 0,
+          guide: {
+            muscle: "Lat width, grip strength, and spine decompression. Hold 30s on all sets to unlock Pull-ups.",
+            form: "Use an active hang: pull your shoulders gently down away from your ears instead of hanging totally limp. Stop right away if your left shoulder feels pinched or unstable."
+          }
+        },
+        {
+          id: "b_back_ext",
+          name: "Back Extensions / Superman Holds",
+          aliases: ["Back Extensions"],
+          loc: "No Equip",
+          mode: "weight_reps",
+          sets: 3, reps: 15, kg: 0,
+          guide: {
+            muscle: "Lower back thickness (spinal erectors) and glutes.",
+            form: "Lift your chest and legs only until your body feels tight and straight — do not hyperextend. Keep arms folded by your sides or bent in a W shape so your left shoulder stays comfortable."
+          }
+        },
+        {
+          id: "b_glute_bridges",
+          name: "Glute Bridges",
+          loc: "No Equip",
+          mode: "weight_reps",
+          sets: 3, reps: 15, kg: 0,
+          guide: {
+            muscle: "Back of thighs (hamstrings), glutes, and pelvic posture correction.",
+            form: "Drive through your heels, squeeze your glutes hard at the top, and keep your arms resting flat on the floor with shoulders relaxed."
+          }
+        },
+        {
+          id: "b_neck_ext",
+          name: "Neck Extensions",
+          loc: "No Equip",
+          mode: "weight_reps",
+          sets: 3, reps: 15, kg: 0,
+          guide: {
+            muscle: "Back neck and upper traps for a thick, athletic neckline.",
+            form: "Lie face-down on a bench edge or mat with shoulders pressed down and relaxed. Move slowly with smooth control — never jerk your neck."
           }
         }
       ]
@@ -1661,7 +1538,7 @@
     // STATE MANAGEMENT
     // =========================================================================
     let app, db, isCloudReady = false;
-    let currentDay = 'D1';
+    let currentDay = 'A';
     let currentFilter = 'ALL';
     let historySubTab = 'workouts';
     let historyDayFilter = 'ALL';
@@ -1673,15 +1550,23 @@
     let appData = {
       history: [],
       bodyWeights: [],
-      waterLogs: {},
-      customExercises: { D1: [], D2: [], D3: [], D4: [], D5: [], ALL: [] },
-      activeDraft: null, // Only created/saved when user actually interacts!
+      customExercises: { A: [], B: [], BOTH: [] },
+      activeDraft: null, // Only created/saved when user explicitly interacts!
       updatedAt: 0
     };
 
     // =========================================================================
-    // DATE & UI HELPERS
+    // UTILITY & SAFETY HELPERS
     // =========================================================================
+    function escHtml(str) {
+      return String(str || '')
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#39;');
+    }
+
     function getLocalTodayStr() {
       const d = new Date();
       return new Date(d.getTime() - (d.getTimezoneOffset() * 60000)).toISOString().split('T')[0];
@@ -1744,9 +1629,8 @@
       if (!data || typeof data !== 'object') data = {};
       if (!Array.isArray(data.history)) data.history = [];
       if (!Array.isArray(data.bodyWeights)) data.bodyWeights = [];
-      if (!data.waterLogs || typeof data.waterLogs !== 'object') data.waterLogs = {};
       if (!data.customExercises || typeof data.customExercises !== 'object') data.customExercises = {};
-      ['D1', 'D2', 'D3', 'D4', 'D5', 'ALL'].forEach(k => {
+      ['A', 'B', 'BOTH'].forEach(k => {
         if (!Array.isArray(data.customExercises[k])) data.customExercises[k] = [];
       });
       if (!data.updatedAt) data.updatedAt = 0;
@@ -1767,35 +1651,35 @@
         appData.activeDraft.date = val;
         persistDraftQuick();
       }
-      window.renderWaterTracker();
     };
 
     // =========================================================================
     // EXERCISE LOOKUP, PULL-UP UNLOCK & PROGRESSIVE OVERLOAD HINTS
     // =========================================================================
     function getNextRecommendedDay() {
-      if (!appData.history || appData.history.length === 0) return 'D1';
+      if (!appData.history || appData.history.length === 0) return 'A';
       for (let i = appData.history.length - 1; i >= 0; i--) {
-        const t = String(appData.history[i].dayKey || appData.history[i].type || '');
-        const match = t.match(/D([1-5])/i);
-        if (match) {
-          const num = parseInt(match[1], 10);
-          return `D${(num % 5) + 1}`;
-        }
+        const h = appData.history[i];
+        const key = getDayChipLabel(h);
+        if (key === 'A') return 'B';
+        if (key === 'B') return 'A';
       }
-      return 'D1';
+      return 'A';
     }
 
     function getLastCommittedDayLabel() {
       if (!appData.history || appData.history.length === 0) return null;
-      const last = appData.history[appData.history.length - 1];
-      return last.dayKey || last.type || null;
+      for (let i = appData.history.length - 1; i >= 0; i--) {
+        const key = getDayChipLabel(appData.history[i]);
+        if (key === 'A' || key === 'B') return `DAY ${key}`;
+      }
+      return null;
     }
 
     window.checkPullupUnlock = function() {
       for (let i = 0; i < appData.history.length; i++) {
         const h = appData.history[i];
-        const byId = h.exercisesById?.d2_dead_hangs;
+        const byId = h.exercisesById?.b_dead_hangs || h.exercisesById?.d2_dead_hangs;
         const byName = h.exercises?.['Dead Hangs'] || h.exercises?.['Dead Hangs & Pull-ups'];
         const dh = byId || byName;
         if (Array.isArray(dh) && dh.length > 0 && dh.every(s => (Number(s.sec) || 0) >= 30)) {
@@ -1807,9 +1691,9 @@
 
     function getExercisesForDay(day) {
       const pullupsUnlocked = window.checkPullupUnlock();
-      const base = (BASE_DAYS[day] || BASE_DAYS.D1).map(ex => {
+      const base = (BASE_DAYS[day] || BASE_DAYS.A).map(ex => {
         const copy = { ...ex, guide: ex.guide ? { ...ex.guide } : {} };
-        if (copy.id === 'd2_dead_hangs') {
+        if (copy.id === 'b_dead_hangs') {
           if (pullupsUnlocked) {
             copy.mode = 'time_reps';
             copy.name = 'Dead Hangs & Pull-ups';
@@ -1822,8 +1706,9 @@
         return copy;
       });
       const customDay = (appData.customExercises[day] || []).map(c => ({ ...c }));
-      const customAll = (appData.customExercises.ALL || []).map(c => ({ ...c }));
-      const combined = [...base, ...customDay, ...customAll];
+      const customBoth = (appData.customExercises.BOTH || []).map(c => ({ ...c }));
+      const customLegacyAll = (appData.customExercises.ALL || []).map(c => ({ ...c }));
+      const combined = [...base, ...customDay, ...customBoth, ...customLegacyAll];
       combined.sort((a, b) => {
         const pa = PHASE_ORDER.indexOf(a.loc);
         const pb = PHASE_ORDER.indexOf(b.loc);
@@ -1837,20 +1722,21 @@
         const h = appData.history[i];
         if (h.exercisesById && h.exercisesById[ex.id]) return h.exercisesById[ex.id];
         if (h.exercises && h.exercises[ex.name]) return h.exercises[ex.name];
-        if (ex.id === 'd2_dead_hangs' && h.exercises) {
-          if (h.exercises['Dead Hangs & Pull-ups']) return h.exercises['Dead Hangs & Pull-ups'];
-          if (h.exercises['Dead Hangs']) return h.exercises['Dead Hangs'];
+        if (Array.isArray(ex.aliases) && h.exercises) {
+          for (let j = 0; j < ex.aliases.length; j++) {
+            if (h.exercises[ex.aliases[j]]) return h.exercises[ex.aliases[j]];
+          }
         }
       }
       return null;
     }
 
     function didHitAllTargetRepsLastSession(ex) {
-      if (ex.mode !== 'weight_reps' || ex.isMax || ex.optional) return false;
+      if (ex.mode !== 'weight_reps' || ex.loc !== 'Gym') return false;
       const lastSets = getLastSetsForExercise(ex);
       if (!Array.isArray(lastSets) || lastSets.length < ex.sets) return false;
-      const hasWeight = ex.loc === 'Gym' || (ex.kg || 0) > 0 || lastSets.some(s => (Number(s.kg) || 0) > 0);
-      if (!hasWeight) return false;
+      const usesWeight = (Number(ex.kg) || 0) > 0 || lastSets.some(s => (Number(s.kg) || 0) > 0);
+      if (!usesWeight) return false;
       const targetReps = Number(ex.reps) || 0;
       if (targetReps <= 0) return false;
       return lastSets.every(s => (Number(s.reps) || 0) >= targetReps);
@@ -1869,7 +1755,7 @@
     }
 
     // =========================================================================
-    // DRAFT ENGINE (BUG FIX: NEVER AUTO-LOGS UNTOUCHED / UNDONE WORKOUTS)
+    // DRAFT ENGINE (ZERO GHOST WORKOUTS — ONLY COMPLETED ITEMS COMMIT)
     // =========================================================================
     function buildDefaultDraftForExercise(ex) {
       const lastSets = getLastSetsForExercise(ex);
@@ -1901,21 +1787,16 @@
         id: ex.id,
         name: ex.name,
         mode: ex.mode,
-        done: false,     // Explicit per-exercise DONE flag
-        skipped: Boolean(ex.optional),
-        touched: false,  // Tracks whether user edited numbers
+        done: false,
+        skipped: false,
+        touched: false,
         sets
       };
     }
 
-    /**
-     * Returns the draft entry for display WITHOUT writing anything to storage.
-     * Storage is only mutated when the user explicitly taps, edits, checks, or marks DONE.
-     */
     function getExerciseDraftEntry(day, ex) {
       const existing = appData.activeDraft?.byDay?.[day]?.[ex.id];
       if (!existing) return buildDefaultDraftForExercise(ex);
-      // Keep name/mode aligned if Dead Hangs unlocked pull-ups
       existing.name = ex.name;
       if (existing.mode !== ex.mode) {
         existing.mode = ex.mode;
@@ -1927,9 +1808,6 @@
       return existing;
     }
 
-    /**
-     * Ensures writable draft container exists ONLY when user actually interacts.
-     */
     function ensureWritableDraftEntry(day, ex) {
       const dateStr = document.getElementById('sessionDate')?.value || getLocalTodayStr();
       if (!appData.activeDraft || typeof appData.activeDraft !== 'object') {
@@ -1961,11 +1839,6 @@
       return DAY_ORDER.some(d => countCompletedExercisesForDay(draft, d) > 0);
     }
 
-    /**
-     * Builds a History session payload containing ONLY exercises the user
-     * explicitly marked DONE (or sets they explicitly checked off ✓).
-     * Never logs untouched default exercises!
-     */
     function buildSessionPayloadFromDraft(day, rawDate, autoCommitted = false) {
       const list = getExercisesForDay(day);
       const dayDraft = appData.activeDraft?.byDay?.[day] || {};
@@ -1979,7 +1852,6 @@
         const entry = dayDraft[ex.id];
         if (!isExerciseCompletedOrChecked(entry)) return;
 
-        // If marked DONE -> include all sets with > 0 value; otherwise include only checked ✓ sets
         const sourceSets = entry.done
           ? entry.sets
           : entry.sets.filter(st => st.done === true);
@@ -2012,8 +1884,7 @@
       let lastDayVol = 0;
       for (let i = appData.history.length - 1; i >= 0; i--) {
         const h = appData.history[i];
-        const matchKey = h.dayKey || (String(h.type || '').match(/D[1-5]/i)?.[0]?.toUpperCase());
-        if (matchKey === day) {
+        if (getDayChipLabel(h) === day) {
           for (let k in h.exercises) {
             const sArr = h.exercises[k];
             lastDayVol += calcVol(sArr, sArr[0]?.mode || 'weight_reps');
@@ -2029,7 +1900,7 @@
         dayScore = `${diff >= 0 ? '+' : ''}${diff.toFixed(1)}%`;
       }
 
-      const meta = DAY_META[day] || { short: day, title: '' };
+      const meta = DAY_META[day] || { short: `DAY ${day}`, title: '' };
       return {
         date: formatDisplayDate(rawDate),
         rawDate: rawDate || '',
@@ -2039,37 +1910,30 @@
         dayScore,
         dayCls,
         autoCommitted,
-        waterGlasses: appData.waterLogs[rawDate] || 0,
         exercises: exercisesMap,
         exercisesById: exercisesByIdMap,
         progress: progressMap
       };
     }
 
-    /**
-     * End-of-day rollover:
-     * ONLY auto-commits if the user actually marked exercises DONE or checked sets ✓
-     * on that previous day. If nothing was done, silently discards stale draft!
-     */
     async function checkAndAutoCommitPreviousDay() {
       const today = getLocalTodayStr();
       const draft = appData.activeDraft;
       if (!draft || !draft.date || draft.date >= today) return false;
 
-      // Find any days from that past draft that actually have completed exercises
       const daysWithWork = DAY_ORDER.filter(d => countCompletedExercisesForDay(draft, d) > 0);
       let committedAny = false;
 
       daysWithWork.forEach(draftDay => {
         const alreadyCommitted = appData.history.some(
-          h => h.rawDate === draft.date && (h.dayKey === draftDay || String(h.type || '').startsWith(draftDay))
+          h => h.rawDate === draft.date && getDayChipLabel(h) === draftDay
         );
         if (!alreadyCommitted) {
           const payload = buildSessionPayloadFromDraft(draftDay, draft.date, true);
           if (Object.keys(payload.exercises).length > 0) {
             appData.history.push(payload);
             committedAny = true;
-            showToast(`Auto-saved your completed ${draftDay} (${payload.date}) to History.`);
+            showToast(`Auto-saved your completed Day ${draftDay} (${payload.date}) to History.`);
           }
         }
       });
@@ -2082,7 +1946,7 @@
     function persistDraftQuick() {
       appData.updatedAt = Date.now();
       if (appData.activeDraft) appData.activeDraft.updatedAt = appData.updatedAt;
-      localStorage.setItem('gymv_data', JSON.stringify(appData));
+      try { localStorage.setItem('gymv_data', JSON.stringify(appData)); } catch (e) {}
 
       clearTimeout(cloudSaveTimer);
       cloudSaveTimer = setTimeout(() => { window.saveData(false); }, 650);
@@ -2092,7 +1956,7 @@
       appData = ensureDataShape(appData);
       appData.updatedAt = Date.now();
       lastLocalWriteMs = appData.updatedAt;
-      localStorage.setItem('gymv_data', JSON.stringify(appData));
+      try { localStorage.setItem('gymv_data', JSON.stringify(appData)); } catch (e) {}
       if (isCloudReady && navigator.onLine) {
         const stat = document.getElementById('cloudStatus');
         if (immediate && stat) stat.innerText = 'SYNCING...';
@@ -2111,7 +1975,7 @@
     // Persist safely on app background/close and check day rollover on return
     document.addEventListener('visibilitychange', () => {
       if (document.visibilityState === 'hidden') {
-        localStorage.setItem('gymv_data', JSON.stringify(appData));
+        try { localStorage.setItem('gymv_data', JSON.stringify(appData)); } catch (e) {}
       } else if (document.visibilityState === 'visible') {
         checkAndAutoCommitPreviousDay().then((didCommit) => {
           if (didCommit) {
@@ -2124,7 +1988,7 @@
       }
     });
     window.addEventListener('pagehide', () => {
-      localStorage.setItem('gymv_data', JSON.stringify(appData));
+      try { localStorage.setItem('gymv_data', JSON.stringify(appData)); } catch (e) {}
     });
 
     async function loadData() {
@@ -2145,66 +2009,37 @@
       }
 
       window.updateBwHeader();
-      window.renderWaterTracker();
       window.renderWorkoutHeader();
       window.renderExercises();
 
       if (isCloudReady) {
-        onSnapshot(doc(db, "userdata", "main_profile"), async (snapshot) => {
-          if (!snapshot.exists()) return;
-          const remote = ensureDataShape(snapshot.data());
-          if (Date.now() - lastLocalWriteMs < 2500) return;
-          if ((remote.updatedAt || 0) < (appData.updatedAt || 0)) return;
+        onSnapshot(
+          doc(db, "userdata", "main_profile"),
+          async (snapshot) => {
+            if (!snapshot.exists()) return;
+            const remote = ensureDataShape(snapshot.data());
+            if (Date.now() - lastLocalWriteMs < 2500) return;
+            if ((remote.updatedAt || 0) < (appData.updatedAt || 0)) return;
 
-          appData = remote;
-          localStorage.setItem('gymv_data', JSON.stringify(appData));
-          await checkAndAutoCommitPreviousDay();
+            appData = remote;
+            try { localStorage.setItem('gymv_data', JSON.stringify(appData)); } catch (e) {}
+            await checkAndAutoCommitPreviousDay();
 
-          if (appData.activeDraft && appData.activeDraft.date === getLocalTodayStr() && DAY_ORDER.includes(appData.activeDraft.activeDay)) {
-            currentDay = appData.activeDraft.activeDay;
+            if (appData.activeDraft && appData.activeDraft.date === getLocalTodayStr() && DAY_ORDER.includes(appData.activeDraft.activeDay)) {
+              currentDay = appData.activeDraft.activeDay;
+            }
+            window.updateBwHeader();
+            window.renderWorkoutHeader();
+            if (document.getElementById('workoutView').style.display !== 'none') window.renderExercises();
+            else window.renderHistory();
+          },
+          () => {
+            document.getElementById('cloudDot').className = 'dot err';
+            document.getElementById('cloudStatus').innerText = 'SYNC OFFLINE';
           }
-          window.updateBwHeader();
-          window.renderWaterTracker();
-          window.renderWorkoutHeader();
-          if (document.getElementById('workoutView').style.display !== 'none') window.renderExercises();
-          else window.renderHistory();
-        });
+        );
       }
     }
-
-    // =========================================================================
-    // WATER TRACKER (12 GLASSES)
-    // =========================================================================
-    window.renderWaterTracker = function() {
-      const dateStr = document.getElementById('bwDate').value || getLocalTodayStr();
-      const count = appData.waterLogs[dateStr] || 0;
-      document.getElementById('waterCountDisplay').innerText = `${count} / ${WATER_GOAL} Glasses`;
-      const container = document.getElementById('waterPillsContainer');
-      container.innerHTML = '';
-      for (let i = 1; i <= WATER_GOAL; i++) {
-        const pill = document.createElement('div');
-        pill.className = `water-pill ${i <= count ? 'filled' : ''}`;
-        pill.onclick = () => window.setWaterDirect(i);
-        container.appendChild(pill);
-      }
-    };
-
-    window.adjustWater = async function(delta) {
-      const dateStr = document.getElementById('bwDate').value || getLocalTodayStr();
-      let current = appData.waterLogs[dateStr] || 0;
-      current = Math.max(0, Math.min(24, current + delta));
-      appData.waterLogs[dateStr] = current;
-      window.renderWaterTracker();
-      await window.saveData(true);
-    };
-
-    window.setWaterDirect = async function(val) {
-      const dateStr = document.getElementById('bwDate').value || getLocalTodayStr();
-      const current = appData.waterLogs[dateStr] || 0;
-      appData.waterLogs[dateStr] = (current === val) ? val - 1 : val;
-      window.renderWaterTracker();
-      await window.saveData(true);
-    };
 
     // =========================================================================
     // WORKOUT HEADER & LIVE SUMMARY
@@ -2220,7 +2055,7 @@
       document.getElementById('dayTitleText').innerText = `${meta.short} • ${meta.title}`;
       const rec = getNextRecommendedDay();
       const last = getLastCommittedDayLabel();
-      document.getElementById('smartRecommendBanner').innerText = last ? `NEXT: ${rec}` : `START: ${rec}`;
+      document.getElementById('smartRecommendBanner').innerText = last ? `NEXT: DAY ${rec}` : `START: DAY ${rec}`;
     };
 
     function updateLiveSummaryAndCardBadge(exId) {
@@ -2320,7 +2155,7 @@
           <div class="input-box"><span>SEC</span>
             <div class="num-ctrl">
               <div class="btn" onclick="window.adj('${ex.id}', ${s}, 'sec', -5)">-</div>
-              <input type="number" id="sec-${ex.id}-${s}" value="${secVal}" oninput="window.onSetInput('${ex.id}', ${s}, 'sec', this.value)">
+              <input type="number" inputmode="decimal" id="sec-${ex.id}-${s}" value="${secVal}" oninput="window.onSetInput('${ex.id}', ${s}, 'sec', this.value)">
               <div class="btn" onclick="window.adj('${ex.id}', ${s}, 'sec', 5)">+</div>
             </div>
           </div>
@@ -2335,14 +2170,14 @@
           <div class="input-box"><span>SEC</span>
             <div class="num-ctrl">
               <div class="btn" onclick="window.adj('${ex.id}', ${s}, 'sec', -5)">-</div>
-              <input type="number" id="sec-${ex.id}-${s}" value="${secVal}" oninput="window.onSetInput('${ex.id}', ${s}, 'sec', this.value)">
+              <input type="number" inputmode="decimal" id="sec-${ex.id}-${s}" value="${secVal}" oninput="window.onSetInput('${ex.id}', ${s}, 'sec', this.value)">
               <div class="btn" onclick="window.adj('${ex.id}', ${s}, 'sec', 5)">+</div>
             </div>
           </div>
           <div class="input-box"><span>PULL-UPS</span>
             <div class="num-ctrl">
               <div class="btn" onclick="window.adj('${ex.id}', ${s}, 'reps', -1)">-</div>
-              <input type="number" id="reps-${ex.id}-${s}" value="${repVal}" oninput="window.onSetInput('${ex.id}', ${s}, 'reps', this.value)">
+              <input type="number" inputmode="numeric" id="reps-${ex.id}-${s}" value="${repVal}" oninput="window.onSetInput('${ex.id}', ${s}, 'reps', this.value)">
               <div class="btn" onclick="window.adj('${ex.id}', ${s}, 'reps', 1)">+</div>
             </div>
           </div>
@@ -2356,14 +2191,14 @@
         <div class="input-box"><span>REPS</span>
           <div class="num-ctrl">
             <div class="btn" onclick="window.adj('${ex.id}', ${s}, 'reps', -1)">-</div>
-            <input type="number" id="reps-${ex.id}-${s}" value="${repVal}" oninput="window.onSetInput('${ex.id}', ${s}, 'reps', this.value)">
+            <input type="number" inputmode="numeric" id="reps-${ex.id}-${s}" value="${repVal}" oninput="window.onSetInput('${ex.id}', ${s}, 'reps', this.value)">
             <div class="btn" onclick="window.adj('${ex.id}', ${s}, 'reps', 1)">+</div>
           </div>
         </div>
         <div class="input-box"><span>KG</span>
           <div class="num-ctrl">
             <div class="btn" onclick="window.adj('${ex.id}', ${s}, 'kg', -2.5)">-</div>
-            <input type="number" step="0.5" id="kg-${ex.id}-${s}" value="${kgVal}" oninput="window.onSetInput('${ex.id}', ${s}, 'kg', this.value)">
+            <input type="number" inputmode="decimal" step="0.5" id="kg-${ex.id}-${s}" value="${kgVal}" oninput="window.onSetInput('${ex.id}', ${s}, 'kg', this.value)">
             <div class="btn" onclick="window.adj('${ex.id}', ${s}, 'kg', 2.5)">+</div>
           </div>
         </div>
@@ -2374,7 +2209,6 @@
     function getTargetLabel(ex) {
       if (ex.mode === 'time_only') return `Target: ${ex.sets} × ${ex.sec}s`;
       if (ex.mode === 'time_reps') return `Target: ${ex.sets} × ${ex.sec}s + Pull-ups`;
-      if (ex.isMax) return `Target: ${ex.sets} × MAX`;
       return `Target: ${ex.sets} × ${ex.reps}${ex.kg > 0 ? ` • ${ex.kg}kg` : ''}`;
     }
 
@@ -2412,9 +2246,9 @@
         let hintHtml = '';
         if (showPlusHint) {
           hintHtml = `<div class="overload-hint">▲ +2.5 kg next time (All target reps hit last session)</div>`;
-        } else if (ex.id === 'd2_dead_hangs' && !pullupsUnlocked) {
+        } else if (ex.id === 'b_dead_hangs' && !pullupsUnlocked) {
           hintHtml = `<div class="unlock-hint">Hold 30s on all sets to unlock Pull-up Reps</div>`;
-        } else if (ex.id === 'd2_dead_hangs' && pullupsUnlocked) {
+        } else if (ex.id === 'b_dead_hangs' && pullupsUnlocked) {
           hintHtml = `<div class="overload-hint">★ Pull-up Reps Unlocked</div>`;
         }
 
@@ -2430,14 +2264,13 @@
         card.innerHTML = `
           <div class="ex-header">
             <div class="ex-title-wrap">
-              <span class="ex-name">${ex.name}</span>
+              <span class="ex-name">${escHtml(ex.name)}</span>
               <button type="button" class="info-btn" onclick="window.openGuideModal('${ex.id}')">i</button>
-              ${ex.optional ? `<span class="opt-badge">OPTIONAL</span>` : ''}
               <span id="badge-${ex.id}">${badgeHtml}</span>
             </div>
             <div style="display:flex; align-items:center;">
-              <div class="loc-badge">${ex.loc}</div>
-              ${ex.isCustom ? `<button class="delete-btn" style="margin-left:6px;" onclick="window.deleteCustomExercise('${ex.id}')">DEL</button>` : ''}
+              <div class="loc-badge">${escHtml(ex.loc)}</div>
+              ${ex.isCustom ? `<button type="button" class="delete-btn" style="margin-left:6px;" onclick="window.deleteCustomExercise('${ex.id}')">DEL</button>` : ''}
             </div>
           </div>
           <div class="ex-meta-row">
@@ -2505,8 +2338,6 @@
       entry.sets[setNum - 1].done = !entry.sets[setNum - 1].done;
       entry.touched = true;
       entry.skipped = false;
-
-      // Auto-sync exercise DONE status when all sets are checked/unchecked
       entry.done = entry.sets.length > 0 && entry.sets.every(st => st.done === true);
 
       const btn = document.getElementById(`chk-${exId}-${setNum}`);
@@ -2598,7 +2429,7 @@
         const p = payload.progress[exName] || { str: 'NEW', cls: 'pct-neu' };
         const setsCount = payload.exercises[exName].length;
         breakdownHtml += `<div class="row-between" style="padding: 7px 0; border-bottom: 1px solid #1c1c1c; font-size: 0.8rem;">
-          <span style="color: var(--white); font-weight: 700;">${exName} <span style="color:var(--ash); font-weight:600;">(${setsCount}s)</span></span>
+          <span style="color: var(--white); font-weight: 700;">${escHtml(exName)} <span style="color:var(--ash); font-weight:600;">(${setsCount}s)</span></span>
           <span class="pct-badge ${p.cls}">${p.str}</span>
         </div>`;
       });
@@ -2620,7 +2451,6 @@
 
       appData.history.push(payload);
 
-      // Clear only the committed day from activeDraft (or clear whole draft if no other day has done work)
       if (appData.activeDraft && appData.activeDraft.byDay) {
         delete appData.activeDraft.byDay[currentDay];
         if (!hasAnyCompletedWorkInDraft(appData.activeDraft)) {
@@ -2634,7 +2464,7 @@
       expandedHistoryIds.add(String(payload.timestamp));
       currentDay = getNextRecommendedDay();
       window.renderWorkoutHeader();
-      showToast(`${payload.dayKey} saved to History!`);
+      showToast(`Day ${payload.dayKey} saved to History!`);
       window.switchTab('history');
     };
 
@@ -2684,7 +2514,7 @@
           const sign = diff > 0 ? '+' : '';
           pctHtml = `<span class="pct-badge ${diff > 0 ? 'pct-pos' : (diff < 0 ? 'pct-neg' : 'pct-neu')}">${sign}${diff.toFixed(1)} kg</span>`;
         }
-        d.innerHTML = `Last: ${last.weight} kg (${last.date}) ${pctHtml}`;
+        d.innerHTML = `Last: ${last.weight} kg (${escHtml(last.date)}) ${pctHtml}`;
       } else {
         d.innerText = "Last: Not logged";
       }
@@ -2699,13 +2529,17 @@
 
     window.addCustomExercise = async function() {
       const name = document.getElementById('custName').value.trim();
-      if (!name) return;
+      if (!name) {
+        showToast("Please enter an exercise name.", true);
+        return;
+      }
       const dayKey = document.getElementById('custDay').value;
       const loc = document.getElementById('custLoc').value;
       const mode = document.getElementById('custMode').value;
       const targetVal = Number(document.getElementById('custTarget').value) || 10;
       const muscleText = document.getElementById('custTargetMuscle').value.trim();
 
+      if (!Array.isArray(appData.customExercises[dayKey])) appData.customExercises[dayKey] = [];
       appData.customExercises[dayKey].push({
         id: 'cust_' + Date.now(),
         isCustom: true,
@@ -2730,8 +2564,10 @@
     };
 
     window.deleteCustomExercise = async function(exId) {
-      ['D1', 'D2', 'D3', 'D4', 'D5', 'ALL'].forEach(d => {
-        appData.customExercises[d] = (appData.customExercises[d] || []).filter(item => item.id !== exId);
+      ['A', 'B', 'BOTH', 'ALL', 'D1', 'D2', 'D3', 'D4', 'D5'].forEach(d => {
+        if (Array.isArray(appData.customExercises[d])) {
+          appData.customExercises[d] = appData.customExercises[d].filter(item => item.id !== exId);
+        }
         if (appData.activeDraft?.byDay?.[d]) {
           delete appData.activeDraft.byDay[d][exId];
         }
@@ -2764,16 +2600,19 @@
     }
 
     function getDayChipLabel(h) {
-      const m = String(h.dayKey || h.type || '').match(/D([1-5])/i);
-      if (m) return `D${m[1]}`;
-      if (String(h.type || '').includes('Day A')) return 'A';
-      if (String(h.type || '').includes('Day B')) return 'B';
+      const dk = String(h.dayKey || '').toUpperCase();
+      if (dk === 'A' || dk === 'B') return dk;
+      const t = String(h.type || '');
+      if (/^DAY\s*A\b/i.test(t)) return 'A';
+      if (/^DAY\s*B\b/i.test(t)) return 'B';
+      const legacy = (dk || t).match(/D([1-5])/i);
+      if (legacy) return `D${legacy[1]}`;
       return 'LOG';
     }
 
     function getCleanSessionTitle(h) {
       const chip = getDayChipLabel(h);
-      if (DAY_META[chip]) return DAY_META[chip].title;
+      if (DAY_META[chip]) return `${DAY_META[chip].short} • ${DAY_META[chip].title}`;
       return h.type || 'Workout Session';
     }
 
@@ -2790,7 +2629,7 @@
 
     window.setHistoryDayFilter = function(dayFlt) {
       historyDayFilter = dayFlt;
-      ['ALL', 'D1', 'D2', 'D3', 'D4', 'D5'].forEach(k => {
+      ['ALL', 'A', 'B'].forEach(k => {
         const btn = document.getElementById(`hdflt-${k}`);
         if (btn) btn.classList.toggle('active', k === dayFlt);
       });
@@ -2815,7 +2654,7 @@
 
       document.getElementById('historyStatsGrid').innerHTML = `
         <div class="stat-tile"><div class="stat-num">${totalSessions}</div><div class="stat-lbl">Total Logs</div></div>
-        <div class="stat-tile"><div class="stat-num">${weekCount} / 5</div><div class="stat-lbl">Last 7 Days</div></div>
+        <div class="stat-tile"><div class="stat-num">${weekCount} / 4</div><div class="stat-lbl">Last 7 Days</div></div>
         <div class="stat-tile"><div class="stat-num">${latestBw}</div><div class="stat-lbl">Latest Weight</div></div>
       `;
 
@@ -2831,10 +2670,9 @@
       if (filtered.length === 0) {
         workoutsContainer.innerHTML = `<div class="bw-table-card" style="text-align:center;">
           <div class="card-label" style="margin-bottom:4px;">No Sessions Found</div>
-          <div class="sub-label">${historyDayFilter === 'ALL' ? 'Mark exercises DONE and save your workout to see it organized here.' : `No saved workouts for ${historyDayFilter} yet.`}</div>
+          <div class="sub-label">${historyDayFilter === 'ALL' ? 'Mark exercises DONE and save your workout to see it organized here.' : `No saved workouts for Day ${historyDayFilter} yet.`}</div>
         </div>`;
       } else {
-        // Default-expand the newest session if nothing expanded yet
         if (expandedHistoryIds.size === 0 && filtered[0]) {
           expandedHistoryIds.add(String(filtered[0].timestamp));
         }
@@ -2863,7 +2701,7 @@
             exRowsHtml += `
               <div class="hist-ex-row">
                 <div class="hist-ex-top">
-                  <span class="hist-ex-name">${name}</span>
+                  <span class="hist-ex-name">${escHtml(name)}</span>
                   ${p ? `<span class="pct-badge ${p.cls}">${p.str}</span>` : ''}
                 </div>
                 <div class="set-chips">${chipsHtml}</div>
@@ -2878,11 +2716,10 @@
               <div class="hist-left">
                 <div class="day-chip">${getDayChipLabel(h)}</div>
                 <div class="hist-title-block">
-                  <div class="hist-title">${getCleanSessionTitle(h)}</div>
+                  <div class="hist-title">${escHtml(getCleanSessionTitle(h))}</div>
                   <div class="hist-meta">
-                    <span>${h.date}</span>
+                    <span>${escHtml(h.date)}</span>
                     <span>• ${exNames.length} ex (${totalSets} sets)</span>
-                    ${h.waterGlasses ? `<span>• 💧 ${h.waterGlasses}/${WATER_GOAL}</span>` : ''}
                     ${h.autoCommitted ? `<span class="pct-badge pct-neu">AUTO</span>` : ''}
                   </div>
                 </div>
@@ -2895,8 +2732,8 @@
             <div class="hist-body">
               ${exRowsHtml}
               <div class="hist-footer">
-                <span>Logged ${h.date}</span>
-                <button type="button" class="delete-btn" onclick="window.deleteWorkout(${h.timestamp})">DELETE SESSION</button>
+                <span>Logged ${escHtml(h.date)}</span>
+                <button type="button" class="delete-btn" onclick="event.stopPropagation(); window.deleteWorkout(${h.timestamp})">DELETE SESSION</button>
               </div>
             </div>
           `;
@@ -2927,9 +2764,9 @@
             <div class="bw-row">
               <div>
                 <div style="font-weight:800; color:var(--white);">${b.weight} kg &nbsp;${deltaHtml}</div>
-                <div class="sub-label">${b.date}</div>
+                <div class="sub-label">${escHtml(b.date)}</div>
               </div>
-              <button class="delete-btn" onclick="window.deleteWeight(${b.timestamp})">DEL</button>
+              <button type="button" class="delete-btn" onclick="window.deleteWeight(${b.timestamp})">DEL</button>
             </div>`;
         });
         weightsContainer.innerHTML = `<div class="bw-table-card">
@@ -2963,7 +2800,6 @@
     window.setDay = function(day) {
       if (!DAY_ORDER.includes(day)) return;
       currentDay = day;
-      // Only update activeDay inside draft if a draft already exists
       if (appData.activeDraft) {
         appData.activeDraft.activeDay = currentDay;
         persistDraftQuick();
@@ -3015,20 +2851,18 @@
     };
 
     window.openResetConfirmModal = function() {
-      askConfirmation("Wipe Server & Local?", "Permanently delete all workouts, weights, water logs, and custom exercises?", async () => {
+      askConfirmation("Wipe Server & Local?", "Permanently delete all workouts, weights, and custom exercises?", async () => {
         appData = {
           history: [],
           bodyWeights: [],
-          waterLogs: {},
-          customExercises: { D1: [], D2: [], D3: [], D4: [], D5: [], ALL: [] },
+          customExercises: { A: [], B: [], BOTH: [] },
           activeDraft: null,
           updatedAt: Date.now()
         };
         expandedHistoryIds.clear();
-        currentDay = 'D1';
+        currentDay = 'A';
         await window.saveData(true);
         window.updateBwHeader();
-        window.renderWaterTracker();
         window.renderWorkoutHeader();
         window.renderHistory();
       });
@@ -3056,7 +2890,6 @@
           await window.saveData(true);
           currentDay = getNextRecommendedDay();
           window.updateBwHeader();
-          window.renderWaterTracker();
           window.renderWorkoutHeader();
           window.renderHistory();
           showToast("Backup imported successfully.");
