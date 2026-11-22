@@ -14,7 +14,6 @@
       --ash: #888888;
       --ash-light: #d1d1d1;
       --white: #f5f5f5;
-      --accent: #333333;
       --pos: #2ecc71;
       --neg: #e74c3c;
       --warn: #f1c40f;
@@ -24,10 +23,12 @@
     html, body { background-color: var(--bg); color: var(--white); width: 100%; overflow-x: hidden; }
     body { padding: env(safe-area-inset-top, 16px) 14px env(safe-area-inset-bottom, 90px) 14px; min-height: 100vh; max-width: 600px; margin: 0 auto; }
 
-    header { padding: 12px 0; border-bottom: 1px solid var(--card-border); display: flex; justify-content: space-between; align-items: center; }
+    header { padding: 12px 0; border-bottom: 1px solid var(--card-border); display: flex; justify-content: space-between; align-items: center; gap: 8px; }
     h1 { font-size: 1.25rem; letter-spacing: 2px; text-transform: uppercase; font-weight: 900; }
-    .status-badge { font-size: 0.65rem; font-weight: 700; color: var(--ash); background: var(--card); border: 1px solid var(--card-border); padding: 6px 10px; border-radius: 4px; display: flex; align-items: center; gap: 6px; }
-    .dot { width: 8px; height: 8px; border-radius: 50%; background: var(--ash); }
+    .header-right { display: flex; align-items: center; gap: 6px; }
+    .plan-btn { font-size: 0.65rem; font-weight: 900; color: #000; background: var(--white); border: none; padding: 6px 9px; border-radius: 4px; cursor: pointer; text-transform: uppercase; }
+    .status-badge { font-size: 0.62rem; font-weight: 700; color: var(--ash); background: var(--card); border: 1px solid var(--card-border); padding: 6px 8px; border-radius: 4px; display: flex; align-items: center; gap: 5px; }
+    .dot { width: 7px; height: 7px; border-radius: 50%; background: var(--ash); }
     .dot.live { background: var(--pos); box-shadow: 0 0 6px var(--pos); }
     .dot.err { background: var(--neg); box-shadow: 0 0 6px var(--neg); }
 
@@ -42,16 +43,25 @@
     .day-btn.active { color: #000; background: var(--white); border-color: var(--white); }
 
     .day-title-bar { background: #0c0c0c; border: 1px solid var(--card-border); border-radius: 6px; padding: 9px 12px; margin-bottom: 10px; display: flex; justify-content: space-between; align-items: center; gap: 8px; }
-    .day-title-text { font-size: 0.82rem; font-weight: 900; color: var(--white); text-transform: uppercase; letter-spacing: 0.5px; }
-    .day-sub-rec { font-size: 0.66rem; font-weight: 800; color: var(--pos); text-transform: uppercase; text-align: right; }
+    .day-title-text { font-size: 0.78rem; font-weight: 900; color: var(--white); text-transform: uppercase; letter-spacing: 0.4px; }
+    .day-sub-rec { font-size: 0.64rem; font-weight: 800; color: var(--pos); text-transform: uppercase; text-align: right; white-space: nowrap; }
+
+    .timer-card { background: var(--card); border: 1px solid var(--card-border); border-radius: 8px; padding: 11px 14px; margin-bottom: 12px; }
+    .timer-display { font-size: 1.45rem; font-weight: 900; font-family: monospace; color: var(--white); letter-spacing: 1px; }
+    .timer-display.running { color: var(--pos); }
+    .timer-display.done { color: var(--warn); }
+    .timer-presets { display: grid; grid-template-columns: repeat(6, 1fr); gap: 5px; margin-top: 9px; }
+    .t-btn { padding: 7px 2px; background: #000; border: 1px solid var(--card-border); color: var(--ash-light); font-size: 0.68rem; font-weight: 800; border-radius: 4px; cursor: pointer; }
+    .t-btn:active { background: var(--white); color: #000; }
+    .t-ctrl-btn { padding: 6px 10px; background: #1e1e1e; border: 1px solid var(--card-border); color: var(--white); font-size: 0.68rem; font-weight: 800; border-radius: 4px; cursor: pointer; text-transform: uppercase; }
 
     .filter-tabs { display: grid; grid-template-columns: repeat(4, 1fr); gap: 4px; margin-bottom: 12px; background: #000; padding: 4px; border-radius: 6px; border: 1px solid var(--card-border); }
-    .filter-btn { padding: 8px 2px; background: transparent; border: none; color: var(--ash); font-size: 0.66rem; font-weight: 800; border-radius: 4px; cursor: pointer; text-transform: uppercase; }
+    .filter-btn { padding: 8px 2px; background: transparent; border: none; color: var(--ash); font-size: 0.64rem; font-weight: 800; border-radius: 4px; cursor: pointer; text-transform: uppercase; }
     .filter-btn.active { background: var(--card); color: var(--white); border: 1px solid var(--card-border); }
 
     .tracker-card { background: var(--card); border: 1px solid var(--card-border); border-radius: 8px; padding: 12px 14px; margin-bottom: 12px; display: flex; flex-direction: column; gap: 10px; }
     .row-between { display: flex; justify-content: space-between; align-items: center; gap: 8px; }
-    .card-label { font-size: 0.78rem; color: var(--ash-light); font-weight: 800; text-transform: uppercase; letter-spacing: 0.5px; }
+    .card-label { font-size: 0.76rem; color: var(--ash-light); font-weight: 800; text-transform: uppercase; letter-spacing: 0.5px; }
     .sub-label { font-size: 0.72rem; color: var(--ash); margin-top: 2px; }
 
     .bw-input-wrap { display: flex; align-items: center; gap: 6px; }
@@ -60,25 +70,26 @@
     .date-input { background: #000; border: 1px solid var(--card-border); color: var(--white); padding: 6px 8px; border-radius: 4px; font-family: monospace; font-size: 0.85rem; }
 
     .live-score-card { background: #0d0d0d; border: 1px solid var(--card-border); border-radius: 8px; padding: 11px 14px; margin-bottom: 12px; }
-    .live-score-val { font-size: 1.05rem; font-weight: 900; }
-    .draft-pill { font-size: 0.62rem; font-weight: 800; color: var(--ash); text-transform: uppercase; letter-spacing: 0.4px; margin-top: 4px; display: flex; justify-content: space-between; align-items: center; }
+    .live-score-val { font-size: 1.02rem; font-weight: 900; }
+    .draft-pill { font-size: 0.6rem; font-weight: 800; color: var(--ash); text-transform: uppercase; letter-spacing: 0.4px; margin-top: 4px; display: flex; justify-content: space-between; align-items: center; }
 
-    .phase-divider { font-size: 0.68rem; font-weight: 900; color: var(--ash); text-transform: uppercase; letter-spacing: 1.2px; margin: 14px 0 8px; display: flex; align-items: center; gap: 8px; }
+    .phase-divider { font-size: 0.67rem; font-weight: 900; color: var(--ash); text-transform: uppercase; letter-spacing: 1px; margin: 14px 0 8px; display: flex; align-items: center; gap: 8px; }
     .phase-divider::after { content: ""; flex: 1; height: 1px; background: var(--card-border); }
 
     .exercise-card { background: var(--card); border: 1px solid var(--card-border); border-radius: 8px; padding: 14px; margin-bottom: 12px; transition: border 0.2s, background 0.2s; }
     .exercise-card.saved { border-color: var(--pos); background: rgba(46, 204, 113, 0.04); }
     .ex-header { display: flex; justify-content: space-between; align-items: flex-start; gap: 8px; margin-bottom: 5px; }
     .ex-title-wrap { display: flex; align-items: center; flex-wrap: wrap; gap: 6px; }
-    .ex-name { font-size: 0.96rem; font-weight: 800; color: var(--white); }
+    .ex-name { font-size: 0.94rem; font-weight: 800; color: var(--white); }
     .info-btn { width: 22px; height: 22px; border-radius: 50%; background: #1f1f1f; border: 1px solid var(--ash); color: var(--white); font-size: 0.72rem; font-weight: 900; font-family: Georgia, serif; font-style: italic; display: inline-flex; align-items: center; justify-content: center; cursor: pointer; flex-shrink: 0; }
     .loc-badge { font-size: 0.6rem; background: #1d1d1d; border: 1px solid var(--card-border); padding: 2px 6px; border-radius: 4px; color: var(--ash-light); text-transform: uppercase; font-weight: 700; white-space: nowrap; }
 
-    .ex-meta-row { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 6px; font-size: 0.72rem; color: var(--ash); margin-bottom: 10px; border-bottom: 1px solid var(--card-border); padding-bottom: 8px; }
+    .ex-meta-row { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 6px; font-size: 0.71rem; color: var(--ash); margin-bottom: 10px; border-bottom: 1px solid var(--card-border); padding-bottom: 8px; }
     .target-tag { color: var(--ash-light); font-weight: 700; font-size: 0.7rem; }
 
-    .overload-hint { display: inline-flex; align-items: center; gap: 5px; background: rgba(46, 204, 113, 0.14); border: 1px solid var(--pos); color: var(--pos); font-size: 0.68rem; font-weight: 900; padding: 4px 8px; border-radius: 4px; margin-bottom: 10px; text-transform: uppercase; letter-spacing: 0.3px; }
-    .unlock-hint { display: inline-flex; align-items: center; gap: 5px; background: rgba(241, 196, 15, 0.14); border: 1px solid var(--warn); color: var(--warn); font-size: 0.68rem; font-weight: 800; padding: 4px 8px; border-radius: 4px; margin-bottom: 10px; }
+    .overload-hint { display: inline-flex; align-items: center; gap: 5px; background: rgba(46, 204, 113, 0.14); border: 1px solid var(--pos); color: var(--pos); font-size: 0.66rem; font-weight: 900; padding: 5px 8px; border-radius: 4px; margin-bottom: 10px; text-transform: uppercase; letter-spacing: 0.3px; line-height: 1.3; }
+    .plateau-hint { display: inline-flex; align-items: center; gap: 5px; background: rgba(241, 196, 15, 0.14); border: 1px solid var(--warn); color: var(--warn); font-size: 0.66rem; font-weight: 800; padding: 5px 8px; border-radius: 4px; margin-bottom: 10px; line-height: 1.3; }
+    .cut-note { font-size: 0.66rem; color: var(--warn); font-weight: 700; margin-bottom: 8px; }
 
     .set-row { display: grid; grid-template-columns: 28px 1fr 1fr 38px; gap: 8px; align-items: center; margin-bottom: 10px; }
     .set-row.single-col { grid-template-columns: 28px 1fr 38px; }
@@ -142,13 +153,13 @@
 
     .modal-overlay { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.92); display: none; z-index: 1000; align-items: center; justify-content: center; padding: 16px; }
     .modal-content { background: var(--card); border: 1px solid var(--ash); width: 100%; max-width: 440px; max-height: 85vh; overflow-y: auto; border-radius: 10px; padding: 18px; }
-    .modal-content h2 { font-size: 1.02rem; margin-bottom: 12px; color: var(--white); text-transform: uppercase; letter-spacing: 0.5px; }
+    .modal-content h2 { font-size: 1rem; margin-bottom: 12px; color: var(--white); text-transform: uppercase; letter-spacing: 0.5px; }
     .guide-section { background: #090909; border: 1px solid var(--card-border); border-radius: 6px; padding: 10px 12px; margin-bottom: 10px; }
     .guide-label { font-size: 0.65rem; font-weight: 900; color: var(--ash); text-transform: uppercase; letter-spacing: 0.6px; margin-bottom: 4px; }
     .guide-text { font-size: 0.84rem; color: var(--white); line-height: 1.45; }
     .guide-safe { border-color: rgba(241, 196, 15, 0.45); }
     .guide-safe .guide-label { color: var(--warn); }
-    .modal-day-score { font-size: 2.3rem; font-weight: 900; margin: 10px 0; text-align: center; }
+    .modal-day-score { font-size: 2.2rem; font-weight: 900; margin: 10px 0; text-align: center; }
     .close-modal-btn { width: 100%; padding: 13px; background: var(--white); color: #000; font-weight: 900; border: none; border-radius: 6px; cursor: pointer; margin-top: 10px; text-transform: uppercase; }
   </style>
 </head>
@@ -157,9 +168,12 @@
     <header>
       <div>
         <h1>GYM V2</h1>
-        <div style="font-size: 0.65rem; color: var(--ash); font-weight: 700;">TRAINER + V-TAPER 2-DAY SPLIT</div>
+        <div style="font-size: 0.63rem; color: var(--ash); font-weight: 700;">V-TAPER 4-DAY SPLIT (A • B • REST)</div>
       </div>
-      <div class="status-badge"><span class="dot" id="cloudDot"></span><span id="cloudStatus">CHECKING NET...</span></div>
+      <div class="header-right">
+        <button class="plan-btn" onclick="window.openPlanModal()">PLAN</button>
+        <div class="status-badge"><span class="dot" id="cloudDot"></span><span id="cloudStatus">NET...</span></div>
+      </div>
     </header>
 
     <div id="toastBanner" class="toast-banner"></div>
@@ -193,8 +207,30 @@
       </div>
 
       <div class="day-title-bar">
-        <span class="day-title-text" id="dayTitleText">DAY A • Upper Push, Arms & Upper Abs</span>
-        <span class="day-sub-rec" id="smartRecommendBanner">NEXT: DAY A</span>
+        <span class="day-title-text" id="dayTitleText">DAY A • Back, Shoulders & Forearms</span>
+        <span class="day-sub-rec" id="smartRecommendBanner">START: DAY A</span>
+      </div>
+
+      <div class="timer-card">
+        <div class="row-between">
+          <div>
+            <div class="card-label">Rest & Hold Timer</div>
+            <div class="sub-label" id="timerStatus">Rest 60–90s • Tap a preset to start</div>
+          </div>
+          <div style="display:flex; align-items:center; gap:8px;">
+            <span class="timer-display" id="timerDisplay">00:00</span>
+            <button class="t-ctrl-btn" id="timerToggleBtn" onclick="window.toggleTimer()">PAUSE</button>
+            <button class="t-ctrl-btn" onclick="window.resetTimer()">RST</button>
+          </div>
+        </div>
+        <div class="timer-presets">
+          <button class="t-btn" onclick="window.startTimer(15, 'Vacuum / Neck')">15s</button>
+          <button class="t-btn" onclick="window.startTimer(20, 'Side-Delt Hold')">20s</button>
+          <button class="t-btn" onclick="window.startTimer(30, 'Stretch / Hang')">30s</button>
+          <button class="t-btn" onclick="window.startTimer(40, 'Plank / Neck')">40s</button>
+          <button class="t-btn" onclick="window.startTimer(60, 'Rest 60s')">60s</button>
+          <button class="t-btn" onclick="window.startTimer(90, 'Rest 90s')">90s</button>
+        </div>
       </div>
 
       <div class="live-score-card">
@@ -203,7 +239,7 @@
             <div class="card-label">Done Today</div>
             <div class="sub-label" id="liveSetsSummary">0 exercises done • Only done workouts save</div>
           </div>
-          <div class="live-score-val pct-pos" id="liveDayScore">0 DONE</div>
+          <div class="live-score-val pct-neu" id="liveDayScore">0 DONE</div>
         </div>
         <div class="draft-pill">
           <span id="draftSaveLabel">REST MODE (NOTHING LOGGED YET)</span>
@@ -215,7 +251,7 @@
         <button class="filter-btn active" id="flt-ALL" onclick="window.setFilter('ALL')">ALL</button>
         <button class="filter-btn" id="flt-Stretch" onclick="window.setFilter('Stretch')">1. STRETCH</button>
         <button class="filter-btn" id="flt-Gym" onclick="window.setFilter('Gym')">2. GYM</button>
-        <button class="filter-btn" id="flt-No Equip" onclick="window.setFilter('No Equip')">3. NO EQUIP</button>
+        <button class="filter-btn" id="flt-Finisher" onclick="window.setFilter('Finisher')">3. FINISHER</button>
       </div>
 
       <div id="exercisesContainer"></div>
@@ -226,7 +262,7 @@
           <span id="customToggleIcon" style="font-weight: 900; color: var(--ash-light);">[+]</span>
         </div>
         <div id="customExForm" style="display: none; margin-top: 12px; border-top: 1px solid var(--card-border); padding-top: 12px;">
-          <input type="text" id="custName" class="form-input" placeholder="Exercise Name (e.g. Hammer Curl)">
+          <input type="text" id="custName" class="form-input" placeholder="Exercise Name">
           <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px;">
             <select id="custDay" class="form-select">
               <option value="DayA">Day A</option>
@@ -236,18 +272,18 @@
             <select id="custLoc" class="form-select">
               <option value="Stretch">1. Stretch</option>
               <option value="Gym" selected>2. Gym</option>
-              <option value="No Equip">3. No Equip</option>
+              <option value="Finisher">3. Finisher</option>
             </select>
           </div>
           <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px;">
             <select id="custMode" class="form-select">
-              <option value="weight_reps">Sets + Reps + KG</option>
-              <option value="time_only">Sets + Time (Sec)</option>
-              <option value="time_reps">Time (Sec) + Reps</option>
+              <option value="weight_reps">Reps + KG</option>
+              <option value="reps_only">Reps Only</option>
+              <option value="time_only">Time (Sec)</option>
             </select>
-            <input type="number" id="custTarget" class="form-input" placeholder="Target Reps or Sec (10)" value="10">
+            <input type="number" id="custTarget" class="form-input" placeholder="Target Reps or Sec" value="12">
           </div>
-          <input type="text" id="custTargetMuscle" class="form-input" placeholder="Muscle Target (optional)">
+          <input type="text" id="custTargetMuscle" class="form-input" placeholder="Form / Muscle note (optional)">
           <button class="action-btn-white" style="width: 100%; padding: 12px;" onclick="window.addCustomExercise()">SAVE TO LIST</button>
         </div>
       </div>
@@ -298,25 +334,43 @@
     </div>
   </div>
 
+  <!-- PLAN & GOALS MODAL -->
+  <div id="planModal" class="modal-overlay" onclick="window.closePlanModal()">
+    <div class="modal-content" onclick="event.stopPropagation()">
+      <h2>WEEKLY PLAN & DAILY TARGETS</h2>
+      <div class="guide-section">
+        <div class="guide-label">Weekly Schedule (4 Days / Week)</div>
+        <p class="guide-text"><strong>A → B → Rest → A → B → Rest → Rest</strong><br>Rest <strong>60–90 sec</strong> between sets. Total session ~55–60 min. If you run over 1 hour, cut <strong>Plank</strong> first.</p>
+      </div>
+      <div class="guide-section guide-safe">
+        <div class="guide-label">V-Taper & Arm Balance Rule</div>
+        <p class="guide-text">Keep your arms smaller than your shoulders and back. Add weight slowly on Forearms, Triceps, and Biceps, and give most of your effort to your lats and side shoulders.</p>
+      </div>
+      <div class="guide-section">
+        <div class="guide-label">Daily Nutrition & Recovery</div>
+        <p class="guide-text">• Calories: <strong>~2,600 kcal/day</strong> (2,500–2,700)<br>• Protein: <strong>120–130 g/day</strong><br>• Water: <strong>3 L/day</strong> • Sleep: <strong>7–8 hours</strong></p>
+      </div>
+      <button class="close-modal-btn" onclick="window.closePlanModal()">CLOSE</button>
+    </div>
+  </div>
+
+  <!-- EXERCISE GUIDE MODAL -->
   <div id="guideModal" class="modal-overlay" onclick="window.closeGuideModal()">
     <div class="modal-content" onclick="event.stopPropagation()">
       <h2 id="guideTitle">Exercise Guide</h2>
       <div class="guide-section">
-        <div class="guide-label">Muscle Target</div>
-        <p id="guideMuscle" class="guide-text"></p>
-      </div>
-      <div class="guide-section guide-safe">
-        <div class="guide-label">Left-Shoulder Safe Form</div>
+        <div class="guide-label">How To Do It</div>
         <p id="guideForm" class="guide-text"></p>
       </div>
-      <div class="guide-section">
-        <div class="guide-label">Effort Rule</div>
-        <p class="guide-text">Keep 1–2 reps in reserve on your first sets. Push the last set to clean technical failure only. Stop right away if your left shoulder feels wobbly.</p>
+      <div class="guide-section guide-safe">
+        <div class="guide-label">Shoulder Safety & Focus</div>
+        <p id="guideSafe" class="guide-text"></p>
       </div>
       <button class="close-modal-btn" onclick="window.closeGuideModal()">GOT IT</button>
     </div>
   </div>
 
+  <!-- COMMIT MODAL -->
   <div id="progressModal" class="modal-overlay" onclick="window.closeProgressModal()">
     <div class="modal-content" onclick="event.stopPropagation()">
       <h2 style="text-align: center;">COMMIT DONE WORKOUTS</h2>
@@ -327,6 +381,7 @@
     </div>
   </div>
 
+  <!-- CONFIRM MODAL -->
   <div id="confirmModal" class="modal-overlay">
     <div class="modal-content" style="text-align: center;">
       <h2 id="confirmTitle">Confirm Action</h2>
@@ -354,196 +409,367 @@
 
     const DAY_ORDER = ['DayA', 'DayB'];
     const DAY_META = {
-      DayA: { short: 'DAY A', title: 'Upper Push, Arms & Upper Abs' },
-      DayB: { short: 'DAY B', title: 'Back Width, Legs & Waist' }
+      DayA: { short: 'DAY A', title: 'Back, Shoulders & Forearms (45m)' },
+      DayB: { short: 'DAY B', title: 'Legs, Shoulders & Arms (45m)' }
     };
-    const PHASE_ORDER = ['Stretch', 'Gym', 'No Equip'];
+    const PHASE_ORDER = ['Stretch', 'Gym', 'Finisher'];
     const PHASE_LABELS = {
-      'Stretch': 'PHASE 1 • STRETCH',
-      'Gym': 'PHASE 2 • TRAINER GYM PLAN',
-      'No Equip': 'PHASE 3 • NO-EQUIPMENT V-TAPER FINISHERS'
+      'Stretch': 'PHASE 1 • WARM-UP STRETCH (5 MIN • 30s EACH)',
+      'Gym': 'PHASE 2 • GYM WORKOUT (45 MIN • 60–90s REST)',
+      'Finisher': 'PHASE 3 • NO-EQUIPMENT FINISHER (10 MIN)'
     };
+
+    const SHARED_FINISHERS = [
+      {
+        id: "fin_superman_pull",
+        name: "Superman Lat Pull",
+        loc: "Finisher",
+        mode: "reps_only",
+        sets: 3,
+        reps: 12,
+        targetLabel: "3 × 12 reps",
+        targetMax: 12,
+        guide: {
+          form: "Lie face down, lift your chest slightly, and pull your elbows down toward your ribs. Squeeze your lats on every rep.",
+          safe: "Keep arms in a smooth 'W' path instead of forcing straight overhead if your left shoulder feels tight."
+        }
+      },
+      {
+        id: "fin_wall_sidedelt",
+        name: "Wall Side-Delt Press",
+        loc: "Finisher",
+        mode: "time_only",
+        sets: 3,
+        sec: 20,
+        targetLabel: "3 × 20s each side",
+        targetMax: 20,
+        guide: {
+          form: "Stand sideways next to a wall. Press the back of your wrist/arm out into the wall and hold 20 sec on each side. Feel the side of your shoulder burn.",
+          safe: "Keep your shoulder blade down and traps relaxed. Very joint-friendly for your left shoulder."
+        }
+      },
+      {
+        id: "fin_vacuum",
+        name: "Stomach Vacuum",
+        loc: "Finisher",
+        mode: "time_only",
+        sets: 5,
+        sec: 15,
+        targetLabel: "5 × 15s hold",
+        targetMax: 15,
+        guide: {
+          form: "Breathe out all your air and pull your belly button straight inward toward your spine. Hold 15 sec to tighten your deep waist muscles.",
+          safe: "Keep your chest tall and shoulders relaxed."
+        }
+      },
+      {
+        id: "fin_plank",
+        name: "Plank",
+        loc: "Finisher",
+        mode: "time_only",
+        sets: 3,
+        sec: 40,
+        targetLabel: "3 × 40s hold",
+        targetMax: 40,
+        cutFirst: true,
+        guide: {
+          form: "Brace on your forearms, squeeze your abs and glutes, and keep your body in a straight line for 40 sec.",
+          safe: "Stack elbows directly under shoulders. If your workout runs over 1 hour, cut Plank first."
+        }
+      },
+      {
+        id: "fin_neck",
+        name: "Neck Isometric (4 Ways)",
+        loc: "Finisher",
+        mode: "time_only",
+        sets: 2,
+        sec: 40,
+        targetLabel: "2 rounds × 40s (10s each way)",
+        targetMax: 40,
+        guide: {
+          form: "Push your hand gently against your forehead (10s), left side (10s), right side (10s), and back of your head (10s) = 40 sec per round.",
+          safe: "Go gently! Never jerk your neck or push with max force."
+        }
+      }
+    ];
 
     const BASE_DAYS = {
       DayA: [
         {
-          id: "da_st_hip",
-          name: "Kneeling Hip Flexor Stretch",
-          loc: "Stretch",
-          mode: "time_only",
-          sets: 2,
-          sec: 45,
-          guide: {
-            muscle: "Hip flexors and front pelvis. Helps fix anterior pelvic tilt and flatten your lower stomach.",
-            form: "Squeeze your back glute and tuck your ribs down. Keep your arms relaxed at your sides so your left shoulder stays calm."
-          }
-        },
-        {
-          id: "da_st_pec",
-          name: "Doorway Pec Stretch",
+          id: "da_st_child",
+          name: "Child's Pose",
           loc: "Stretch",
           mode: "time_only",
           sets: 2,
           sec: 30,
+          targetLabel: "2 × 30s",
           guide: {
-            muscle: "Chest (pectorals) and front shoulders. Opens your posture for a wider V-taper.",
-            form: "Keep your elbow slightly below shoulder height and lean gently. Never force a deep pull in the front of your left shoulder."
+            form: "Sit hips back toward your heels and reach arms forward to gently open your lats and upper back.",
+            safe: "Do not force your left shoulder down if it feels pinched."
           }
         },
         {
-          id: "da_db_press",
-          name: "Dumbbell Press",
+          id: "da_st_circles",
+          name: "Arm Circles",
+          loc: "Stretch",
+          mode: "time_only",
+          sets: 2,
+          sec: 30,
+          targetLabel: "2 × 30s (forward & back)",
+          guide: {
+            form: "Make smooth, controlled circles for 30 sec forward and 30 sec backward to warm up your shoulder joints.",
+            safe: "Keep circles medium-sized and pain-free on your left shoulder."
+          }
+        },
+        {
+          id: "da_st_thread",
+          name: "Thread-the-Needle",
+          loc: "Stretch",
+          mode: "time_only",
+          sets: 2,
+          sec: 30,
+          targetLabel: "2 × 30s (each side)",
+          guide: {
+            form: "From hands and knees, slide one arm under your chest and gently twist your upper back. 30 sec each side.",
+            safe: "Move slowly and breathe out into the twist."
+          }
+        },
+        {
+          id: "da_lat_pulldown",
+          name: "Lat Pulldown",
           loc: "Gym",
           mode: "weight_reps",
           sets: 3,
           reps: 10,
-          kg: 10,
+          kg: 25,
+          targetLabel: "3 × 8–12 reps",
+          targetMax: 12,
           guide: {
-            muscle: "Chest (pectorals), front shoulders, and triceps for upper-body thickness.",
-            form: "Tuck your elbows to 45 degrees instead of flaring straight out. Keep shoulder blades pinned into the bench and stop right away if your left shoulder feels wobbly."
+            form: "Use a wide grip and lean back a little. Drive your elbows down toward your pockets. Do not pull with your biceps.",
+            safe: "Pull shoulder blades down first so your left shoulder stays packed and stable. Give top effort here for V-taper width."
           }
         },
         {
-          id: "da_pec_fly",
-          name: "Pec Fly",
+          id: "da_pullup_neg",
+          name: "Pull-up Negatives",
+          loc: "Gym",
+          mode: "reps_only",
+          sets: 3,
+          reps: 4,
+          targetLabel: "3 × 3–5 reps (5s slow lower)",
+          targetMax: 5,
+          guide: {
+            form: "Use a chin-up grip (palms facing you). Jump or step up to the top, then lower yourself slowly for a full 5 seconds.",
+            safe: "Keep shoulders pulled down slightly at the bottom instead of dropping suddenly into a loose hang."
+          }
+        },
+        {
+          id: "da_dead_hang",
+          name: "Dead Hang",
+          loc: "Gym",
+          mode: "time_only",
+          sets: 2,
+          sec: 30,
+          targetLabel: "2 × max time",
+          targetMax: 45,
+          guide: {
+            form: "Hang from the bar for max controlled time. Builds your lats, forearms, and grip strength.",
+            safe: "Use a slight active hang (shoulders gently pulled down) to protect your left shoulder."
+          }
+        },
+        {
+          id: "da_pullover",
+          name: "Pullover",
           loc: "Gym",
           mode: "weight_reps",
           sets: 3,
           reps: 12,
           kg: 10,
+          targetLabel: "3 × 12 reps",
+          targetMax: 12,
           guide: {
-            muscle: "Inner and outer chest fibers for sharp chest definition.",
-            form: "Keep a soft bend in your elbows and stop the stretch when your hands align with your torso. Do not let the handles pull your left shoulder behind your back."
+            form: "Keep a slight fixed bend in your elbows and feel the deep stretch in your lats. Do not use your shoulders or triceps.",
+            safe: "Stop the overhead stretch as soon as you feel your lats tight — do not over-stretch your left shoulder."
           }
         },
         {
-          id: "da_db_curl",
-          name: "Dumbbell Curl",
+          id: "da_lat_raise",
+          name: "Lateral Raise",
           loc: "Gym",
           mode: "weight_reps",
           sets: 3,
-          reps: 10,
-          kg: 7.5,
+          reps: 12,
+          kg: 2.5,
+          targetLabel: "3 × 12–15 reps",
+          targetMax: 15,
           guide: {
-            muscle: "Biceps and forearms for fuller arms.",
-            form: "Pin your elbows lightly at your sides and lift with control. Do not swing your torso or let your left shoulder roll forward at the top."
+            form: "Lead with your elbows and lift slightly forward of your sides. Keep your traps relaxed.",
+            safe: "Keep thumbs neutral (do not pour water down) so your left shoulder stays smooth and pain-free. High priority for V-taper!"
           }
         },
         {
-          id: "da_tri_push",
-          name: "Triceps Pushdown",
+          id: "da_back_fly",
+          name: "Back Fly Machine",
           loc: "Gym",
           mode: "weight_reps",
           sets: 3,
           reps: 12,
           kg: 15,
+          targetLabel: "3 × 12–15 reps",
+          targetMax: 15,
           guide: {
-            muscle: "Triceps — makes up two-thirds of your upper arm thickness.",
-            form: "Keep your shoulders pulled down away from your ears and lock your elbows at your sides. Extend smoothly without letting your left shoulder shrug up."
+            form: "Sweep arms back with soft elbows and squeeze your rear shoulders. Control the return slowly.",
+            safe: "Keep your chest glued to the pad and shoulders down away from your ears."
           }
         },
         {
-          id: "da_crunch",
-          name: "Crunch",
+          id: "da_forearms",
+          name: "Forearm Wrist Curls",
           loc: "Gym",
           mode: "weight_reps",
           sets: 3,
-          reps: 15,
-          kg: 0,
+          reps: 12,
+          kg: 5,
+          armSlow: true,
+          targetLabel: "3 × 12 (palms up + palms down)",
+          targetMax: 12,
           guide: {
-            muscle: "Upper abdominal muscles (rectus abdominis).",
-            form: "Curl your ribs toward your hips with hands lightly behind your head. Do not pull on your neck or flare your elbows aggressively."
+            form: "Rest your forearms on your thighs, palms up. Curl only your wrists for 12 reps, then flip palms down and do 12 reps. Do not swing your arms.",
+            safe: "Add weight slowly on arm exercises so your shoulders stay the widest part of your upper body."
           }
         },
-        {
-          id: "da_ne_pike_lat",
-          name: "Pike Hold + Slow Arm Raises",
-          loc: "No Equip",
-          mode: "weight_reps",
-          sets: 3,
-          reps: 15,
-          kg: 0,
-          guide: {
-            muscle: "Side delts and rear delts — the key missing width muscles for a V-taper.",
-            form: "Lift your arms out in the scapular plane (slightly forward of your sides) with a 2-second squeeze at the top. Keep thumbs neutral to protect your left shoulder."
-          }
-        },
-        {
-          id: "da_ne_superman",
-          name: "Superman Holds",
-          loc: "No Equip",
-          mode: "time_only",
-          sets: 3,
-          sec: 30,
-          guide: {
-            muscle: "Upper back, rear delts, and spinal erectors for a thicker back and upright posture.",
-            form: "Lie face down with arms bent in a 'W' shape instead of straight overhead so your left shoulder stays completely safe. Squeeze your shoulder blades together and hold."
-          }
-        }
+        ...SHARED_FINISHERS.map(f => ({ ...f, id: 'a_' + f.id }))
       ],
 
       DayB: [
         {
-          id: "db_st_hip",
-          name: "Kneeling Hip Flexor Stretch",
+          id: "db_st_squat",
+          name: "Deep Squat Hold",
           loc: "Stretch",
           mode: "time_only",
           sets: 2,
-          sec: 45,
+          sec: 30,
+          targetLabel: "2 × 30s",
           guide: {
-            muscle: "Hip flexors and front pelvis. Helps fix anterior pelvic tilt and flatten your lower stomach.",
-            form: "Squeeze your back glute and tuck your ribs down. Keep your arms relaxed at your sides."
+            form: "Drop into a deep comfortable squat, keep heels down, and gently push knees out with your elbows for 30 sec.",
+            safe: "Hold onto a rack if needed to keep your chest upright."
           }
         },
         {
-          id: "db_st_child_calf",
-          name: "Child's Pose & Calf Stretch",
+          id: "db_st_lunge",
+          name: "Lunge Stretch",
           loc: "Stretch",
           mode: "time_only",
           sets: 2,
-          sec: 40,
+          sec: 30,
+          targetLabel: "2 × 30s (each side)",
           guide: {
-            muscle: "Lats, upper back, hamstrings, and calves before pulling and leg work.",
-            form: "Reach forward only as far as feels stable. Keep your left shoulder blade pulled gently down away from your ear."
+            form: "Kneel in a lunge, squeeze your back glute, and shift hips slightly forward to open your hip flexors. 30 sec each side.",
+            safe: "Helps flatten your lower stomach posture before squatting."
           }
         },
         {
-          id: "db_lat_pulldown",
-          name: "Lat Pulldown",
-          loc: "Gym",
-          mode: "weight_reps",
-          sets: 4,
-          reps: 10,
-          kg: 25,
+          id: "db_st_calf",
+          name: "Wall Calf Stretch",
+          loc: "Stretch",
+          mode: "time_only",
+          sets: 2,
+          sec: 30,
+          targetLabel: "2 × 30s (each side)",
           guide: {
-            muscle: "Outer lats — your #1 gym lift for V-taper back width.",
-            form: "Use a grip just outside shoulder width, never super wide. Pull shoulder blades down first, then drive elbows to your ribs without letting your left shoulder shrug loose at the top."
+            form: "Place hands on a wall, step one foot back with heel flat, and lean forward until you feel a clean calf stretch. 30 sec each side.",
+            safe: "Keeps ankles mobile for deeper squats and full calf raises."
           }
         },
         {
-          id: "db_seated_row",
-          name: "Seated Row",
+          id: "db_squat",
+          name: "Squat",
           loc: "Gym",
           mode: "weight_reps",
           sets: 3,
-          reps: 10,
-          kg: 15,
+          reps: 12,
+          kg: 0,
+          targetLabel: "3 × 12 reps",
+          targetMax: 12,
           guide: {
-            muscle: "Mid-back (rhomboids, middle traps) and lats for thick back density.",
-            form: "Sit tall and pull the handle toward your belly button. Squeeze your shoulder blades together without rolling your left shoulder forward."
+            form: "Keep your chest up, push knees out over toes, and drive up through your heels.",
+            safe: "Use bodyweight, dumbbells, or light barbell — keep your torso braced and steady."
           }
         },
         {
-          id: "db_leg_press",
-          name: "Leg Press",
+          id: "db_decline_bench",
+          name: "Decline Bench Press",
           loc: "Gym",
           mode: "weight_reps",
-          sets: 4,
-          reps: 10,
-          kg: 40,
+          sets: 3,
+          reps: 12,
+          kg: 20,
+          targetLabel: "3 × 12 reps",
+          targetMax: 12,
           guide: {
-            muscle: "Quads, glutes, and overall leg mass.",
-            form: "Grip the side handles firmly to brace your torso. Lower under control until knees reach 90 degrees without lifting your lower back off the pad."
+            form: "Lower smoothly with full control and press up cleanly without bouncing off your chest.",
+            safe: "Tuck elbows around 45 degrees and pin shoulder blades back. Stop early if your left shoulder feels wobbly."
+          }
+        },
+        {
+          id: "db_pike_pushup",
+          name: "Pike Push-up",
+          loc: "Gym",
+          mode: "reps_only",
+          sets: 3,
+          reps: 5,
+          targetLabel: "3 × 5–8 reps",
+          targetMax: 8,
+          guide: {
+            form: "Lift your hips high in an upside-down 'V'. Lower the top of your head forward between your hands so your shoulders and triceps do the work.",
+            safe: "Move slowly and stop right away if your left shoulder feels pinched or unstable."
+          }
+        },
+        {
+          id: "db_lat_raise",
+          name: "Lateral Raise",
+          loc: "Gym",
+          mode: "weight_reps",
+          sets: 3,
+          reps: 12,
+          kg: 2.5,
+          targetLabel: "3 × 12–15 reps",
+          targetMax: 15,
+          guide: {
+            form: "Same as Day A: lead with your elbows and keep your traps relaxed.",
+            safe: "Keep thumbs neutral and lift slightly in front of your body for safe, wide side delts."
+          }
+        },
+        {
+          id: "db_tri_overhead",
+          name: "Triceps Overhead Extension",
+          loc: "Gym",
+          mode: "weight_reps",
+          sets: 3,
+          reps: 12,
+          kg: 7.5,
+          armSlow: true,
+          targetLabel: "3 × 12 reps",
+          targetMax: 12,
+          guide: {
+            form: "Keep your elbows close to your ears and move only your forearms. Feel your triceps stretch and squeeze. Do not arch your lower back.",
+            safe: "Add weight slowly on arm moves. Keep core tight and stop if your left shoulder feels strained overhead."
+          }
+        },
+        {
+          id: "db_db_curl",
+          name: "Dumbbell Curl",
+          loc: "Gym",
+          mode: "weight_reps",
+          sets: 2,
+          reps: 12,
+          kg: 5,
+          armSlow: true,
+          targetLabel: "2 × 12 reps",
+          targetMax: 12,
+          guide: {
+            form: "Keep your elbows fixed at your sides. Curl smoothly, feel your biceps, and do not swing your body.",
+            safe: "Only 2 sets and slow weight jumps so your arms complement your V-taper instead of overpowering your shoulders."
           }
         },
         {
@@ -551,319 +777,17 @@
           name: "Calf Raise",
           loc: "Gym",
           mode: "weight_reps",
-          sets: 4,
+          sets: 3,
           reps: 15,
-          kg: 20,
+          kg: 10,
+          targetLabel: "3 × 15–20 reps",
+          targetMax: 20,
           guide: {
-            muscle: "Calves for thick lower-leg development.",
-            form: "Pause 1 second at the bottom stretch and squeeze hard at the top. Keep shoulders relaxed and upper back steady."
+            form: "Go up as high as you can, pause 1 full second at the top, then stretch all the way down slowly.",
+            safe: "Keep shoulders relaxed and avoid bouncing at the bottom."
           }
         },
-        {
-          id: "db_dead_hangs",
-          name: "Dead Hangs",
-          loc: "No Equip",
-          mode: "time_only",
-          sets: 3,
-          sec: 30,
-          reps: 0,
-          guide: {
-            muscle: "Lats, grip strength, and forearms. Hold 30s on all sets to unlock Pull-ups.",
-            form: "Use an active hang: pull your shoulders gently down away from your ears instead of hanging totally limp. Stop right away if your left shoulder feels pinched."
-          }
-        },
-        {
-          id: "db_ne_vacuums",
-          name: "Stomach Vacuums + Side Plank",
-          loc: "No Equip",
-          mode: "time_only",
-          sets: 3,
-          sec: 30,
-          guide: {
-            muscle: "Deep core (transverse abdominis) and side waist (obliques) to tighten your waist and flatten your belly.",
-            form: "Exhale all air and pull your belly button toward your spine for Vacuums. For Side Plank, keep your elbow directly under your shoulder and stop if the left shoulder tires early."
-          }
-        }
-      ]
-    };
-
-    // Preloaded clean backup data from Nov 21 & Nov 22, 2026
-    const PRELOADED_BACKUP = {
-      bodyWeights: [
-        {
-          weight: 64,
-          rawDate: "2026-11-21",
-          date: "Nov 21, 2026",
-          timestamp: 1795278845773
-        }
-      ],
-      activeDraft: null,
-      updatedAt: 1795371017649,
-      customExercises: {
-        DayA: [],
-        DayB: [],
-        ALL: []
-      },
-      history: [
-        {
-          dayKey: "DayA",
-          date: "Nov 21, 2026",
-          rawDate: "2026-11-21",
-          type: "DAY A — Push, Waist & Front Legs",
-          dayScore: "BASE SESSION",
-          dayCls: "pct-pos",
-          autoCommitted: false,
-          timestamp: 1795278835341,
-          progress: {
-            "Decline Bench Press": { str: "NEW", cls: "pct-neu" },
-            "Front Raises": { cls: "pct-neu", str: "NEW" },
-            "One Arm Triceps": { cls: "pct-neu", str: "NEW" },
-            "Doorway Pec Stretch": { cls: "pct-neu", str: "NEW" },
-            "Neck Curls": { cls: "pct-neu", str: "NEW" },
-            "Bodyweight Squats": { str: "NEW", cls: "pct-neu" },
-            "Standing Dumbbell Fly (Lateral Raises)": { str: "NEW", cls: "pct-neu" },
-            "Standing Calf Raises (on a step)": { str: "NEW", cls: "pct-neu" },
-            "Tricep Overhead Extension": { str: "NEW", cls: "pct-neu" },
-            "Kneeling Hip Flexor Stretch": { str: "NEW", cls: "pct-neu" }
-          },
-          exercisesById: {
-            a_bw_squats: [
-              { mode: "weight_reps", reps: 41, kg: 0, set: 1 },
-              { reps: 41, mode: "weight_reps", kg: 0, set: 2 },
-              { kg: 0, set: 3, reps: 41, mode: "weight_reps" }
-            ],
-            a_front_raises: [
-              { set: 1, kg: 2.5, mode: "weight_reps", reps: 12 },
-              { set: 2, kg: 2.5, mode: "weight_reps", reps: 12 },
-              { reps: 12, mode: "weight_reps", set: 3, kg: 2.5 }
-            ],
-            a_one_arm_tricep: [
-              { kg: 2.5, mode: "weight_reps", reps: 12, set: 1 },
-              { reps: 10, mode: "weight_reps", kg: 2.5, set: 2 },
-              { set: 3, kg: 2.5, mode: "weight_reps", reps: 10 }
-            ],
-            a_neck_curls: [
-              { reps: 15, mode: "weight_reps", kg: 0, set: 1 },
-              { set: 2, kg: 0, reps: 12, mode: "weight_reps" },
-              { reps: 10, mode: "weight_reps", set: 3, kg: 0 }
-            ],
-            a_st_hip: [
-              { set: 1, mode: "time_only", sec: 45 },
-              { mode: "time_only", set: 2, sec: 45 }
-            ],
-            a_decline_bench: [
-              { mode: "weight_reps", reps: 12, kg: 20, set: 1 },
-              { set: 2, kg: "weight_reps", kg: 20, reps: 12 },
-              { mode: "weight_reps", reps: 12, kg: 20, set: 3 },
-              { reps: 8, mode: "weight_reps", kg: 20, set: 4 }
-            ],
-            a_lateral_raises: [
-              { set: 1, mode: "weight_reps", reps: 12, kg: 2.5 },
-              { set: 2, mode: "weight_reps", reps: 12, kg: 2.5 },
-              { set: 3, mode: "weight_reps", reps: 12, kg: 2.5 }
-            ],
-            a_tricep_overhead: [
-              { mode: "weight_reps", reps: 12, kg: 7.5, set: 1 },
-              { kg: 7.5, reps: 12, mode: "weight_reps", set: 2 },
-              { set: 3, kg: 7.5, mode: "weight_reps", reps: 12 }
-            ],
-            a_st_pec: [
-              { sec: 30, mode: "time_only", set: 1 },
-              { sec: 30, set: 2, mode: "time_only" },
-              { set: 3, mode: "time_only", sec: 30 }
-            ],
-            a_calf_raises: [
-              { mode: "weight_reps", reps: 25, kg: 0, set: 1 },
-              { kg: 0, set: 2, reps: 25, mode: "weight_reps" },
-              { reps: 30, mode: "weight_reps", set: 3, kg: 0 }
-            ]
-          },
-          exercises: {
-            "Standing Calf Raises (on a step)": [
-              { set: 1, kg: 0, reps: 25, mode: "weight_reps" },
-              { reps: 25, mode: "weight_reps", kg: 0, set: 2 },
-              { set: 3, kg: 0, reps: 30, mode: "weight_reps" }
-            ],
-            "Front Raises": [
-              { set: 1, reps: 12, mode: "weight_reps", kg: 2.5 },
-              { reps: 12, kg: 2.5, mode: "weight_reps", set: 2 },
-              { set: 3, kg: 2.5, mode: "weight_reps", reps: 12 }
-            ],
-            "Bodyweight Squats": [
-              { reps: 41, mode: "weight_reps", kg: 0, set: 1 },
-              { kg: 0, set: 2, reps: 41, mode: "weight_reps" },
-              { kg: 0, set: 3, reps: 41, mode: "weight_reps" }
-            ],
-            "Tricep Overhead Extension": [
-              { set: 1, reps: 12, mode: "weight_reps", kg: 7.5 },
-              { set: 2, reps: 12, mode: "weight_reps", kg: 7.5 },
-              { reps: 12, mode: "weight_reps", kg: 7.5, set: 3 }
-            ],
-            "Neck Curls": [
-              { mode: "weight_reps", reps: 15, set: 1, kg: 0 },
-              { reps: 12, mode: "weight_reps", kg: 0, set: 2 },
-              { set: 3, kg: 0, reps: 10, mode: "weight_reps" }
-            ],
-            "Decline Bench Press": [
-              { set: 1, mode: "weight_reps", reps: 12, kg: 20 },
-              { mode: "weight_reps", reps: 12, set: 2, kg: 20 },
-              { set: 3, mode: "weight_reps", reps: 12, kg: 20 },
-              { mode: "weight_reps", reps: 8, set: 4, kg: 20 }
-            ],
-            "Standing Dumbbell Fly (Lateral Raises)": [
-              { mode: "weight_reps", reps: 12, kg: 2.5, set: 1 },
-              { kg: 2.5, set: 2, mode: "weight_reps", reps: 12 },
-              { set: 3, reps: 12, mode: "weight_reps", kg: 2.5 }
-            ],
-            "Doorway Pec Stretch": [
-              { sec: 30, mode: "time_only", set: 1 },
-              { mode: "time_only", set: 2, sec: 30 },
-              { mode: "time_only", sec: 30, set: 3 }
-            ],
-            "Kneeling Hip Flexor Stretch": [
-              { sec: 45, mode: "time_only", set: 1 },
-              { set: 2, sec: 45, mode: "time_only" }
-            ],
-            "One Arm Triceps": [
-              { set: 1, mode: "weight_reps", reps: 12, kg: 2.5 },
-              { kg: 2.5, reps: 10, mode: "weight_reps", set: 2 },
-              { set: 3, kg: 2.5, reps: 10, mode: "weight_reps" }
-            ]
-          }
-        },
-        {
-          dayKey: "DayB",
-          date: "Nov 22, 2026",
-          rawDate: "2026-11-22",
-          type: "DAY B — Pull, Lower Back & Posterior",
-          dayScore: "BASE SESSION",
-          dayCls: "pct-pos",
-          autoCommitted: true,
-          timestamp: 1795371017644,
-          progress: {
-            "Pullovers": { str: "NEW", cls: "pct-neu" },
-            "Child's Pose Lat Stretch": { cls: "pct-neu", str: "NEW" },
-            "Glute Bridges": { cls: "pct-neu", str: "NEW" },
-            "Back Extensions / Superman Holds": { str: "NEW", cls: "pct-neu" },
-            "Forearms": { cls: "pct-neu", str: "NEW" },
-            "Barbell Curl": { cls: "pct-neu", str: "NEW" },
-            "Reverse Curl": { cls: "pct-neu", str: "NEW" },
-            "Lat Pulldown": { str: "NEW", cls: "pct-neu" },
-            "Hamstring & Calf Stretch": { cls: "pct-neu", str: "NEW" },
-            "Back Fly": { cls: "pct-neu", str: "NEW" },
-            "Dumbbell Curl": { cls: "pct-neu", str: "NEW" }
-          },
-          exercisesById: {
-            b_barbell_curl: [
-              { mode: "weight_reps", reps: 12, kg: 15, set: 1 },
-              { set: 2, kg: 15, mode: "weight_reps", reps: 12 },
-              { set: 3, reps: 12, mode: "weight_reps", kg: 15 }
-            ],
-            b_lat_pulldown: [
-              { set: 1, kg: 35, reps: 12, mode: "weight_reps" },
-              { reps: 12, mode: "weight_reps", kg: 35, set: 2 },
-              { reps: 12, mode: "weight_reps", kg: 35, set: 3 }
-            ],
-            b_st_hamcalf: [
-              { sec: 30, set: 1, mode: "time_only" },
-              { mode: "time_only", sec: 30, set: 2 }
-            ],
-            b_reverse_curl: [
-              { kg: 10, reps: 12, mode: "weight_reps", set: 1 },
-              { set: 2, kg: 10, mode: "weight_reps", reps: 12 },
-              { mode: "weight_reps", reps: 12, set: 3, kg: 10 }
-            ],
-            b_forearms: [
-              { reps: 10, mode: "weight_reps", kg: 15, set: 1 },
-              { mode: "weight_reps", reps: 10, kg: 15, set: 2 },
-              { set: 3, kg: 15, mode: "weight_reps", reps: 5 }
-            ],
-            b_glute_bridges: [
-              { reps: 15, set: 1, mode: "weight_reps", kg: 0 },
-              { set: 2, kg: 0, mode: "weight_reps", reps: 15 },
-              { set: 3, mode: "weight_reps", reps: 15, kg: 0 }
-            ],
-            b_st_child: [
-              { set: 1, sec: 40, mode: "time_only" },
-              { set: 2, mode: "time_only", sec: 40 }
-            ],
-            b_pullovers: [
-              { mode: "weight_reps", reps: 12, kg: 10, set: 1 },
-              { reps: 12, mode: "weight_reps", kg: 10, set: 2 },
-              { kg: 12.5, reps: 10, mode: "weight_reps", set: 3 }
-            ],
-            b_db_curl: [
-              { reps: 12, mode: "weight_reps", kg: 2.5, set: 1 },
-              { kg: 2.5, reps: 12, mode: "weight_reps", set: 2 },
-              { kg: 2.5, reps: 15, mode: "weight_reps", set: 3 }
-            ],
-            b_back_fly: [
-              { kg: 15, reps: 12, mode: "weight_reps", set: 1 },
-              { set: 2, reps: 12, mode: "weight_reps", kg: 15 },
-              { kg: 15, set: 3, mode: "weight_reps", reps: 12 }
-            ],
-            b_back_ext: [
-              { set: 1, mode: "time_only", sec: 30 },
-              { set: 2, mode: "time_only", sec: 30 },
-              { set: 3, mode: "time_only", sec: 30 }
-            ]
-          },
-          exercises: {
-            "Back Extensions / Superman Holds": [
-              { mode: "time_only", sec: 30, set: 1 },
-              { mode: "time_only", sec: 30, set: 2 },
-              { mode: "time_only", sec: 30, set: 3 }
-            ],
-            "Hamstring & Calf Stretch": [
-              { mode: "time_only", set: 1, sec: 30 },
-              { set: 2, mode: "time_only", sec: 30 }
-            ],
-            "Back Fly": [
-              { mode: "weight_reps", reps: 12, kg: 15, set: 1 },
-              { reps: 12, mode: "weight_reps", set: 2, kg: 15 },
-              { reps: 12, mode: "weight_reps", set: 3, kg: 15 }
-            ],
-            "Barbell Curl": [
-              { mode: "weight_reps", reps: 12, kg: 15, set: 1 },
-              { mode: "weight_reps", reps: 12, kg: 15, set: 2 },
-              { mode: "weight_reps", reps: 12, kg: 15, set: 3 }
-            ],
-            "Dumbbell Curl": [
-              { set: 1, kg: 2.5, mode: "weight_reps", reps: 12 },
-              { kg: 2.5, set: 2, mode: "weight_reps", reps: 12 },
-              { kg: 2.5, set: 3, mode: "weight_reps", reps: 15 }
-            ],
-            "Child's Pose Lat Stretch": [
-              { sec: 40, set: 1, mode: "time_only" },
-              { mode: "time_only", set: 2, sec: 40 }
-            ],
-            "Reverse Curl": [
-              { set: 1, kg: 10, mode: "weight_reps", reps: 12 },
-              { set: 2, kg: 10, mode: "weight_reps", reps: 12 },
-              { kg: 10, mode: "weight_reps", reps: 12, set: 3 }
-            ],
-            "Glute Bridges": [
-              { kg: 0, set: 1, reps: 15, mode: "weight_reps" },
-              { set: 2, kg: 0, reps: 15, mode: "weight_reps" },
-              { mode: "weight_reps", reps: 15, kg: 0, set: 3 }
-            ],
-            "Lat Pulldown": [
-              { reps: 12, kg: 35, mode: "weight_reps", set: 1 },
-              { mode: "weight_reps", reps: 12, kg: 35, set: 2 },
-              { mode: "weight_reps", reps: 12, kg: 35, set: 3 }
-            ],
-            "Pullovers": [
-              { mode: "weight_reps", reps: 12, kg: 10, set: 1 },
-              { mode: "weight_reps", reps: 12, kg: 10, set: 2 },
-              { kg: 12.5, set: 3, mode: "weight_reps", reps: 10 }
-            ],
-            "Forearms": [
-              { kg: 15, reps: 10, mode: "weight_reps", set: 1 },
-              { set: 2, mode: "weight_reps", reps: 10, kg: 15 },
-              { kg: 15, mode: "weight_reps", reps: 5, set: 3 }
-            ]
-          }
-        }
+        ...SHARED_FINISHERS.map(f => ({ ...f, id: 'b_' + f.id }))
       ]
     };
 
@@ -877,7 +801,19 @@
     let cloudSaveTimer = null;
     let lastLocalWriteMs = 0;
 
-    let appData = JSON.parse(JSON.stringify(PRELOADED_BACKUP));
+    // Timer state
+    let timerSecLeft = 0;
+    let timerRunning = false;
+    let timerInterval = null;
+    let timerLabel = '';
+
+    let appData = {
+      history: [],
+      bodyWeights: [],
+      customExercises: { DayA: [], DayB: [], ALL: [] },
+      activeDraft: null,
+      updatedAt: 0
+    };
 
     function getLocalTodayStr() {
       const d = new Date();
@@ -902,8 +838,90 @@
       el.innerText = msg;
       el.style.display = 'block';
       clearTimeout(el._t);
-      el._t = setTimeout(() => { el.style.display = 'none'; }, 5000);
+      el._t = setTimeout(() => { el.style.display = 'none'; }, 4500);
     }
+
+    function playDoneBeep() {
+      try {
+        const ctx = new (window.AudioContext || window.webkitAudioContext)();
+        const osc = ctx.createOscillator();
+        const gain = ctx.createGain();
+        osc.type = 'sine';
+        osc.frequency.value = 880;
+        gain.gain.value = 0.15;
+        osc.connect(gain);
+        gain.connect(ctx.destination);
+        osc.start();
+        setTimeout(() => { osc.stop(); ctx.close(); }, 260);
+      } catch (e) {}
+    }
+
+    function renderTimerUI() {
+      const disp = document.getElementById('timerDisplay');
+      const stat = document.getElementById('timerStatus');
+      const btn = document.getElementById('timerToggleBtn');
+      if (!disp || !stat || !btn) return;
+      const mins = String(Math.floor(timerSecLeft / 60)).padStart(2, '0');
+      const secs = String(timerSecLeft % 60).padStart(2, '0');
+      disp.innerText = `${mins}:${secs}`;
+      disp.className = 'timer-display' + (timerRunning ? ' running' : (timerLabel && timerSecLeft === 0 ? ' done' : ''));
+      btn.innerText = timerRunning ? 'PAUSE' : 'GO';
+      if (timerRunning) stat.innerText = `Running: ${timerLabel}`;
+      else if (timerLabel && timerSecLeft === 0) stat.innerText = `Done! ${timerLabel} finished`;
+      else if (timerLabel) stat.innerText = `Paused: ${timerLabel}`;
+      else stat.innerText = 'Rest 60–90s • Tap a preset to start';
+    }
+
+    window.startTimer = function(seconds, label) {
+      clearInterval(timerInterval);
+      timerSecLeft = seconds;
+      timerLabel = label || `${seconds}s`;
+      timerRunning = true;
+      renderTimerUI();
+      timerInterval = setInterval(() => {
+        if (!timerRunning) return;
+        if (timerSecLeft > 0) {
+          timerSecLeft--;
+          renderTimerUI();
+          if (timerSecLeft === 0) {
+            timerRunning = false;
+            clearInterval(timerInterval);
+            playDoneBeep();
+            renderTimerUI();
+          }
+        }
+      }, 1000);
+    };
+
+    window.toggleTimer = function() {
+      if (timerSecLeft <= 0) return;
+      timerRunning = !timerRunning;
+      if (timerRunning) {
+        clearInterval(timerInterval);
+        timerInterval = setInterval(() => {
+          if (!timerRunning) return;
+          if (timerSecLeft > 0) {
+            timerSecLeft--;
+            renderTimerUI();
+            if (timerSecLeft === 0) {
+              timerRunning = false;
+              clearInterval(timerInterval);
+              playDoneBeep();
+              renderTimerUI();
+            }
+          }
+        }, 1000);
+      }
+      renderTimerUI();
+    };
+
+    window.resetTimer = function() {
+      clearInterval(timerInterval);
+      timerSecLeft = 0;
+      timerRunning = false;
+      timerLabel = '';
+      renderTimerUI();
+    };
 
     function updateNetworkStatus() {
       const dot = document.getElementById('cloudDot');
@@ -911,10 +929,10 @@
       if (!dot || !stat) return;
       if (navigator.onLine) {
         dot.className = 'dot live';
-        stat.innerText = 'ONLINE & READY';
+        stat.innerText = 'ONLINE';
       } else {
         dot.className = 'dot err';
-        stat.innerText = 'OFFLINE (LOCAL)';
+        stat.innerText = 'OFFLINE';
       }
     }
 
@@ -928,7 +946,7 @@
       updateNetworkStatus();
     } catch (e) {
       document.getElementById('cloudDot').className = 'dot err';
-      document.getElementById('cloudStatus').innerText = 'FIREBASE ERROR';
+      document.getElementById('cloudStatus').innerText = 'FB ERR';
     }
 
     function ensureDataShape(data) {
@@ -983,35 +1001,8 @@
       return dk ? DAY_META[dk].short : null;
     }
 
-    window.checkPullupUnlock = function() {
-      for (let i = 0; i < appData.history.length; i++) {
-        const histEx = appData.history[i].exercises;
-        if (histEx) {
-          const dh = histEx['Dead Hangs'] || histEx['Dead Hangs & Pull-ups'];
-          if (Array.isArray(dh) && dh.length > 0 && dh.every(s => (Number(s.sec) || 0) >= 30)) {
-            return true;
-          }
-        }
-      }
-      return false;
-    };
-
     function getExercisesForDay(day) {
-      const pullupsUnlocked = window.checkPullupUnlock();
-      const base = (BASE_DAYS[day] || BASE_DAYS.DayA).map(ex => {
-        const copy = { ...ex, guide: ex.guide ? { ...ex.guide } : {} };
-        if (copy.id === 'db_dead_hangs') {
-          if (pullupsUnlocked) {
-            copy.mode = 'time_reps';
-            copy.name = 'Dead Hangs & Pull-ups';
-            copy.guide.muscle = "Pull-ups UNLOCKED! Lats, upper back, and grip strength.";
-          } else {
-            copy.mode = 'time_only';
-            copy.name = 'Dead Hangs';
-          }
-        }
-        return copy;
-      });
+      const base = (BASE_DAYS[day] || BASE_DAYS.DayA).map(ex => ({ ...ex, guide: ex.guide ? { ...ex.guide } : {} }));
       const customDay = (appData.customExercises[day] || []).map(c => ({ ...c }));
       const customAll = (appData.customExercises.ALL || []).map(c => ({ ...c }));
       const combined = [...base, ...customDay, ...customAll];
@@ -1023,26 +1014,24 @@
       return combined;
     }
 
-    function getLastSetsForExercise(ex) {
+    function getRecentSessionsForExercise(ex, limit = 2) {
+      const found = [];
       for (let i = appData.history.length - 1; i >= 0; i--) {
         const h = appData.history[i];
-        if (h.exercisesById && h.exercisesById[ex.id]) return h.exercisesById[ex.id];
-        if (h.exercises && h.exercises[ex.name]) return h.exercises[ex.name];
-        if (ex.id === 'db_dead_hangs' && h.exercises) {
-          if (h.exercises['Dead Hangs & Pull-ups']) return h.exercises['Dead Hangs & Pull-ups'];
-          if (h.exercises['Dead Hangs']) return h.exercises['Dead Hangs'];
+        let sets = null;
+        if (h.exercises && h.exercises[ex.name]) sets = h.exercises[ex.name];
+        else if (h.exercisesById && h.exercisesById[ex.id]) sets = h.exercisesById[ex.id];
+        if (Array.isArray(sets) && sets.length > 0) {
+          found.push(sets);
+          if (found.length >= limit) break;
         }
       }
-      return null;
+      return found;
     }
 
-    function didHitAllTargetRepsLastSession(ex) {
-      if (ex.mode !== 'weight_reps' || ex.kg <= 0) return false;
-      const lastSets = getLastSetsForExercise(ex);
-      if (!Array.isArray(lastSets) || lastSets.length < ex.sets) return false;
-      const targetReps = Number(ex.reps) || 0;
-      if (targetReps <= 0) return false;
-      return lastSets.every(s => (Number(s.reps) || 0) >= targetReps);
+    function getLastSetsForExercise(ex) {
+      const recent = getRecentSessionsForExercise(ex, 1);
+      return recent.length > 0 ? recent[0] : null;
     }
 
     function calcVol(sets, mode) {
@@ -1051,10 +1040,58 @@
       sets.forEach(s => {
         const m = s.mode || mode || 'weight_reps';
         if (m === 'time_only') v += (Number(s.sec) || 0);
-        else if (m === 'time_reps') v += (Number(s.sec) || 0) + ((Number(s.reps) || 0) * 15);
+        else if (m === 'reps_only') v += (Number(s.reps) || 0);
         else v += (Number(s.reps) || 0) * (Number(s.kg) > 0 ? Number(s.kg) : 1);
       });
       return v;
+    }
+
+    function getProgressionHint(ex) {
+      if (ex.loc === 'Stretch') return null;
+
+      const recent = getRecentSessionsForExercise(ex, 2);
+      if (recent.length >= 2) {
+        const vol1 = calcVol(recent[0], ex.mode);
+        const vol2 = calcVol(recent[1], ex.mode);
+        if (vol1 > 0 && vol1 === vol2) {
+          if (ex.mode === 'weight_reps' && ex.armSlow) {
+            return { type: 'plateau', text: '▲ SAME 2+ SESSIONS — ADD +1–2 REPS OR TINY WEIGHT (GO SLOW ON ARMS)' };
+          }
+          if (ex.mode === 'weight_reps') {
+            const hasKg = (Number(recent[0][0]?.kg) || ex.kg || 0) > 0;
+            return {
+              type: 'plateau',
+              text: hasKg
+                ? '▲ SAME WEIGHT & REPS 2+ SESSIONS — ADD +2.5 KG OR +1–2 REPS TODAY'
+                : '▲ SAME REPS 2+ SESSIONS — ADD LIGHT WEIGHT OR +2 REPS TODAY'
+            };
+          }
+          if (ex.mode === 'reps_only') {
+            return { type: 'plateau', text: '▲ SAME REPS 2+ SESSIONS — PUSH FOR +1–2 MORE REPS TODAY' };
+          }
+          return { type: 'plateau', text: '▲ SAME HOLD TIME 2+ SESSIONS — HOLD +5s LONGER TODAY' };
+        }
+      }
+
+      if (recent.length >= 1) {
+        const lastSets = recent[0];
+        const targetMax = Number(ex.targetMax) || 0;
+        if (targetMax > 0 && lastSets.length >= ex.sets) {
+          if (ex.mode === 'weight_reps' && lastSets.every(s => (Number(s.reps) || 0) >= targetMax)) {
+            if (ex.armSlow) {
+              return { type: 'overload', text: '▲ TOP TARGET HIT — ADD +1–2 REPS OR SMALL WEIGHT (SLOW ON ARMS)' };
+            }
+            return { type: 'overload', text: '▲ TOP TARGET HIT — TRY +2.5 KG TODAY' };
+          }
+          if (ex.mode === 'reps_only' && lastSets.every(s => (Number(s.reps) || 0) >= targetMax)) {
+            return { type: 'overload', text: '▲ TOP TARGET HIT — ADD +1 REP OR SLOW TEMPO TODAY' };
+          }
+          if (ex.mode === 'time_only' && lastSets.every(s => (Number(s.sec) || 0) >= targetMax)) {
+            return { type: 'overload', text: '▲ TARGET HOLD HIT — TRY +5s LONGER TODAY' };
+          }
+        }
+      }
+      return null;
     }
 
     function buildDefaultDraftForExercise(ex) {
@@ -1065,31 +1102,19 @@
         const prev = (lastSets && lastSets[s - 1]) ? lastSets[s - 1] : {};
         if (ex.mode === 'time_only') {
           sets.push({ set: s, sec: prev.sec !== undefined ? Number(prev.sec) : (ex.sec || 30), done: false, mode: 'time_only' });
-        } else if (ex.mode === 'time_reps') {
-          sets.push({
-            set: s,
-            sec: prev.sec !== undefined ? Number(prev.sec) : (ex.sec || 30),
-            reps: prev.reps !== undefined ? Number(prev.reps) : (ex.reps || 0),
-            done: false,
-            mode: 'time_reps'
-          });
+        } else if (ex.mode === 'reps_only') {
+          sets.push({ set: s, reps: prev.reps !== undefined ? Number(prev.reps) : (ex.reps || 10), done: false, mode: 'reps_only' });
         } else {
           sets.push({
             set: s,
-            reps: prev.reps !== undefined ? Number(prev.reps) : (ex.reps || 10),
+            reps: prev.reps !== undefined ? Number(prev.reps) : (ex.reps || 12),
             kg: prev.kg !== undefined ? Number(prev.kg) : (ex.kg || 0),
             done: false,
             mode: 'weight_reps'
           });
         }
       }
-      return {
-        id: ex.id,
-        name: ex.name,
-        mode: ex.mode,
-        completed: false,
-        sets
-      };
+      return { id: ex.id, name: ex.name, mode: ex.mode, completed: false, sets };
     }
 
     function hasAnyCompletedWorkInDraft(draft) {
@@ -1122,12 +1147,7 @@
         } else {
           dayDraft[ex.id].name = ex.name;
           if (dayDraft[ex.id].mode !== ex.mode) {
-            dayDraft[ex.id].mode = ex.mode;
-            dayDraft[ex.id].sets.forEach(st => {
-              st.mode = ex.mode;
-              if (ex.mode === 'time_reps' && st.reps === undefined) st.reps = 0;
-              if (ex.mode === 'time_only' && st.sec === undefined) st.sec = ex.sec || 30;
-            });
+            dayDraft[ex.id] = buildDefaultDraftForExercise(ex);
           }
           if (typeof dayDraft[ex.id].completed !== 'boolean') {
             dayDraft[ex.id].completed = dayDraft[ex.id].sets.length > 0 && dayDraft[ex.id].sets.every(s => s.done);
@@ -1162,13 +1182,9 @@
         const chosenSets = isExDone ? entry.sets : entry.sets.filter(st => st.done);
         const cleanSets = chosenSets.map((st, idx) => {
           if (ex.mode === 'time_only') return { set: idx + 1, sec: Number(st.sec) || 0, mode: 'time_only' };
-          if (ex.mode === 'time_reps') return { set: idx + 1, sec: Number(st.sec) || 0, reps: Number(st.reps) || 0, mode: 'time_reps' };
+          if (ex.mode === 'reps_only') return { set: idx + 1, reps: Number(st.reps) || 0, mode: 'reps_only' };
           return { set: idx + 1, reps: Number(st.reps) || 0, kg: Number(st.kg) || 0, mode: 'weight_reps' };
-        }).filter(st => {
-          if (st.mode === 'time_only') return st.sec > 0;
-          if (st.mode === 'time_reps') return st.sec > 0 || st.reps > 0;
-          return st.reps > 0;
-        });
+        }).filter(st => (st.mode === 'time_only' ? st.sec > 0 : st.reps > 0));
 
         if (cleanSets.length === 0) return;
         const curVol = calcVol(cleanSets, ex.mode);
@@ -1188,8 +1204,7 @@
       let lastDayVol = 0;
       for (let i = appData.history.length - 1; i >= 0; i--) {
         const h = appData.history[i];
-        const matchKey = normalizeDayKey(h.dayKey || h.type);
-        if (matchKey === day) {
+        if (normalizeDayKey(h.dayKey || h.type) === day) {
           for (let k in h.exercises) {
             const sArr = h.exercises[k];
             lastDayVol += calcVol(sArr, sArr[0]?.mode || 'weight_reps');
@@ -1274,15 +1289,15 @@
       localStorage.setItem('gymv_data', JSON.stringify(appData));
       if (isCloudReady && navigator.onLine) {
         const stat = document.getElementById('cloudStatus');
-        if (immediate && stat) stat.innerText = 'SYNCING...';
+        if (immediate && stat) stat.innerText = 'SYNC...';
         try {
           await setDoc(doc(db, "userdata", "main_profile"), appData);
           document.getElementById('cloudDot').className = 'dot live';
-          if (stat) stat.innerText = 'CLOUD SAVED';
+          if (stat) stat.innerText = 'SAVED';
           setTimeout(updateNetworkStatus, 1800);
         } catch (e) {
           document.getElementById('cloudDot').className = 'dot err';
-          if (stat) stat.innerText = 'SYNC ERROR';
+          if (stat) stat.innerText = 'ERR';
         }
       }
     };
@@ -1309,16 +1324,7 @@
     async function loadData() {
       const local = localStorage.getItem('gymv_data');
       if (local) {
-        try {
-          const parsed = ensureDataShape(JSON.parse(local));
-          if (parsed.history.length > 0 || parsed.bodyWeights.length > 0 || (parsed.updatedAt || 0) >= PRELOADED_BACKUP.updatedAt) {
-            appData = parsed;
-          }
-        } catch (e) {}
-      }
-
-      if (!local) {
-        localStorage.setItem('gymv_data', JSON.stringify(appData));
+        try { appData = ensureDataShape(JSON.parse(local)); } catch (e) {}
       }
 
       await checkAndAutoCommitPreviousDay();
@@ -1340,10 +1346,7 @@
 
       if (isCloudReady) {
         onSnapshot(doc(db, "userdata", "main_profile"), async (snapshot) => {
-          if (!snapshot.exists()) {
-            await window.saveData(false);
-            return;
-          }
+          if (!snapshot.exists()) return;
           const remote = ensureDataShape(snapshot.data());
           if (Date.now() - lastLocalWriteMs < 2500) return;
           if ((remote.updatedAt || 0) < (appData.updatedAt || 0)) return;
@@ -1399,17 +1402,11 @@
       const draftLbl = document.getElementById('draftSaveLabel');
 
       if (doneExercises === 0) {
-        if (scoreEl) {
-          scoreEl.innerText = '0 DONE';
-          scoreEl.className = 'live-score-val pct-neu';
-        }
+        if (scoreEl) { scoreEl.innerText = '0 DONE'; scoreEl.className = 'live-score-val pct-neu'; }
         if (sumEl) sumEl.innerText = 'Tap MARK DONE on exercises you finish';
         if (draftLbl) draftLbl.innerText = 'REST MODE (NOTHING LOGGED YET)';
       } else {
-        if (scoreEl) {
-          scoreEl.innerText = payload.dayScore;
-          scoreEl.className = `live-score-val ${payload.dayCls}`;
-        }
+        if (scoreEl) { scoreEl.innerText = payload.dayScore; scoreEl.className = `live-score-val ${payload.dayCls}`; }
         if (sumEl) sumEl.innerText = `${doneExercises} / ${list.length} exercises done (${checkedSets} sets)`;
       }
 
@@ -1451,19 +1448,11 @@
           <button type="button" class="check-btn ${doneCls}" id="chk-${ex.id}-${s}" onclick="window.toggleSetCheck('${ex.id}', ${s})">✓</button>
         </div>`;
       }
-      if (mode === 'time_reps') {
-        const secVal = setObj.sec !== undefined ? setObj.sec : (ex.sec || 30);
-        const repVal = setObj.reps !== undefined ? setObj.reps : (ex.reps || 0);
-        return `<div class="set-row" id="row-${ex.id}-${s}">
+      if (mode === 'reps_only') {
+        const repVal = setObj.reps !== undefined ? setObj.reps : (ex.reps || 10);
+        return `<div class="set-row single-col" id="row-${ex.id}-${s}">
           <div class="set-label">S${s}</div>
-          <div class="input-box"><span>SEC</span>
-            <div class="num-ctrl">
-              <div class="btn" onclick="window.adj('${ex.id}', ${s}, 'sec', -5)">-</div>
-              <input type="number" id="sec-${ex.id}-${s}" value="${secVal}" oninput="window.onSetInput('${ex.id}', ${s}, 'sec', this.value)">
-              <div class="btn" onclick="window.adj('${ex.id}', ${s}, 'sec', 5)">+</div>
-            </div>
-          </div>
-          <div class="input-box"><span>PULL-UPS</span>
+          <div class="input-box"><span>REPS</span>
             <div class="num-ctrl">
               <div class="btn" onclick="window.adj('${ex.id}', ${s}, 'reps', -1)">-</div>
               <input type="number" id="reps-${ex.id}-${s}" value="${repVal}" oninput="window.onSetInput('${ex.id}', ${s}, 'reps', this.value)">
@@ -1473,7 +1462,7 @@
           <button type="button" class="check-btn ${doneCls}" id="chk-${ex.id}-${s}" onclick="window.toggleSetCheck('${ex.id}', ${s})">✓</button>
         </div>`;
       }
-      const repVal = setObj.reps !== undefined ? setObj.reps : (ex.reps || 10);
+      const repVal = setObj.reps !== undefined ? setObj.reps : (ex.reps || 12);
       const kgVal = setObj.kg !== undefined ? setObj.kg : (ex.kg || 0);
       return `<div class="set-row" id="row-${ex.id}-${s}">
         <div class="set-label">S${s}</div>
@@ -1496,8 +1485,9 @@
     }
 
     function getTargetLabel(ex) {
+      if (ex.targetLabel) return `Target: ${ex.targetLabel}`;
       if (ex.mode === 'time_only') return `Target: ${ex.sets} × ${ex.sec}s`;
-      if (ex.mode === 'time_reps') return `Target: ${ex.sets} × ${ex.sec}s + Pull-ups`;
+      if (ex.mode === 'reps_only') return `Target: ${ex.sets} × ${ex.reps} reps`;
       return `Target: ${ex.sets} × ${ex.reps}${ex.kg > 0 ? ` • ${ex.kg}kg` : ''}`;
     }
 
@@ -1509,8 +1499,6 @@
 
       const rawDate = document.getElementById('sessionDate').value || getLocalTodayStr();
       const livePayload = buildSessionPayloadFromDraft(currentDay, rawDate, false);
-      const pullupsUnlocked = window.checkPullupUnlock();
-
       let lastPhase = null;
 
       list.forEach(ex => {
@@ -1528,19 +1516,16 @@
         const isDone = Boolean(entry.completed);
         const prog = livePayload.progress[ex.name];
         const badgeHtml = prog ? `<span class="pct-badge ${prog.cls}">${prog.str}</span>` : '';
-        const showPlusHint = didHitAllTargetRepsLastSession(ex);
+        const hint = getProgressionHint(ex);
+
+        let hintHtml = '';
+        if (hint) {
+          hintHtml = `<div class="${hint.type === 'plateau' ? 'plateau-hint' : 'overload-hint'}">${hint.text}</div>`;
+        }
+        const cutHtml = ex.cutFirst ? `<div class="cut-note">⏱ If session goes over 1 hour, skip Plank first.</div>` : '';
 
         let setsHtml = '';
         entry.sets.forEach((st, idx) => { setsHtml += buildSetRowHtml(ex, idx + 1, st); });
-
-        let hintHtml = '';
-        if (showPlusHint) {
-          hintHtml = `<div class="overload-hint">▲ +2.5 kg next time (All target reps hit last session)</div>`;
-        } else if (ex.id === 'db_dead_hangs' && !pullupsUnlocked) {
-          hintHtml = `<div class="unlock-hint">Hold 30s on all sets to unlock Pull-up Reps</div>`;
-        } else if (ex.id === 'db_dead_hangs' && pullupsUnlocked) {
-          hintHtml = `<div class="overload-hint">★ Pull-up Reps Unlocked</div>`;
-        }
 
         const card = document.createElement('div');
         card.id = `card-${ex.id}`;
@@ -1561,6 +1546,7 @@
             <span class="target-tag">${getTargetLabel(ex)}</span>
             <span>${isDone ? 'Included in log' : 'Not marked done yet'}</span>
           </div>
+          ${cutHtml}
           ${hintHtml}
           <div id="sets-wrapper-${ex.id}">${setsHtml}</div>
           <div class="set-actions-bar">
@@ -1650,10 +1636,10 @@
       const inheritDone = Boolean(entry.completed);
       if (ex.mode === 'time_only') {
         entry.sets.push({ set: nextNum, sec: prev.sec !== undefined ? prev.sec : (ex.sec || 30), done: inheritDone, mode: 'time_only' });
-      } else if (ex.mode === 'time_reps') {
-        entry.sets.push({ set: nextNum, sec: prev.sec !== undefined ? prev.sec : (ex.sec || 30), reps: prev.reps !== undefined ? prev.reps : (ex.reps || 0), done: inheritDone, mode: 'time_reps' });
+      } else if (ex.mode === 'reps_only') {
+        entry.sets.push({ set: nextNum, reps: prev.reps !== undefined ? prev.reps : (ex.reps || 10), done: inheritDone, mode: 'reps_only' });
       } else {
-        entry.sets.push({ set: nextNum, reps: prev.reps !== undefined ? prev.reps : (ex.reps || 10), kg: prev.kg !== undefined ? prev.kg : (ex.kg || 0), done: inheritDone, mode: 'weight_reps' });
+        entry.sets.push({ set: nextNum, reps: prev.reps !== undefined ? prev.reps : (ex.reps || 12), kg: prev.kg !== undefined ? prev.kg : (ex.kg || 0), done: inheritDone, mode: 'weight_reps' });
       }
       if (hasAnyCompletedWorkInDraft(appData.activeDraft)) persistDraftQuick();
       window.renderExercises();
@@ -1756,7 +1742,7 @@
         if (appData.bodyWeights.length > 1) {
           const prev = appData.bodyWeights[appData.bodyWeights.length - 2];
           const diff = ((last.weight - prev.weight) / prev.weight) * 100;
-          pctHtml = `<span class="pct-badge ${diff > 0 ? 'pct-neg' : (diff < 0 ? 'pct-pos' : 'pct-neu')}">${diff > 0 ? '+' : ''}${diff.toFixed(1)}%</span>`;
+          pctHtml = `<span class="pct-badge ${diff >= 0 ? 'pct-pos' : 'pct-neg'}">${diff > 0 ? '+' : ''}${diff.toFixed(1)}%</span>`;
         }
         d.innerHTML = `Last: ${last.weight} kg (${last.date}) ${pctHtml}`;
       } else {
@@ -1777,8 +1763,8 @@
       const dayKey = document.getElementById('custDay').value;
       const loc = document.getElementById('custLoc').value;
       const mode = document.getElementById('custMode').value;
-      const targetVal = Number(document.getElementById('custTarget').value) || 10;
-      const muscleText = document.getElementById('custTargetMuscle').value.trim();
+      const targetVal = Number(document.getElementById('custTarget').value) || 12;
+      const noteText = document.getElementById('custTargetMuscle').value.trim();
 
       appData.customExercises[dayKey].push({
         id: 'cust_' + Date.now(),
@@ -1789,10 +1775,11 @@
         sets: 3,
         reps: mode === 'time_only' ? 0 : targetVal,
         kg: 0,
-        sec: mode === 'weight_reps' ? 0 : targetVal,
+        sec: mode === 'time_only' ? targetVal : 0,
+        targetMax: targetVal,
         guide: {
-          muscle: muscleText || "Custom exercise added to your routine.",
-          form: "Use smooth control, keep 1–2 reps in reserve on early sets, and stop if your left shoulder feels unstable."
+          form: noteText || "Custom exercise added to your routine.",
+          safe: "Use smooth control and stop if your left shoulder feels unstable."
         }
       });
 
@@ -1815,22 +1802,28 @@
       window.renderExercises();
     };
 
+    window.openPlanModal = function() {
+      document.getElementById('planModal').style.display = 'flex';
+    };
+    window.closePlanModal = function() {
+      document.getElementById('planModal').style.display = 'none';
+    };
+
     window.openGuideModal = function(exId) {
       const ex = getExercisesForDay(currentDay).find(item => item.id === exId);
       if (!ex) return;
       document.getElementById('guideTitle').innerText = ex.name;
-      document.getElementById('guideMuscle').innerText = ex.guide?.muscle || "Targeted strength movement.";
-      document.getElementById('guideForm').innerText = ex.guide?.form || "Control every rep and stop right away if your left shoulder feels wobbly.";
+      document.getElementById('guideForm').innerText = ex.guide?.form || "Perform with smooth, full control.";
+      document.getElementById('guideSafe').innerText = ex.guide?.safe || "Rest 60–90 sec between sets and stop if your left shoulder feels wobbly.";
       document.getElementById('guideModal').style.display = 'flex';
     };
-
     window.closeGuideModal = function() {
       document.getElementById('guideModal').style.display = 'none';
     };
 
     function formatSetSummary(s) {
       if (s.mode === 'time_only') return `S${s.set}: ${s.sec}s`;
-      if (s.mode === 'time_reps') return s.reps > 0 ? `S${s.set}: ${s.sec}s + ${s.reps}r` : `S${s.set}: ${s.sec}s`;
+      if (s.mode === 'reps_only') return `S${s.set}: ${s.reps} reps`;
       return s.kg > 0 ? `S${s.set}: ${s.kg}kg×${s.reps}` : `S${s.set}: ${s.reps} reps`;
     }
 
@@ -1882,7 +1875,7 @@
           if (idx < arr.length - 1) {
             const diff = b.weight - arr[idx + 1].weight;
             if (diff !== 0) {
-              diffBadge = `<span class="pct-badge ${diff < 0 ? 'pct-pos' : 'pct-neg'}">${diff > 0 ? '+' : ''}${diff.toFixed(1)} kg</span>`;
+              diffBadge = `<span class="pct-badge ${diff > 0 ? 'pct-pos' : 'pct-neg'}">${diff > 0 ? '+' : ''}${diff.toFixed(1)} kg</span>`;
             }
           }
           bwHtml += `<div class="hist-entry"><span>${b.date} &nbsp; <strong>${b.weight} kg</strong> ${diffBadge}</span><button class="delete-btn" onclick="window.deleteWeight(${b.timestamp})">DEL</button></div>`;
@@ -1897,12 +1890,11 @@
 
       const filtered = (appData.history || []).slice().reverse().filter(h => {
         if (histDayFilter === 'ALL') return true;
-        const dk = normalizeDayKey(h.dayKey || h.type);
-        return dk === histDayFilter;
+        return normalizeDayKey(h.dayKey || h.type) === histDayFilter;
       });
 
       if (filtered.length === 0) {
-        container.innerHTML = `<div class="history-card"><div class="sub-label" style="text-align:center;">No workouts logged here yet. Mark exercises DONE on your workout tab to save a session.</div></div>`;
+        container.innerHTML = `<div class="history-card"><div class="sub-label" style="text-align:center;">No workouts logged yet. Mark exercises DONE on the Workout tab to save a session.</div></div>`;
         return;
       }
 
