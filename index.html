@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-  <title>GYM LOG</title>
+  <title>GYM LITE</title>
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <style>
@@ -80,7 +80,7 @@
       display: grid;
       grid-template-columns: 1fr 1fr;
       gap: 8px;
-      margin: 14px 0 12px;
+      margin: 14px 0 10px;
     }
 
     .nav-btn {
@@ -99,6 +99,63 @@
       background: var(--white);
       color: var(--bg);
       border-color: var(--white);
+    }
+
+    /* SMART STREAK CARD */
+    .streak-card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 11px 13px;
+      margin-bottom: 12px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .streak-main {
+      display: flex;
+      align-items: baseline;
+      gap: 8px;
+    }
+
+    .streak-num {
+      font-size: 1.35rem;
+      font-weight: 900;
+      color: var(--white);
+      letter-spacing: 0.5px;
+    }
+
+    .streak-num.active-streak {
+      color: var(--pos);
+    }
+
+    .streak-tag {
+      font-size: 0.62rem;
+      font-weight: 800;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: 0.7px;
+    }
+
+    .streak-sub {
+      font-size: 0.7rem;
+      color: var(--light);
+      margin-top: 3px;
+    }
+
+    .streak-best {
+      text-align: right;
+      border-left: 1px solid var(--border);
+      padding-left: 12px;
+      flex-shrink: 0;
+    }
+
+    .streak-best-val {
+      font-size: 0.95rem;
+      font-weight: 900;
+      color: var(--white);
     }
 
     .schedule-strip {
@@ -573,7 +630,7 @@
 <body>
 
   <header>
-    <h1>GYM LOG</h1>
+    <h1>GYM LITE</h1>
     <div class="sync-pill">
       <span class="dot" id="syncDot"></span>
       <span id="syncText">LOCAL</span>
@@ -585,6 +642,21 @@
   <div class="nav-tabs">
     <button class="nav-btn active" id="tabToday" onclick="window.setTab('today')">TODAY</button>
     <button class="nav-btn" id="tabHistory" onclick="window.setTab('history')">HISTORY</button>
+  </div>
+
+  <!-- SMART STREAK COUNTER -->
+  <div class="streak-card">
+    <div>
+      <div class="streak-main">
+        <span class="streak-num" id="streakCurrent">0 DAYS</span>
+        <span class="streak-tag">SMART STREAK</span>
+      </div>
+      <div class="streak-sub" id="streakSub">Rest days (Mon, Fri) never break your streak</div>
+    </div>
+    <div class="streak-best">
+      <div class="streak-tag">BEST</div>
+      <div class="streak-best-val" id="streakBest">0d</div>
+    </div>
   </div>
 
   <!-- TODAY VIEW -->
@@ -669,8 +741,8 @@
       measurementId: "G-8NWPQN2E63"
     };
 
-    const STORAGE_KEY = "gym_simple_v1";
-    const CLOUD_DOC_ID = "gym_simple_v1";
+    const STORAGE_KEY = "gym_lite_v1";
+    const CLOUD_DOC_ID = "gym_lite_v1";
 
     // Schedule: 0=Sun, 1=Mon, 2=Tue, 3=Wed, 4=Thu, 5=Fri, 6=Sat
     const SCHEDULE = {
@@ -726,10 +798,18 @@
       return new Date(d.getTime() - d.getTimezoneOffset() * 60000).toISOString().split("T")[0];
     }
 
+    function isoFromDateObj(d) {
+      return new Date(d.getTime() - d.getTimezoneOffset() * 60000).toISOString().split("T")[0];
+    }
+
+    function parseISO(iso) {
+      const [y, m, d] = iso.split("-").map(Number);
+      return new Date(y, m - 1, d);
+    }
+
     function formatDateNice(iso) {
       if (!iso) return "";
-      const [y, m, d] = iso.split("-");
-      return new Date(y, m - 1, d).toLocaleDateString("en-US", {
+      return parseISO(iso).toLocaleDateString("en-US", {
         weekday: "short", month: "short", day: "numeric"
       });
     }
@@ -763,6 +843,84 @@
     window.addEventListener("online", () => { updateSyncUI("live"); saveAll(false); });
     window.addEventListener("offline", () => updateSyncUI("err"));
 
+    // SMART STREAK ENGINE
+    // Rest days (Mon=1, Fri=5) never break the streak. Training on a rest day adds +1 bonus!
+    function calculateSmartStreak() {
+      const loggedDates = new Set(appData.history.map(h => h.rawDate).filter(Boolean));
+      const todayISO = getTodayISO();
+      const todayDow = parseISO(todayISO).getDay();
+      const isTodayRest = SCHEDULE[todayDow].type === "Rest";
+      const loggedToday = loggedDates.has(todayISO);
+
+      let current = 0;
+      let cursor = parseISO(todayISO);
+      for (let i = 0; i < 730; i++) {
+        const iso = isoFromDateObj(cursor);
+        const dow = cursor.getDay();
+        const isRest = SCHEDULE[dow].type === "Rest";
+
+        if (loggedDates.has(iso)) {
+          current++;
+        } else if (iso === todayISO) {
+          // Today isn't over yet; don't break streak before you train today
+        } else if (isRest) {
+          // Scheduled rest day -> streak stays intact
+        } else {
+          break;
+        }
+        cursor.setDate(cursor.getDate() - 1);
+      }
+
+      let best = current;
+      if (loggedDates.size > 0) {
+        const sorted = Array.from(loggedDates).sort();
+        let runCursor = parseISO(sorted[0]);
+        const endCursor = parseISO(todayISO);
+        let run = 0;
+
+        while (runCursor <= endCursor) {
+          const iso = isoFromDateObj(runCursor);
+          const dow = runCursor.getDay();
+          const isRest = SCHEDULE[dow].type === "Rest";
+
+          if (loggedDates.has(iso)) {
+            run++;
+            if (run > best) best = run;
+          } else if (!isRest && iso !== todayISO) {
+            run = 0;
+          }
+          runCursor.setDate(runCursor.getDate() + 1);
+        }
+      }
+
+      let subText = "";
+      if (loggedToday) {
+        subText = "Today logged! Streak is locked in.";
+      } else if (isTodayRest) {
+        subText = current > 0
+          ? "Rest day today — your streak is safe."
+          : "Rest day today. Next session: Sat (Push) or Tue (Push).";
+      } else {
+        subText = current > 0
+          ? `Log today's ${SCHEDULE[todayDow].type} to reach ${current + 1} days!`
+          : `Log today's ${SCHEDULE[todayDow].type} to start a new streak.`;
+      }
+
+      return { current, best, subText };
+    }
+
+    function renderSmartStreak() {
+      const { current, best, subText } = calculateSmartStreak();
+      const numEl = document.getElementById("streakCurrent");
+      const subEl = document.getElementById("streakSub");
+      const bestEl = document.getElementById("streakBest");
+
+      numEl.innerText = `${current} ${current === 1 ? "DAY" : "DAYS"}`;
+      numEl.className = "streak-num" + (current > 0 ? " active-streak" : "");
+      subEl.innerText = subText;
+      bestEl.innerText = `${best}d`;
+    }
+
     function calcVolume(sets, mode) {
       if (!Array.isArray(sets)) return 0;
       let total = 0;
@@ -778,7 +936,6 @@
       return total;
     }
 
-    // Find the most recent saved workout of the same type BEFORE the currently selected date (or any previous saved session)
     function getPreviousSession(type, excludeDate) {
       const matches = appData.history
         .filter(h => h.type === type && h.rawDate !== excludeDate)
@@ -794,7 +951,6 @@
       const key = getDraftKey(dateISO, type);
       if (appData.drafts[key]) return appData.drafts[key];
 
-      // If this exact date + type was already saved, load it for easy editing
       const existing = appData.history.find(h => h.rawDate === dateISO && h.type === type);
       if (existing) {
         const clone = {};
@@ -807,7 +963,6 @@
         return clone;
       }
 
-      // Otherwise pre-fill from the last session of the same workout type
       const prev = getPreviousSession(type, dateISO);
       const draft = {};
       PLANS[type].forEach(ex => {
@@ -870,8 +1025,7 @@
     }
 
     function updateScheduleBanner(dateISO) {
-      const [y, m, d] = dateISO.split("-");
-      const dow = new Date(y, m - 1, d).getDay();
+      const dow = parseISO(dateISO).getDay();
       const info = SCHEDULE[dow];
       const el = document.getElementById("scheduleNotice");
       if (info.type === "Rest") {
@@ -882,6 +1036,7 @@
     }
 
     function renderWorkout() {
+      renderSmartStreak();
       const dateISO = document.getElementById("workoutDate").value || getTodayISO();
       updateScheduleBanner(dateISO);
 
@@ -1081,8 +1236,7 @@
 
     window.onDateChange = function(val) {
       if (!val) return;
-      const [y, m, d] = val.split("-");
-      const info = SCHEDULE[new Date(y, m - 1, d).getDay()];
+      const info = SCHEDULE[parseISO(val).getDay()];
       if (info.type !== "Rest") currentType = info.type;
       renderWorkout();
     };
@@ -1130,14 +1284,13 @@
         meta: cleanPerEx
       };
 
-      // Replace if already saved for this exact date + workout type
       const idx = appData.history.findIndex(h => h.rawDate === dateISO && h.type === currentType);
       if (idx >= 0) appData.history[idx] = entry;
       else appData.history.push(entry);
 
       await saveAll(true);
+      renderSmartStreak();
 
-      // Show clean daily result modal
       document.getElementById("modalTitle").innerText = `${currentType.toUpperCase()} SAVED • ${formatDateNice(dateISO)}`;
       const mScore = document.getElementById("modalScore");
       mScore.innerText = entry.scoreText;
@@ -1188,11 +1341,13 @@
       if (!confirm("Delete this saved workout?")) return;
       appData.history = appData.history.filter(h => h.id !== id);
       await saveAll(true);
+      renderSmartStreak();
       renderHistory();
       showToast("Workout deleted.");
     };
 
     function renderHistory() {
+      renderSmartStreak();
       const list = document.getElementById("historyList");
       const items = appData.history
         .slice()
@@ -1252,7 +1407,7 @@
       const url = URL.createObjectURL(blob);
       const a = document.createElement("a");
       a.href = url;
-      a.download = `gym-log-${getTodayISO()}.json`;
+      a.download = `gym-lite-${getTodayISO()}.json`;
       a.click();
       URL.revokeObjectURL(url);
     };
@@ -1271,6 +1426,7 @@
             updatedAt: Date.now()
           };
           await saveAll(true);
+          renderSmartStreak();
           renderHistory();
           showToast("Backup imported.");
         } catch {
@@ -1284,6 +1440,7 @@
       if (!confirm("Delete ALL saved workouts from phone and cloud?")) return;
       appData = { history: [], drafts: {}, updatedAt: Date.now() };
       await saveAll(true);
+      renderSmartStreak();
       renderHistory();
       showToast("All data reset.");
     };
